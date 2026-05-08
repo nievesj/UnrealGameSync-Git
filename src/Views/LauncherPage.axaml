@@ -5,18 +5,73 @@
              xmlns:m="using:SourceGit.Models"
              xmlns:v="using:SourceGit.Views"
              xmlns:vm="using:SourceGit.ViewModels"
+             xmlns:tabs="using:SourceGit.ViewModels.Tabs"
+             xmlns:vtabs="using:SourceGit.Views.Tabs"
              xmlns:c="using:SourceGit.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="SourceGit.Views.LauncherPage"
              x:DataType="vm:LauncherPage">
-  <Grid RowDefinitions="36,*">
-    <!-- ToolBar -->
+  <Grid RowDefinitions="Auto,36,*">
+    <!-- Project-Level Tab Bar (only visible when more than 1 tab) -->
     <Border Grid.Row="0"
+            Margin="8,4,4,0"
+            IsVisible="{Binding Tabs.Count, Converter={x:Static c:IntConverters.IsNotOne}}"
+            BorderThickness="1"
+            BorderBrush="{DynamicResource Brush.Border2}"
+            CornerRadius="6"
+            Padding="4,0">
+      <ListBox Background="Transparent"
+               ItemsSource="{Binding Tabs}"
+               SelectedItem="{Binding SelectedTab, Mode=TwoWay}"
+               SelectionMode="AlwaysSelected">
+        <ListBox.Styles>
+          <Style Selector="Path.icon">
+            <Setter Property="Width" Value="12"/>
+            <Setter Property="Height" Value="12"/>
+            <Setter Property="Margin" Value="8,0,6,0"/>
+            <Setter Property="Fill" Value="{DynamicResource Brush.FG2}"/>
+          </Style>
+          <Style Selector="TextBlock.header">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.FG2}"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+          </Style>
+          <Style Selector="ListBoxItem">
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+          </Style>
+        </ListBox.Styles>
+
+        <ListBox.ItemTemplate>
+          <DataTemplate DataType="vm:RepositoryTabDescriptor">
+            <Grid Classes="view_mode" ColumnDefinitions="Auto,*,Auto">
+              <Path Grid.Column="0" Classes="icon"
+                    Data="{Binding Icon}"
+                    Fill="{DynamicResource Brush.FG2}"/>
+              <TextBlock Grid.Column="1" Classes="header"
+                         Text="{Binding Title}"/>
+
+              <!-- Close button for closable tabs -->
+              <Button Grid.Column="2"
+                      Classes="icon_button"
+                      Width="26" Height="26"
+                      IsVisible="{Binding IsClosable}"
+                      Command="{Binding CloseTabCommand}">
+                <Path Width="12" Height="12" Data="{StaticResource Icons.Close}"/>
+              </Button>
+            </Grid>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </Border>
+
+    <!-- ToolBar -->
+    <Border Grid.Row="1"
             BorderBrush="{DynamicResource Brush.Border0}"
             BorderThickness="0,0,0,1"
             Background="{DynamicResource Brush.ToolBar}"
             PointerPressed="OnToolBarPointerPressed">
-      <ContentControl Content="{Binding Data}">
+      <ContentControl Content="{Binding SelectedTab.ToolbarContent, FallbackValue={Binding Data}}">
         <ContentControl.DataTemplates>
           <DataTemplate DataType="vm:Welcome">
             <v:WelcomeToolbar/>
@@ -25,13 +80,17 @@
           <DataTemplate DataType="vm:Repository">
             <v:RepositoryToolbar/>
           </DataTemplate>
+
+          <DataTemplate DataType="tabs:HelloWorldToolbarViewModel">
+            <vtabs:HelloWorldToolbar/>
+          </DataTemplate>
         </ContentControl.DataTemplates>
       </ContentControl>
     </Border>
 
     <!-- Body -->
-    <Border Grid.Row="1">
-      <ContentControl Content="{Binding Data}">        
+    <Border Grid.Row="2">
+      <ContentControl Content="{Binding SelectedTab.BodyContent, FallbackValue={Binding Data}}">
         <ContentControl.DataTemplates>
           <DataTemplate DataType="vm:Welcome">
             <v:Welcome/>
@@ -40,12 +99,16 @@
           <DataTemplate DataType="vm:Repository">
             <v:Repository/>
           </DataTemplate>
+
+          <DataTemplate DataType="tabs:HelloWorldBodyViewModel">
+            <vtabs:HelloWorldBody/>
+          </DataTemplate>
         </ContentControl.DataTemplates>
       </ContentControl>
     </Border>
 
     <!-- Floating -->
-    <Grid Grid.Row="1" ClipToBounds="True">
+    <Grid Grid.Row="1" Grid.RowSpan="2" ClipToBounds="True">
       <Grid.IsVisible>
         <MultiBinding Converter="{x:Static BoolConverters.Or}">
           <Binding Path="Popup" Converter="{x:Static ObjectConverters.IsNotNull}"/>

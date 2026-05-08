@@ -440,6 +440,7 @@ namespace SourceGit.ViewModels
             page.Popup?.Cleanup();
             page.Popup = null;
             page.Data = null;
+            page.Dispose();
         }
 
         private void PostActivePageChanged()

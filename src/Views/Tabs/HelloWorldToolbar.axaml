@@ -1,0 +1,11 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:SourceGit.ViewModels.Tabs"
+             x:Class="SourceGit.Views.Tabs.HelloWorldToolbar"
+             x:DataType="vm:HelloWorldToolbarViewModel">
+    <TextBlock Text="{Binding Title}"
+               FontWeight="Bold"
+               VerticalAlignment="Center"
+               Margin="16,0,0,0"
+               Foreground="{DynamicResource Brush.FG2}" />
+</UserControl>

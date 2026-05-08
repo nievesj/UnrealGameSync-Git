@@ -207,6 +207,12 @@ namespace SourceGit.Models
             set;
         } = [];
 
+        public string ActiveTabId
+        {
+            get;
+            set;
+        } = "repository";
+
         public string LastCommitMessage
         {
             get;
