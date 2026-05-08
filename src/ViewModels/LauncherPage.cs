@@ -54,6 +54,9 @@ namespace SourceGit.ViewModels
                 var previous = _selectedTab;
                 if (SetProperty(ref _selectedTab, value))
                 {
+                    OnPropertyChanged(nameof(ToolbarContent));
+                    OnPropertyChanged(nameof(BodyContent));
+
                     if (previous != null)
                         previous.NotifyDeactivated();
 
@@ -66,6 +69,18 @@ namespace SourceGit.ViewModels
             }
         }
 
+        /// <summary>
+        /// Toolbar content: uses SelectedTab's toolbar if available, otherwise falls back to Data (Welcome page).
+        /// </summary>
+        public object ToolbarContent => _selectedTab?.ToolbarContent ?? _data;
+
+        /// <summary>
+        /// Body content: uses SelectedTab's body if available, otherwise falls back to Data (Welcome page).
+        /// </summary>
+        public object BodyContent => _selectedTab?.BodyContent ?? _data;
+
+        public bool IsTabBarVisible => Tabs.Count > 1;
+
         public LauncherPage()
         {
             _node = new RepositoryNode() { Id = Guid.NewGuid().ToString() };
@@ -73,12 +88,16 @@ namespace SourceGit.ViewModels
 
             // New welcome page will clear the search filter before.
             Welcome.Instance.ClearSearchFilter();
+
+            Tabs.CollectionChanged += (_, _) => OnPropertyChanged(nameof(IsTabBarVisible));
         }
 
         public LauncherPage(RepositoryNode node, Repository repo)
         {
             _node = node;
             _data = repo;
+
+            Tabs.CollectionChanged += (_, _) => OnPropertyChanged(nameof(IsTabBarVisible));
 
             RegisterBuiltInTabs();
             RestoreActiveTab();

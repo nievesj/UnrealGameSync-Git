@@ -728,6 +728,27 @@
     <Setter Property="Opacity" Value="1"/>
   </Style>
 
+  <Style Selector="ListBox.plugin_tabbar">
+    <Setter Property="Background" Value="Transparent"/>
+  </Style>
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem">
+    <Setter Property="Padding" Value="0"/>
+    <Setter Property="Margin" Value="0"/>
+    <Setter Property="Height" Value="28"/>
+  </Style>
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Opacity" Value=".5"/>
+  </Style>
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Opacity" Value=".85"/>
+  </Style>
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Opacity" Value="1"/>
+  </Style>
+
   <Style Selector="ListBox.repo_left_content_list">
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>

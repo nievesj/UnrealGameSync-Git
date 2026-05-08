@@ -14,50 +14,42 @@
   <Grid RowDefinitions="Auto,36,*">
     <!-- Project-Level Tab Bar (only visible when more than 1 tab) -->
     <Border Grid.Row="0"
-            Margin="8,4,4,0"
-            IsVisible="{Binding Tabs.Count, Converter={x:Static c:IntConverters.IsNotOne}}"
-            BorderThickness="1"
-            BorderBrush="{DynamicResource Brush.Border2}"
-            CornerRadius="6"
-            Padding="4,0">
-      <ListBox Background="Transparent"
+            IsVisible="{Binding IsTabBarVisible}"
+            BorderBrush="{DynamicResource Brush.Border0}"
+            BorderThickness="0,0,0,1">
+      <ListBox Classes="plugin_tabbar"
+               Background="Transparent"
                ItemsSource="{Binding Tabs}"
                SelectedItem="{Binding SelectedTab, Mode=TwoWay}"
                SelectionMode="AlwaysSelected">
-        <ListBox.Styles>
-          <Style Selector="Path.icon">
-            <Setter Property="Width" Value="12"/>
-            <Setter Property="Height" Value="12"/>
-            <Setter Property="Margin" Value="8,0,6,0"/>
-            <Setter Property="Fill" Value="{DynamicResource Brush.FG2}"/>
-          </Style>
-          <Style Selector="TextBlock.header">
-            <Setter Property="Foreground" Value="{DynamicResource Brush.FG2}"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-          </Style>
-          <Style Selector="ListBoxItem">
-            <Setter Property="Height" Value="28"/>
-            <Setter Property="Margin" Value="0"/>
-            <Setter Property="Padding" Value="0"/>
-          </Style>
-        </ListBox.Styles>
+        <ListBox.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Orientation="Horizontal"/>
+          </ItemsPanelTemplate>
+        </ListBox.ItemsPanel>
 
         <ListBox.ItemTemplate>
           <DataTemplate DataType="vm:RepositoryTabDescriptor">
-            <Grid Classes="view_mode" ColumnDefinitions="Auto,*,Auto">
-              <Path Grid.Column="0" Classes="icon"
+            <Grid ColumnDefinitions="Auto,Auto,Auto" Height="28">
+              <Path Grid.Column="0"
+                    Width="12" Height="12" Margin="12,0,6,0"
+                    Fill="{DynamicResource Brush.FG2}"
                     Data="{Binding Icon}"
-                    Fill="{DynamicResource Brush.FG2}"/>
-              <TextBlock Grid.Column="1" Classes="header"
-                         Text="{Binding Title}"/>
+                    IsHitTestVisible="False"/>
 
-              <!-- Close button for closable tabs -->
+              <TextBlock Grid.Column="1"
+                         VerticalAlignment="Center"
+                         FontSize="12"
+                         Foreground="{DynamicResource Brush.FG2}"
+                         Text="{Binding Title}"
+                         IsHitTestVisible="False"/>
+
               <Button Grid.Column="2"
                       Classes="icon_button"
-                      Width="26" Height="26"
+                      Width="14" Height="12" Margin="8,0,4,0"
                       IsVisible="{Binding IsClosable}"
                       Command="{Binding CloseTabCommand}">
-                <Path Width="12" Height="12" Data="{StaticResource Icons.Close}"/>
+                <Path Width="9" Height="9" Data="{StaticResource Icons.Close}"/>
               </Button>
             </Grid>
           </DataTemplate>
@@ -71,7 +63,7 @@
             BorderThickness="0,0,0,1"
             Background="{DynamicResource Brush.ToolBar}"
             PointerPressed="OnToolBarPointerPressed">
-      <ContentControl Content="{Binding SelectedTab.ToolbarContent, FallbackValue={Binding Data}}">
+      <ContentControl Content="{Binding ToolbarContent}">
         <ContentControl.DataTemplates>
           <DataTemplate DataType="vm:Welcome">
             <v:WelcomeToolbar/>
@@ -90,7 +82,7 @@
 
     <!-- Body -->
     <Border Grid.Row="2">
-      <ContentControl Content="{Binding SelectedTab.BodyContent, FallbackValue={Binding Data}}">
+      <ContentControl Content="{Binding BodyContent}">
         <ContentControl.DataTemplates>
           <DataTemplate DataType="vm:Welcome">
             <v:Welcome/>
