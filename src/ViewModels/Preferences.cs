@@ -9,7 +9,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace SourceGit.ViewModels
 {
-    public class Preferences : ObservableObject
+    public class Preferences : ObservableObject, Models.IPluginStateStore
     {
         [JsonIgnore]
         public static Preferences Instance
@@ -499,6 +499,19 @@ namespace SourceGit.ViewModels
             set;
         } = [];
 
+        public Dictionary<string, bool> GlobalPluginStates
+        {
+            get;
+            set;
+        } = new Dictionary<string, bool>();
+
+        /// <summary>
+        /// Ensures GlobalPluginStates is never null (handles source-gen deserialization
+        /// bypassing the auto-property initializer when field is absent from JSON).
+        /// </summary>
+        [JsonIgnore]
+        public Dictionary<string, bool> SafeGlobalPluginStates => GlobalPluginStates ??= new();
+
         public double LastCheckUpdateTime
         {
             get => _lastCheckUpdateTime;
@@ -847,5 +860,17 @@ namespace SourceGit.ViewModels
         private string _gitDefaultCloneDir = string.Empty;
         private int _shellOrTerminalType = -1;
         private uint _statisticsSampleColor = 0xFF00FF00;
+
+        #region IPluginStateStore Implementation
+        bool? Models.IPluginStateStore.GetGlobalState(string pluginId)
+        {
+            return SafeGlobalPluginStates.TryGetValue(pluginId, out var enabled) ? enabled : null;
+        }
+
+        void Models.IPluginStateStore.SetGlobalState(string pluginId, bool enabled)
+        {
+            SafeGlobalPluginStates[pluginId] = enabled;
+        }
+        #endregion
     }
 }

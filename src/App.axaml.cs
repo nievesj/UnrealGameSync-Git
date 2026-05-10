@@ -464,6 +464,19 @@ namespace SourceGit
             pref.SetCanModify();
             pref.UpdateAvailableAIModels();
 
+            // Inject plugin state store
+            Models.PluginRegistry.Instance.StateStore = pref;
+
+#if !DISABLE_PLUGINS
+            // Register built-in plugin manifests BEFORE external discovery (NEW-3: cross-check requires built-ins first)
+            Models.PluginRegistry.Instance.RegisterBuiltInManifest(new ViewModels.Tabs.HelloWorldPluginManifest());
+
+            // Discover and load external plugins (disabled in AOT builds via DISABLE_PLUGINS)
+            var pluginResults = Models.PluginLoader.Discover();
+            foreach (var result in pluginResults)
+                Models.PluginRegistry.Instance.DiscoveredPlugins.Add(result);
+#endif
+
             _launcher = new ViewModels.Launcher(startupRepo);
             desktop.MainWindow = new Views.Launcher() { DataContext = _launcher };
             desktop.ShutdownMode = ShutdownMode.OnExplicitShutdown;

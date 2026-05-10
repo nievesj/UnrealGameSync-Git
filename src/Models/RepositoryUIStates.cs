@@ -213,6 +213,18 @@ namespace SourceGit.Models
             set;
         } = "repository";
 
+        public Dictionary<string, bool> PerRepoPluginOverrides
+        {
+            get;
+            set;
+        } = new();
+
+        /// <summary>
+        /// Ensures PerRepoPluginOverrides is never null (handles source-gen deserialization
+        /// bypassing the auto-property initializer when field is absent from JSON).
+        /// </summary>
+        public Dictionary<string, bool> SafePerRepoPluginOverrides => PerRepoPluginOverrides ??= new();
+
         public string LastCommitMessage
         {
             get;

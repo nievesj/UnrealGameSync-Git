@@ -346,14 +346,12 @@ namespace SourceGit.ViewModels
                 else
                 {
                     page = _activePage;
-                    page.Node = node;
-                    page.Data = repo;
+                    page.PromoteToRepositoryPage(node, repo);
                 }
             }
             else
             {
-                page.Node = node;
-                page.Data = repo;
+                page.PromoteToRepositoryPage(node, repo);
             }
 
             _activeWorkspace.Repositories.Clear();

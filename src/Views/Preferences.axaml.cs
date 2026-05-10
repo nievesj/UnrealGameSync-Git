@@ -7,6 +7,8 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 
+using SourceGit.ViewModels;
+
 namespace SourceGit.Views
 {
     public partial class Preferences : ChromelessWindow
@@ -112,6 +114,8 @@ namespace SourceGit.Views
             get => GetValue(SelectedCustomActionProperty);
             set => SetValue(SelectedCustomActionProperty, value);
         }
+
+        public PluginSettingsViewModel PluginSettingsVM { get; } = new PluginSettingsViewModel();
 
         public Preferences()
         {

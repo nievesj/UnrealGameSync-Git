@@ -908,6 +908,13 @@
             </ContentControl>
           </Grid>
         </TabItem>
+
+        <TabItem>
+          <TabItem.Header>
+            <TextBlock Classes="tab_header" Text="Plugins"/>
+          </TabItem.Header>
+          <v:PluginSettingsView DataContext="{Binding #ThisControl.PluginSettingsVM}"/>
+        </TabItem>
       </TabControl>
     </Border>
   </Grid>

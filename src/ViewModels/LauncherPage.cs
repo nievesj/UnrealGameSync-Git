@@ -99,8 +99,33 @@ namespace SourceGit.ViewModels
 
             Tabs.CollectionChanged += (_, _) => OnPropertyChanged(nameof(IsTabBarVisible));
 
+            // Subscribe to plugin state changes for live activation/deactivation
+            PluginRegistry.Instance.PluginStateChanged += OnPluginStateChanged;
+
             RegisterBuiltInTabs();
             RestoreActiveTab();
+        }
+
+        /// <summary>
+        /// Called when a Welcome page is reused for a repository (first repo opened).
+        /// Initializes tabs and subscribes to plugin events. Idempotent — safe to call multiple times.
+        /// </summary>
+        public void PromoteToRepositoryPage(RepositoryNode node, Repository repo)
+        {
+            _node = node;
+            _data = repo;
+
+            // Only initialize once — guard against double-promotion
+            if (Tabs.Count == 0)
+            {
+                Tabs.CollectionChanged += (_, _) => OnPropertyChanged(nameof(IsTabBarVisible));
+
+                // Subscribe to plugin state changes for live activation/deactivation
+                PluginRegistry.Instance.PluginStateChanged += OnPluginStateChanged;
+
+                RegisterBuiltInTabs();
+                RestoreActiveTab();
+            }
         }
 
         public void AddPluginTab(IRepositoryTab tab)
@@ -280,9 +305,61 @@ namespace SourceGit.ViewModels
         internal void Dispose()
         {
             _isDisposed = true;
+
+            // Unsubscribe from plugin state changes
+            PluginRegistry.Instance.PluginStateChanged -= OnPluginStateChanged;
+
+            // Clear activation records for this repository to prevent memory leak (Issue #6)
+            if (_node != null)
+                PluginRegistry.Instance.ClearActivationForRepository(_node.Id);
+
             foreach (var descriptor in Tabs)
                 descriptor.Dispose();
             Tabs.Clear();
+        }
+
+        private void OnPluginStateChanged(string pluginId)
+        {
+            // Must run on UI thread
+            if (!Dispatcher.UIThread.CheckAccess())
+            {
+                Dispatcher.UIThread.Post(() => OnPluginStateChanged(pluginId));
+                return;
+            }
+
+            if (_isDisposed || !(_data is Repository repo))
+                return;
+
+            // Find the manifest for this plugin
+            var manifest = PluginRegistry.Instance.AllManifests.FirstOrDefault(m => m.PluginId == pluginId);
+            if (manifest == null)
+                return;
+
+            var uiStates = repo.UIStates;
+            var isEnabled = PluginRegistry.Instance.IsEnabledForRepository(pluginId, uiStates);
+
+            // Check if the plugin's tabs are currently present
+            var pluginTabIds = PluginRegistry.Instance.GetTabIdsForPlugin(pluginId);
+            bool hasPluginTabs = false;
+            foreach (var tab in Tabs)
+            {
+                if (pluginTabIds.Contains(tab.TabId))
+                {
+                    hasPluginTabs = true;
+                    break;
+                }
+            }
+
+            if (isEnabled && !hasPluginTabs)
+            {
+                // Plugin was enabled but not present — activate it
+                PluginActivator.ActivatePlugin(manifest, this, _node);
+            }
+            else if (!isEnabled && hasPluginTabs)
+            {
+                // Plugin was disabled but still present — deactivate it
+                PluginActivator.DeactivatePlugin(manifest, this);
+            }
         }
 
         private void RegisterBuiltInTabs()
@@ -294,8 +371,8 @@ namespace SourceGit.ViewModels
             var repoTab = new RepositoryTab(repo, _node);
             Tabs.Add(new RepositoryTabDescriptor(repoTab));
 
-            // Register Hello World reference plugin
-            Tabs.Add(new RepositoryTabDescriptor(new HelloWorldTab()));
+            // Activate enabled plugins for this repository
+            PluginActivator.ActivateEnabledPlugins(this, _node, repo.UIStates);
 
             SelectedTab = Tabs[0];
         }
