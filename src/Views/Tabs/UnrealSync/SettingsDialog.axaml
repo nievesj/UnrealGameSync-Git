@@ -1,0 +1,108 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:SourceGit.ViewModels.Tabs.UnrealSync"
+        x:Class="SourceGit.Views.Tabs.UnrealSync.SettingsDialog"
+        x:DataType="vm:SettingsDialogViewModel"
+        Title="UnrealSync Settings"
+        Width="500" Height="600"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False">
+
+    <ScrollViewer>
+        <StackPanel Margin="16" Spacing="16">
+
+            <!-- Engine section -->
+            <Border Background="{DynamicResource Brush.Card}" CornerRadius="6" Padding="12">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Engine" FontWeight="SemiBold" FontSize="14" />
+
+                    <CheckBox Content="Auto-detect engine" IsChecked="{Binding AutoDetectEngine}" />
+
+                    <TextBlock Text="Local engine path (saved to your local config, not shared with team):"
+                               FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
+                    <TextBox Text="{Binding EnginePathOverride}"
+                             IsEnabled="{Binding !AutoDetectEngine}"
+                             Watermark="C:\Program Files\Epic Games\UE_5.4" />
+                    <TextBlock Text="{Binding EnginePathError}"
+                               Foreground="Red" FontSize="11"
+                               IsVisible="{Binding EnginePathError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Network Location section -->
+            <Border Background="{DynamicResource Brush.Card}" CornerRadius="6" Padding="12">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Network Location" FontWeight="SemiBold" FontSize="14" />
+
+                    <TextBlock Text="Base URL (UNC path or HTTP URL for archive &amp; publish):"
+                               FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
+                    <TextBox Text="{Binding NetworkBaseUrl}"
+                             Watermark="\\build-server\ue-binaries" />
+                    <TextBlock Text="{Binding NetworkUrlError}"
+                               Foreground="Red" FontSize="11"
+                               IsVisible="{Binding NetworkUrlError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+
+                    <Grid ColumnDefinitions="*,*">
+                        <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,8,0">
+                            <TextBlock Text="Archive channel:" FontSize="11"
+                                       Foreground="{DynamicResource Brush.FG3}" />
+                            <TextBox Text="{Binding ArchiveChannel}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Spacing="4">
+                            <TextBlock Text="Publish channel:" FontSize="11"
+                                       Foreground="{DynamicResource Brush.FG3}" />
+                            <TextBox Text="{Binding PublishChannel}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*,*">
+                        <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,8,0">
+                            <TextBlock Text="Custom archive channel:" FontSize="11"
+                                       Foreground="{DynamicResource Brush.FG3}" />
+                            <TextBox Text="{Binding CustomArchiveChannel}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Spacing="4">
+                            <TextBlock Text="Custom publish channel:" FontSize="11"
+                                       Foreground="{DynamicResource Brush.FG3}" />
+                            <TextBox Text="{Binding CustomPublishChannel}" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Build Defaults section -->
+            <Border Background="{DynamicResource Brush.Card}" CornerRadius="6" Padding="12">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Build Defaults" FontWeight="SemiBold" FontSize="14" />
+
+                    <TextBlock Text="Default config:" FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
+                    <ComboBox SelectedItem="{Binding DefaultBuildConfig}" />
+                    <!-- Items: Development, DebugGame, Shipping, Test — bound in code-behind -->
+
+                    <CheckBox Content="Build content when packaging"
+                              IsChecked="{Binding BuildContentWhenPackaging}" />
+
+                    <TextBlock Text="Output directory:" FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
+                    <TextBox Text="{Binding OutputDirectory}" Watermark="Saved/StagedBuilds" />
+                </StackPanel>
+            </Border>
+
+            <!-- Publish Options section -->
+            <Border Background="{DynamicResource Brush.Card}" CornerRadius="6" Padding="12">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Publish Options" FontWeight="SemiBold" FontSize="14" />
+                    <CheckBox Content="Atomic publish (write to temp, then rename)"
+                              IsChecked="{Binding AtomicPublish}" />
+                </StackPanel>
+            </Border>
+
+            <!-- Action buttons -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                <Button Content="Cancel" Command="{Binding CancelCommand}" />
+                <Button Content="Save &amp; Apply" Command="{Binding SaveCommand}"
+                        Classes="accent" />
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</Window>

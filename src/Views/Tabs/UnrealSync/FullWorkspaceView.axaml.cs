@@ -1,0 +1,31 @@
+using Avalonia.Controls;
+using Avalonia.Interactivity;
+
+namespace SourceGit.Views.Tabs.UnrealSync;
+
+public partial class FullWorkspaceView : UserControl
+{
+    public FullWorkspaceView()
+    {
+        InitializeComponent();
+    }
+
+    private async void OpenSettings(object sender, RoutedEventArgs e)
+    {
+        if (DataContext is not ViewModels.Tabs.UnrealSync.FullWorkspaceViewModel vm)
+            return;
+
+        // Create settings dialog directly instead of relying on ShowDialogAsync magic
+        var dialog = new SettingsDialog(vm.RepoPath);
+
+        // Find the owner window
+        var owner = TopLevel.GetTopLevel(this) as Window;
+        if (owner != null)
+        {
+            dialog.DataContext = new ViewModels.Tabs.UnrealSync.SettingsDialogViewModel(vm.RepoPath);
+            await dialog.ShowDialog(owner);
+        }
+
+        e.Handled = true;
+    }
+}
