@@ -16,6 +16,7 @@ namespace SourceGit.ViewModels.Tabs.UnrealSync;
 public partial class StatusPanelViewModel : ObservableObject
 {
     private readonly string _repoPath;
+    private readonly GitSyncService _syncService;
 
     [ObservableProperty]
     private string _statusText = "Ready";
@@ -29,18 +30,18 @@ public partial class StatusPanelViewModel : ObservableObject
     [ObservableProperty]
     private string _commitSubject = "";
 
-    public StatusPanelViewModel(string repoPath)
+    public StatusPanelViewModel(string repoPath, GitSyncService syncService)
     {
         _repoPath = repoPath;
+        _syncService = syncService;
     }
 
     public async Task RefreshAsync(CancellationToken ct)
     {
         try
         {
-            var gitSync = new GitSyncService(_repoPath);
-            BranchText = await gitSync.GetCurrentBranchAsync(ct);
-            CommitText = await gitSync.GetCurrentCommitAsync(ct);
+            BranchText = await _syncService.GetCurrentBranchAsync(ct);
+            CommitText = await _syncService.GetCurrentCommitAsync(ct);
             StatusText = "Ready";
         }
         catch (Exception ex)

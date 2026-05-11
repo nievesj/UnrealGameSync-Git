@@ -43,13 +43,12 @@ public static class ConfigService
         var config = JsonSerializer.Deserialize(json, UnrealSyncJsonContext.Default.UgsConfig)
             ?? new UgsConfig();
 
-        // Validate version — refuse unknown versions
-        if (config.Version > 1)
-            throw new InvalidOperationException(
-                $"Unknown .unrealsync.json version {config.Version}. Supported: 1.");
+        // Validate version — silently fall back to default for unknown versions (fixes M-7)
+        if (config.Version > 2)
+            return new UgsConfig { Version = -1 };
 
-        // Expand environment variables in all string fields
-        ExpandEnvVarsInConfig(config);
+        // Expand environment variables in all string fields (returns new config for immutability)
+        config = ExpandEnvVarsInConfig(config);
 
         return config;
     }
@@ -102,18 +101,27 @@ public static class ConfigService
             Environment.GetEnvironmentVariable(match.Groups[1].Value) ?? string.Empty);
     }
 
-    private static string GetConfigPath(string repoPath) =>
+    internal static string GetConfigPath(string repoPath) =>
         Path.Combine(repoPath, ConfigFileName);
 
     private static string GetLocalConfigPath(string repoPath) =>
         Path.Combine(repoPath, LocalConfigDir, LocalConfigFile);
 
-    private static void ExpandEnvVarsInConfig(UgsConfig config)
+    private static UgsConfig ExpandEnvVarsInConfig(UgsConfig config)
     {
-        // Expand env vars in CI config
-        if (config.Ci?.TeamCity is { } tc && tc.AccessToken != null)
+        // Expand env vars in CI config (uses with expressions since config is now an immutable record)
+        if (config.Ci?.TeamCity is { } tc && !string.IsNullOrEmpty(tc.AccessToken))
         {
-            tc.AccessToken = ResolveEnvVars(tc.AccessToken);
+            var resolved = ResolveEnvVars(tc.AccessToken);
+            config = config with
+            {
+                Ci = config.Ci with
+                {
+                    TeamCity = tc with { AccessToken = resolved }
+                }
+            };
         }
+
+        return config;
     }
 }

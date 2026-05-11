@@ -31,19 +31,23 @@ public class UProjectMeta
     [JsonPropertyName("Plugins")]
     public List<UProjectPlugin> Plugins { get; init; } = new();
 
+    private static readonly JsonSerializerOptions UProjectOptions = new()
+    {
+        ReadCommentHandling = JsonCommentHandling.Skip,
+        PropertyNameCaseInsensitive = true,
+    };
+
     /// <summary>
     /// Parse a .uproject file with UE's non-standard JSON (comments, trailing commas). Fixes BF-6.
+    /// Uses System.Text.Json native comment support (fixes M-1: regex corrupted URLs).
     /// </summary>
     public static UProjectMeta ParseTolerant(string json)
     {
-        // 1. Strip // single-line comments
-        json = Regex.Replace(json, @"//.*$", "", RegexOptions.Multiline);
-        // 2. Strip /* block comments */
-        json = Regex.Replace(json, @"/\*.*?\*/", "", RegexOptions.Singleline);
-        // 3. Strip trailing commas before } or ]
+        // System.Text.Json natively skips // and /* */ comments with ReadCommentHandling.Skip.
+        // UE also uses trailing commas, which STJ doesn't support — strip them.
         json = Regex.Replace(json, @",(\s*[}\]])", "$1");
 
-        return JsonSerializer.Deserialize(json, UnrealSyncJsonContext.Default.UProjectMeta)
+        return JsonSerializer.Deserialize<UProjectMeta>(json, UProjectOptions)
             ?? throw new InvalidOperationException("Failed to parse .uproject file");
     }
 }

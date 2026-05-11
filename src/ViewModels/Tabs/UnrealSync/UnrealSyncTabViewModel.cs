@@ -21,6 +21,7 @@ public enum SyncTabMode
 public class UnrealSyncTabViewModel : ObservableObject
 {
     private readonly string _repoPath;
+    private readonly GitSyncService _syncService;
     private SyncTabMode _mode = SyncTabMode.Detecting;
     private object _currentBody = null!;
 
@@ -41,7 +42,8 @@ public class UnrealSyncTabViewModel : ObservableObject
     public UnrealSyncTabViewModel(string repoPath)
     {
         _repoPath = repoPath;
-        StatusPanel = new StatusPanelViewModel(repoPath);
+        _syncService = new GitSyncService(repoPath);
+        StatusPanel = new StatusPanelViewModel(repoPath, _syncService);
     }
 
     public async Task RefreshAsync()
@@ -70,7 +72,7 @@ public class UnrealSyncTabViewModel : ObservableObject
                 if (!string.IsNullOrEmpty(enginePath))
                 {
                     Mode = SyncTabMode.FullWorkspace;
-                    var bodyVm = new FullWorkspaceViewModel(_repoPath, enginePath, meta);
+                    var bodyVm = new FullWorkspaceViewModel(_repoPath, enginePath, meta, _syncService);
                     CurrentBody = bodyVm;
                 }
                 else

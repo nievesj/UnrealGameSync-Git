@@ -11,8 +11,4 @@ public partial class SettingsDialog : Window
         InitializeComponent();
     }
 
-    public SettingsDialog(string repoPath) : this()
-    {
-        DataContext = new SettingsDialogViewModel(repoPath);
-    }
 }

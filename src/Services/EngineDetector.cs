@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -22,11 +23,29 @@ namespace SourceGit.Services;
 /// </summary>
 public static class EngineDetector
 {
+    private static readonly ConcurrentDictionary<string, (DateTime ConfigWriteTime, string EnginePath)> _cache = new();
+
     /// <summary>
     /// Detect the engine path for a UE project. Returns empty string if not found.
+    /// Uses a cache keyed by repoPath, invalidated when config file write time changes.
     /// Priority: user-local override > team config > env var > .uproject > relative probe > parent scan > known paths > registry/ini.
     /// </summary>
     public static string Detect(UProjectMeta meta, string repoPath)
+    {
+        var configPath = ConfigService.GetConfigPath(repoPath);
+        var configWrite = File.Exists(configPath) ? File.GetLastWriteTimeUtc(configPath) : DateTime.MinValue;
+
+        if (_cache.TryGetValue(repoPath, out var cached) && cached.ConfigWriteTime == configWrite)
+            return cached.EnginePath;
+
+        var result = DetectCore(meta, repoPath);
+        _cache[repoPath] = (configWrite, result);
+        return result;
+    }
+
+    public static void ClearCache() => _cache.Clear();
+
+    private static string DetectCore(UProjectMeta meta, string repoPath)
     {
         // 1. User-local override (.unrealsync/local.json enginePathOverride)
         var localState = ConfigService.LoadLocalState(repoPath);
@@ -368,10 +387,10 @@ public static class EngineDetector
 
     private static string GetUProjectDirectory(string repoPath)
     {
+        // Directory.GetFiles with SearchOption.TopDirectoryOnly ensures the .uproject
+        // file is directly in repoPath, so the directory is always repoPath itself.
         var uprojectFiles = Directory.GetFiles(repoPath, "*.uproject", SearchOption.TopDirectoryOnly);
-        return uprojectFiles.Length > 0
-            ? Path.GetDirectoryName(uprojectFiles[0]) ?? string.Empty
-            : string.Empty;
+        return uprojectFiles.Length > 0 ? repoPath : string.Empty;
     }
 
     private static IEnumerable<string> GetKnownInstallPaths(string versionStr)

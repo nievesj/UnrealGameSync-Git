@@ -1,6 +1,7 @@
 using System;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 
 using Avalonia;
 
@@ -40,7 +41,16 @@ public class UnrealSyncTab : IRepositoryTab
         _bodyView.DataContext = _viewModel;
     }
 
-    public void OnActivated() => _ = _viewModel.RefreshAsync();
+    public void OnActivated()
+    {
+        _viewModel.RefreshAsync().ContinueWith(
+            t =>
+            {
+                if (t.Exception != null)
+                    Native.OS.LogException(t.Exception.Flatten());
+            },
+            TaskContinuationOptions.OnlyOnFaulted);
+    }
     public void OnDeactivated() { }
     public void Dispose() => _viewModel.Dispose();
 }

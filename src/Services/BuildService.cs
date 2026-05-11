@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,10 +19,12 @@ public class BuildService
     private static readonly TimeSpan DefaultTimeout = TimeSpan.FromHours(2);
 
     private readonly string _repoPath;
+    private readonly string _enginePath;
 
-    public BuildService(string repoPath)
+    public BuildService(string repoPath, string enginePath)
     {
         _repoPath = repoPath;
+        _enginePath = enginePath;
     }
 
     /// <summary>
@@ -31,7 +34,8 @@ public class BuildService
         UgsBuildStep step,
         IProgress<string> log,
         CancellationToken ct,
-        TimeSpan? timeout = null)
+        TimeSpan? timeout = null,
+        string? archiveDir = null)
     {
         log.Report($"\n> Build: {step.DisplayName} ({step.Platform} {step.Configuration})...");
 
@@ -43,30 +47,91 @@ public class BuildService
         try
         {
             ProcessStartInfo psi;
-            if (!string.IsNullOrEmpty(step.ScriptPath))
+            if (string.IsNullOrEmpty(step.ScriptPath))
             {
-                var fullPath = Path.IsPathRooted(step.ScriptPath)
-                    ? step.ScriptPath
-                    : Path.GetFullPath(Path.Combine(_repoPath, step.ScriptPath));
-                psi = new ProcessStartInfo(fullPath)
-                {
-                    WorkingDirectory = _repoPath
-                };
+                return new BuildResult(BuildStatus.Failed, step.Id,
+                    "Build error: Script path is empty. No build target configured.");
             }
-            else
+
+            // --- Expand template variables ---
+            var projectName = Path.GetFileNameWithoutExtension(
+                Directory.GetFiles(_repoPath, "*.uproject", SearchOption.TopDirectoryOnly).FirstOrDefault() ?? "Project");
+            var uprojectFile = Directory.GetFiles(_repoPath, "*.uproject", SearchOption.TopDirectoryOnly).FirstOrDefault() ?? "";
+            var uprojectPath = Path.GetFullPath(uprojectFile);
+
+            var expandedScriptPath = step.ScriptPath.Replace("{ProjectName}", projectName, StringComparison.OrdinalIgnoreCase);
+            expandedScriptPath = expandedScriptPath.Replace("{EnginePath}", _enginePath, StringComparison.OrdinalIgnoreCase);
+            var expandedTarget = step.Target.Replace("{ProjectName}", projectName, StringComparison.OrdinalIgnoreCase);
+            expandedTarget = expandedTarget.Replace("{EnginePath}", _enginePath, StringComparison.OrdinalIgnoreCase);
+
+            var expandedArguments = (!string.IsNullOrEmpty(step.Arguments) ? step.Arguments : "")
+                .Replace("{Target}", expandedTarget, StringComparison.OrdinalIgnoreCase)
+                .Replace("{UbtTarget}", expandedTarget, StringComparison.OrdinalIgnoreCase)
+                .Replace("{Platform}", step.Platform, StringComparison.OrdinalIgnoreCase)
+                .Replace("{Configuration}", step.Configuration, StringComparison.OrdinalIgnoreCase)
+                .Replace("{ProjectName}", projectName, StringComparison.OrdinalIgnoreCase)
+                .Replace("{ProjectPath}", uprojectPath, StringComparison.OrdinalIgnoreCase)
+                .Replace("{EnginePath}", _enginePath, StringComparison.OrdinalIgnoreCase)
+                .Replace("{ArchiveDir}", archiveDir ?? Path.Combine(_repoPath, "Saved", "StagedBuilds"), StringComparison.OrdinalIgnoreCase);
+
+            // --- ScriptPath validation (fixes C-1) ---
+
+            // 1. Check extension is in allowlist
+            var ext = Path.GetExtension(expandedScriptPath);
+            var allowedExtensions = new[] { ".bat", ".cmd", ".sh", ".ps1" };
+            if (!allowedExtensions.Contains(ext, StringComparer.OrdinalIgnoreCase))
             {
-                psi = new ProcessStartInfo
-                {
-                    FileName = "cmd",
-                    Arguments = $"/c echo [UnrealSync] Build target '{step.Target}' is not yet wired to UBT. Build step was skipped. && exit 1",
-                    WorkingDirectory = _repoPath
-                };
+                return new BuildResult(BuildStatus.Failed, step.Id,
+                    $"Build error: Script path '{expandedScriptPath}' has invalid extension '{ext}'. Allowed: .bat, .cmd, .sh, .ps1");
             }
+
+            // 2. Resolve full path and verify it's within _repoPath directory tree
+            //    (unless the path uses {EnginePath}, which may resolve outside the repo)
+            var usesEnginePath = step.ScriptPath.StartsWith("{EnginePath}", StringComparison.OrdinalIgnoreCase);
+            var fullPath = Path.IsPathRooted(expandedScriptPath)
+                ? Path.GetFullPath(expandedScriptPath)
+                : Path.GetFullPath(Path.Combine(_repoPath, expandedScriptPath));
+
+            if (!usesEnginePath)
+            {
+                var repoDir = Path.GetFullPath(_repoPath);
+                if (!repoDir.EndsWith(Path.DirectorySeparatorChar.ToString()))
+                    repoDir += Path.DirectorySeparatorChar;
+
+                if (!fullPath.StartsWith(repoDir, StringComparison.OrdinalIgnoreCase))
+                {
+                    return new BuildResult(BuildStatus.Failed, step.Id,
+                        $"Build error: Script path '{expandedScriptPath}' resolves outside the repository directory '{_repoPath}'.");
+                }
+            }
+
+            // 3. Reject shell metacharacters
+            if (expandedScriptPath.IndexOfAny(new[] { '&', '|', ';', '`', '\n' }) >= 0 ||
+                expandedScriptPath.Contains("$(", StringComparison.Ordinal) ||
+                expandedScriptPath.Contains("${", StringComparison.Ordinal))
+            {
+                return new BuildResult(BuildStatus.Failed, step.Id,
+                    $"Build error: Script path '{expandedScriptPath}' contains shell metacharacters.");
+            }
+
+            psi = new ProcessStartInfo(fullPath)
+            {
+                WorkingDirectory = _repoPath,
+                Arguments = expandedArguments
+            };
 
             psi.UseShellExecute = false;
             psi.CreateNoWindow = true;
             psi.RedirectStandardOutput = true;
             psi.RedirectStandardError = true;
+
+            // Pass expanded target as an environment variable so the script can use it
+            psi.EnvironmentVariables["UBT_TARGET"] = expandedTarget;
+            psi.EnvironmentVariables["UBT_PLATFORM"] = step.Platform;
+            psi.EnvironmentVariables["UBT_CONFIGURATION"] = step.Configuration;
+            psi.EnvironmentVariables["UE_PROJECT_NAME"] = projectName;
+            psi.EnvironmentVariables["UE_ENGINE_PATH"] = _enginePath;
+            psi.EnvironmentVariables["UE_BUILD_MODE"] = step.BuildMode ?? BuildModes.Ubt;
 
             process = new Process { StartInfo = psi };
 
@@ -94,14 +159,14 @@ public class BuildService
         }
         catch (OperationCanceledException)
         {
-            KillProcess(process);
+            ProcessHelper.KillProcessTree(process);
             sw.Stop();
             return new BuildResult(BuildStatus.Cancelled, step.Id,
                 "Build cancelled", sw.Elapsed);
         }
         catch (Exception ex)
         {
-            KillProcess(process);
+            ProcessHelper.KillProcessTree(process);
             sw.Stop();
             Native.OS.LogException(ex);
             return new BuildResult(BuildStatus.Failed, step.Id,
@@ -114,25 +179,18 @@ public class BuildService
         }
     }
 
-    private static void KillProcess(Process process)
-    {
-        if (process is { HasExited: false })
-        {
-            try { process.Kill(entireProcessTree: true); } catch { /* best effort */ }
-        }
-    }
-
     /// <summary>
     /// Execute steps in order. Stops on first failure.
     /// </summary>
     public async Task<BuildResult> ExecuteAllAsync(
         System.Collections.Generic.List<UgsBuildStep> steps,
         IProgress<string> log,
-        CancellationToken ct)
+        CancellationToken ct,
+        string? archiveDir = null)
     {
         foreach (var step in steps)
         {
-            var result = await ExecuteStepAsync(step, log, ct);
+            var result = await ExecuteStepAsync(step, log, ct, timeout: null, archiveDir: archiveDir);
             if (result.Status != BuildStatus.Success)
                 return result;
         }
@@ -140,17 +198,4 @@ public class BuildService
     }
 }
 
-public enum BuildStatus
-{
-    Success,
-    Failed,
-    Cancelled,
-    Timeout
-}
-
-public record BuildResult(
-    BuildStatus Status,
-    string StepId,
-    string Message,
-    TimeSpan? Duration = null
-);
+// BuildStatus and BuildResult moved to SourceGit.Models (fixes L-4).

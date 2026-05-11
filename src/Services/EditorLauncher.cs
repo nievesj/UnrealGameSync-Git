@@ -1,8 +1,7 @@
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace SourceGit.Services;
 
@@ -51,9 +50,10 @@ public class EditorLauncher
 
     /// <summary>
     /// Launch the editor with the given project and arguments.
+    /// Throws FileNotFoundException if the editor binary is not found.
+    /// Catches Win32Exception and rethrows as FileNotFoundException with context.
     /// </summary>
-    public async Task<Process> LaunchAsync(
-        string projectPath, string arguments = "", CancellationToken ct = default)
+    public Process Launch(string projectPath, string arguments = "")
     {
         var editorPath = FindEditorPath();
 
@@ -68,7 +68,16 @@ public class EditorLauncher
             UseShellExecute = true
         };
 
-        return Process.Start(psi);
+        try
+        {
+            return Process.Start(psi) ?? throw new FileNotFoundException(
+                $"Editor process failed to start: {editorPath}");
+        }
+        catch (Win32Exception ex)
+        {
+            throw new FileNotFoundException(
+                $"Editor could not be launched. Binary not found or inaccessible: {editorPath}", ex);
+        }
     }
 
     private static string GetPlatformBinaryDir() =>

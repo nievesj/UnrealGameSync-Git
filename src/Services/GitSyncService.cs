@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,6 +16,11 @@ namespace SourceGit.Services;
 /// bypassing SourceGit's Commands infrastructure (command logging, lock management,
 /// UI integration). Refactor to use SourceGit.Commands.* once we understand the
 /// internal API and the repo is open.
+///
+/// TODO (Phase 2): Integrate with SourceGit's operation tracking API once one
+/// exists (e.g. RepositoryState, OperationTracker, or IsBusy on ViewModels.Repository).
+/// Currently no such API exists — the app's own pattern is the index.lock heuristic
+/// (see ViewModels.Repository.AutoFetchAsync).
 /// </summary>
 public class GitSyncService
 {
@@ -35,13 +41,65 @@ public class GitSyncService
     }
 
     /// <summary>
+    /// Checks whether .git/index.lock exists, with a brief wait for transient locks.
+    /// A lock older than 10 seconds is considered stale and ignored.
+    /// </summary>
+    private static async Task<bool> IsRepositoryLockedAsync(string repoPath, CancellationToken ct)
+    {
+        var lockFile = Path.Combine(repoPath, ".git", "index.lock");
+        if (!File.Exists(lockFile))
+            return false;
+
+        // Wait briefly to see if lock is transient (stale less than 10s)
+        try
+        {
+            var lockAge = DateTime.UtcNow - File.GetLastWriteTimeUtc(lockFile);
+            if (lockAge > TimeSpan.FromSeconds(10))
+                return false; // likely stale lock
+        }
+        catch
+        {
+            // File may have been deleted between Exists and GetLastWriteTimeUtc
+            return false;
+        }
+
+        await Task.Delay(1000, ct).ConfigureAwait(false);
+        return File.Exists(lockFile);
+    }
+
+    /// <summary>
+    /// Checks for index.lock with a retry loop (3 attempts, 1s delay).
+    /// Returns null if the lock is cleared; returns a SyncResult if the lock persists.
+    /// </summary>
+    private async Task<SyncResult?> CheckLockWithRetryAsync(CancellationToken ct)
+    {
+        for (int attempt = 0; attempt < 3; attempt++)
+        {
+            if (!await IsRepositoryLockedAsync(_repoPath, ct).ConfigureAwait(false))
+                return null;
+
+            if (attempt == 2)
+                return new SyncResult(SyncStatus.Conflict, "Repository is busy. Wait for the current operation to complete.");
+
+            await Task.Delay(1000, ct).ConfigureAwait(false);
+        }
+
+        return null;
+    }
+
+    /// <summary>
     /// Sync to latest on current branch using git pull --rebase.
-    /// Checks for dirty working tree first.
+    /// Checks for repository locks and dirty working tree first.
     /// </summary>
     public async Task<SyncResult> SyncToLatestAsync(
         string branch, IProgress<string> log, CancellationToken ct)
     {
         var sw = Stopwatch.StartNew();
+
+        // Check for index.lock before proceeding (retry up to 3 times)
+        var lockResult = await CheckLockWithRetryAsync(ct).ConfigureAwait(false);
+        if (lockResult != null)
+            return lockResult;
 
         // Check for dirty working tree
         if (await HasDirtyWorkingTreeAsync(ct))
@@ -83,12 +141,17 @@ public class GitSyncService
     }
 
     /// <summary>
-    /// Checkout a specific commit. Refuses if working tree is dirty.
+    /// Checkout a specific commit. Refuses if working tree is dirty or repository is locked.
     /// </summary>
     public async Task<SyncResult> SyncToCommitAsync(
         string commitSha, IProgress<string> log, CancellationToken ct)
     {
         var sw = Stopwatch.StartNew();
+
+        // Check for index.lock before proceeding (retry up to 3 times)
+        var lockResult = await CheckLockWithRetryAsync(ct).ConfigureAwait(false);
+        if (lockResult != null)
+            return lockResult;
 
         if (await HasDirtyWorkingTreeAsync(ct))
         {

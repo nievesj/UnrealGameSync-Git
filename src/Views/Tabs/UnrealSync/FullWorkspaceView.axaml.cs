@@ -16,14 +16,17 @@ public partial class FullWorkspaceView : UserControl
             return;
 
         // Create settings dialog directly instead of relying on ShowDialogAsync magic
-        var dialog = new SettingsDialog(vm.RepoPath);
+        var dialog = new SettingsDialog();
 
         // Find the owner window
         var owner = TopLevel.GetTopLevel(this) as Window;
         if (owner != null)
         {
-            dialog.DataContext = new ViewModels.Tabs.UnrealSync.SettingsDialogViewModel(vm.RepoPath);
+            dialog.DataContext = new ViewModels.Tabs.UnrealSync.SettingsDialogViewModel(vm.RepoPath, vm.EnginePathText);
             await dialog.ShowDialog(owner);
+
+            // Refresh build targets and config after settings dialog closes
+            vm.ReloadConfig();
         }
 
         e.Handled = true;

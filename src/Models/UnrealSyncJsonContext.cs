@@ -13,4 +13,6 @@ namespace SourceGit.Models;
 [JsonSerializable(typeof(BuildVersion))]
 [JsonSerializable(typeof(EngineInfo))]
 [JsonSerializable(typeof(PublishManifest))]
+[JsonSerializable(typeof(BuildResult))]
+[JsonSerializable(typeof(UatCommandPreset))]
 internal partial class UnrealSyncJsonContext : JsonSerializerContext { }

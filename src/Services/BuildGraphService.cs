@@ -103,14 +103,14 @@ public class BuildGraphService
         }
         catch (OperationCanceledException)
         {
-            KillProcess(process);
+            ProcessHelper.KillProcessTree(process);
             sw.Stop();
             return new StageResult(BuildStatus.Cancelled, "stage", string.Empty,
                 "Stage cancelled", sw.Elapsed);
         }
         catch (Exception ex)
         {
-            KillProcess(process);
+            ProcessHelper.KillProcessTree(process);
             sw.Stop();
             Native.OS.LogException(ex);
             return new StageResult(BuildStatus.Failed, "stage", string.Empty,
@@ -141,32 +141,28 @@ public class BuildGraphService
             if (File.Exists(outputPath))
                 File.Delete(outputPath);
 
-            // Ensure output directory exists
             var outputDir = Path.GetDirectoryName(outputPath);
             if (!string.IsNullOrEmpty(outputDir) && !Directory.Exists(outputDir))
                 Directory.CreateDirectory(outputDir);
 
-            var compression = GetCompressionLevel();
-
-            using var archive = ZipFile.Open(outputPath, ZipArchiveMode.Create);
-
-            foreach (var file in Directory.GetFiles(stagingDir, "*", SearchOption.AllDirectories))
+            try
             {
-                if (ct.IsCancellationRequested)
+                using var archive = ZipFile.Open(outputPath, ZipArchiveMode.Create);
+                foreach (var file in Directory.GetFiles(stagingDir, "*", SearchOption.AllDirectories))
                 {
-                    // ZipArchive doesn't support mid-write cancellation.
-                    // Delete partial zip and throw (fixes M-4).
-                    archive.Dispose();
-                    if (File.Exists(outputPath))
-                        File.Delete(outputPath);
                     ct.ThrowIfCancellationRequested();
+
+                    if (excludePdb && file.EndsWith(".pdb", StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    var relativePath = Path.GetRelativePath(stagingDir, file);
+                    archive.CreateEntryFromFile(file, relativePath, GetCompressionLevel());
                 }
-
-                if (excludePdb && file.EndsWith(".pdb", StringComparison.OrdinalIgnoreCase))
-                    continue;
-
-                var relativePath = Path.GetRelativePath(stagingDir, file);
-                archive.CreateEntryFromFile(file, relativePath, compression);
+            }
+            catch (OperationCanceledException) when (File.Exists(outputPath))
+            {
+                File.Delete(outputPath);
+                throw;
             }
         }, ct);
 
@@ -189,11 +185,4 @@ public class BuildGraphService
         return Path.GetFullPath(Path.Combine(_repoPath, outputDir));
     }
 
-    private static void KillProcess(Process process)
-    {
-        if (process is { HasExited: false })
-        {
-            try { process.Kill(entireProcessTree: true); } catch { /* best effort */ }
-        }
-    }
 }

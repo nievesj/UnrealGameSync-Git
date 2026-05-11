@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,16 +14,17 @@ using SourceGit.Services;
 
 namespace SourceGit.ViewModels.Tabs.UnrealSync;
 
-public partial class FullWorkspaceViewModel : ObservableObject
+public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
 {
     private readonly string _repoPath;
     private readonly string _enginePath;
     private readonly UProjectMeta _meta;
-    private readonly UgsConfig _config;
+    private UgsConfig _config;
     private readonly GitSyncService _syncService;
     private readonly BuildService _buildService;
     private readonly EditorLauncher _editorLauncher;
     private CancellationTokenSource _buildCts = null!;
+    private Process _editorProcess = null!;
     private readonly System.Text.StringBuilder _logBuilder = new();
 
     [ObservableProperty]
@@ -85,14 +87,14 @@ public partial class FullWorkspaceViewModel : ObservableObject
     public ObservableCollection<UgsBuildStep> BuildTargets { get; } = new();
     public ObservableCollection<UgsPackageProfile> PackageProfiles { get; } = new();
 
-    public FullWorkspaceViewModel(string repoPath, string enginePath, UProjectMeta meta)
+    public FullWorkspaceViewModel(string repoPath, string enginePath, UProjectMeta meta, GitSyncService syncService)
     {
         _repoPath = repoPath;
         _enginePath = enginePath;
         _meta = meta;
         _config = ConfigService.LoadConfig(repoPath);
-        _syncService = new GitSyncService(repoPath);
-        _buildService = new BuildService(repoPath);
+        _syncService = syncService;
+        _buildService = new BuildService(repoPath, enginePath);
         _editorLauncher = new EditorLauncher(enginePath);
 
         ProjectName = System.IO.Path.GetFileNameWithoutExtension(
@@ -118,13 +120,23 @@ public partial class FullWorkspaceViewModel : ObservableObject
         LoadPackageProfiles();
     }
 
-    private void LoadPackageProfiles()
+    private void LoadPackageProfiles(UgsConfig? config = null)
     {
+        config ??= _config;
         PackageProfiles.Clear();
 
         // Derive editor target name from project name
         var projectName = ProjectName;
 
+        // Use config-driven profiles if available (fixes L-5)
+        if (config.Archive?.Profiles is { Count: > 0 })
+        {
+            foreach (var profile in config.Archive.Profiles)
+                PackageProfiles.Add(profile);
+            return;
+        }
+
+        // Fall back to hardcoded defaults
         PackageProfiles.Add(new UgsPackageProfile(
             "editor-dev", $"Editor (Dev)", $"{projectName}Editor",
             "Win64", "Development", false));
@@ -136,6 +148,17 @@ public partial class FullWorkspaceViewModel : ObservableObject
         PackageProfiles.Add(new UgsPackageProfile(
             "server-dev", $"Server (Dev)", $"{projectName}Server",
             "Linux", "Development", false));
+    }
+
+    private void ResetCancellationToken()
+    {
+        var old = Interlocked.Exchange(ref _buildCts!, null);
+        if (old != null)
+        {
+            try { if (!old.IsCancellationRequested) old.Cancel(); } catch { }
+            old.Dispose();
+        }
+        _buildCts = new CancellationTokenSource();
     }
 
     [RelayCommand]
@@ -173,13 +196,17 @@ public partial class FullWorkspaceViewModel : ObservableObject
 
         try
         {
-            _buildCts = new CancellationTokenSource();
+            ResetCancellationToken();
             var progress = new Progress<string>(AppendLog);
 
             if (BuildTargets.Count > 0)
             {
+                // Compute archiveDir from config's OutputDirectory (for {ArchiveDir} variable expansion)
+                var archiveDir = Path.GetFullPath(Path.Combine(_repoPath,
+                    _config.BuildDefaults?.OutputDirectory ?? "Saved/StagedBuilds"));
+
                 var result = await _buildService.ExecuteAllAsync(
-                    new List<UgsBuildStep>(BuildTargets), progress, _buildCts.Token);
+                    new List<UgsBuildStep>(BuildTargets), progress, _buildCts.Token, archiveDir).ConfigureAwait(true);
                 AppendLog($"\nBuild {result.Status}: {result.Message}");
             }
             else
@@ -202,15 +229,16 @@ public partial class FullWorkspaceViewModel : ObservableObject
     private void CancelBuild() => _buildCts?.Cancel();
 
     [RelayCommand]
-    private async Task LaunchAsync()
+    private void Launch()
     {
         try
         {
             var uprojectFiles = System.IO.Directory.GetFiles(_repoPath, "*.uproject");
             if (uprojectFiles.Length == 0) { AppendLog("\nNo .uproject found."); return; }
 
-            await _editorLauncher.LaunchAsync(uprojectFiles[0]);
-            AppendLog("\nEditor launched.");
+            _editorProcess = _editorLauncher.Launch(uprojectFiles[0]);
+            if (_editorProcess != null)
+                AppendLog("\nEditor launched.");
         }
         catch (System.Exception ex)
         {
@@ -227,7 +255,7 @@ public partial class FullWorkspaceViewModel : ObservableObject
 
         try
         {
-            _buildCts = new CancellationTokenSource();
+            ResetCancellationToken();
             var progress = new Progress<string>(AppendLog);
             var buildGraph = new BuildGraphService(_enginePath, _repoPath, _config);
 
@@ -242,7 +270,7 @@ public partial class FullWorkspaceViewModel : ObservableObject
                 profile.Platform,
                 profile.Configuration,
                 profile.IncludePdb,
-                progress, _buildCts.Token);
+                progress, _buildCts.Token).ConfigureAwait(true);
 
             AppendLog($"\nStage {stageResult.Status}: {stageResult.Message}");
 
@@ -254,7 +282,7 @@ public partial class FullWorkspaceViewModel : ObservableObject
             var zipResult = await buildGraph.CreateZipAsync(
                 stageResult.StagingDirectory, zipPath,
                 _config.Archive?.ExcludePdb ?? true,
-                progress, _buildCts.Token);
+                progress, _buildCts.Token).ConfigureAwait(true);
 
             AppendLog($"\nZip created: {zipResult}");
             LastZipPath = zipResult;
@@ -303,7 +331,7 @@ public partial class FullWorkspaceViewModel : ObservableObject
                 _config.NetworkBase,
                 publishChannel,
                 atomic,
-                progress, CancellationToken.None);
+                progress, CancellationToken.None).ConfigureAwait(true);
 
             PublishStatusText = result.Status == PublishStatus.Success
                 ? $"Published to {_config.NetworkBase}"
@@ -323,21 +351,46 @@ public partial class FullWorkspaceViewModel : ObservableObject
         // The Avalonia code-behind handles dialog creation and ShowDialogAsync.
     }
 
+    /// <summary>
+    /// Reload config and refresh build targets/package profiles after settings change.
+    /// Called from the view code-behind after the Settings dialog closes.
+    /// </summary>
+    public void ReloadConfig()
+    {
+        _config = ConfigService.LoadConfig(_repoPath);
+
+        // Refresh build targets
+        BuildTargets.Clear();
+        if (_config.Engine?.BuildTargets != null)
+        {
+            foreach (var step in _config.Engine.BuildTargets)
+                BuildTargets.Add(step);
+        }
+
+        // Refresh package profiles
+        LoadPackageProfiles();
+    }
+
     public async Task RefreshAsync(CancellationToken ct)
     {
         try
         {
-            BranchText = await _syncService.GetCurrentBranchAsync(ct);
-            CommitText = await _syncService.GetCurrentCommitAsync(ct);
+            BranchText = await _syncService.GetCurrentBranchAsync(ct).ConfigureAwait(true);
+            CommitText = await _syncService.GetCurrentCommitAsync(ct).ConfigureAwait(true);
         }
         catch { /* ignore */ }
     }
 
-    private static string FormatZipName(string template, UgsPackageProfile profile)
+    public void Dispose()
     {
-        var shortSha = "latest"; // TODO: get from GitSyncService
+        ResetCancellationToken();
+    }
+
+    private string FormatZipName(string template, UgsPackageProfile profile)
+    {
+        var shortSha = CommitText?.Length >= 7 ? CommitText[..7] : "unknown";
         return (template ?? "{target}-{platform}-{config}-{shortSha}.zip")
-            .Replace("{branch}", "main")
+            .Replace("{branch}", BranchText ?? "unknown")
             .Replace("{target}", profile.EditorTarget)
             .Replace("{platform}", profile.Platform)
             .Replace("{config}", profile.Configuration)
