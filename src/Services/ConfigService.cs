@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -49,6 +50,18 @@ public static class ConfigService
 
         // Expand environment variables in all string fields (returns new config for immutability)
         config = ExpandEnvVarsInConfig(config);
+
+        // Migrate build steps that lack BuildMode/UatCommand (Council F-3)
+        if (config.Engine?.BuildTargets is { Count: > 0 })
+        {
+            var migrated = new List<UgsBuildStep>();
+            foreach (var step in config.Engine.BuildTargets)
+                migrated.Add(MigrateBuildStep(step));
+            config = config with
+            {
+                Engine = config.Engine with { BuildTargets = migrated }
+            };
+        }
 
         return config;
     }
@@ -104,7 +117,7 @@ public static class ConfigService
     internal static string GetConfigPath(string repoPath) =>
         Path.Combine(repoPath, ConfigFileName);
 
-    private static string GetLocalConfigPath(string repoPath) =>
+    internal static string GetLocalConfigPath(string repoPath) =>
         Path.Combine(repoPath, LocalConfigDir, LocalConfigFile);
 
     private static UgsConfig ExpandEnvVarsInConfig(UgsConfig config)
@@ -123,5 +136,26 @@ public static class ConfigService
         }
 
         return config;
+    }
+
+    /// <summary>
+    /// Migrate a build step that lacks BuildMode/UatCommand (from old configs).
+    /// Uses filename-only comparison to detect RunUAT (Council F-3).
+    /// </summary>
+    private static UgsBuildStep MigrateBuildStep(UgsBuildStep step)
+    {
+        if (!string.IsNullOrEmpty(step.BuildMode))
+            return step;  // Already migrated
+
+        var filename = Path.GetFileNameWithoutExtension(step.ScriptPath ?? "");
+        var buildMode = filename.Equals("RunUAT", StringComparison.OrdinalIgnoreCase)
+            ? BuildModes.Uat
+            : BuildModes.Ubt;
+
+        return step with
+        {
+            BuildMode = buildMode,
+            UatCommand = buildMode == BuildModes.Uat ? "BuildCookRun" : null
+        };
     }
 }

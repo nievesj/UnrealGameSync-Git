@@ -115,6 +115,7 @@ public partial class SettingsDialogViewModel : ObservableObject
         private bool _scriptPathUserModified;
         private bool _argumentsUserModified;
         private bool _buildTypeUserModified;
+        private bool _suppressDirtyTracking;
 
         public int OrderIndex { get; set; }
         public bool RunOnNormalSync { get; set; } = true;
@@ -136,38 +137,56 @@ public partial class SettingsDialogViewModel : ObservableObject
             // Recompute arguments from preset if not user-modified
             if (!_argumentsUserModified || string.IsNullOrEmpty(Arguments))
             {
-                var preset = UatCommandPresets.Find(UatCommand);
-                Arguments = preset?.ArgumentsTemplate ?? "";
-                _argumentsUserModified = false;
+                _suppressDirtyTracking = true;
+                try
+                {
+                    var preset = UatCommandPresets.Find(UatCommand);
+                    Arguments = preset?.ArgumentsTemplate ?? "";
+                    _argumentsUserModified = false;
+                }
+                finally
+                {
+                    _suppressDirtyTracking = false;
+                }
             }
 
             // Auto-adjust BuildType if user hasn't manually changed it
             var presetForType = UatCommandPresets.Find(UatCommand);
             if (presetForType?.AutoBuildType is { Length: > 0 } && !_buildTypeUserModified)
             {
-                BuildType = presetForType.AutoBuildType;
+                _suppressDirtyTracking = true;
+                try { BuildType = presetForType.AutoBuildType; }
+                finally { _suppressDirtyTracking = false; }
             }
         }
 
         partial void OnScriptPathChanged(string value)
         {
-            _scriptPathUserModified = true;
+            if (!_suppressDirtyTracking) _scriptPathUserModified = true;
         }
 
         partial void OnArgumentsChanged(string value)
         {
-            _argumentsUserModified = true;
+            if (!_suppressDirtyTracking) _argumentsUserModified = true;
         }
 
         partial void OnBuildTypeChanged(string value)
         {
-            _buildTypeUserModified = true;
+            if (!_suppressDirtyTracking) _buildTypeUserModified = true;
 
             // In UBT mode, recompute Arguments if not user-modified
             if (BuildMode == BuildModes.Ubt && !_argumentsUserModified)
             {
-                var defaults = ComputeDefaults(BuildModes.Ubt, null);
-                Arguments = defaults.Arguments;
+                _suppressDirtyTracking = true;
+                try
+                {
+                    var defaults = ComputeDefaults(BuildModes.Ubt, null);
+                    Arguments = defaults.Arguments;
+                }
+                finally
+                {
+                    _suppressDirtyTracking = false;
+                }
             }
         }
 
@@ -179,16 +198,24 @@ public partial class SettingsDialogViewModel : ObservableObject
         {
             var defaults = ComputeDefaults(BuildMode, UatCommand);
 
-            if (!_scriptPathUserModified || string.IsNullOrEmpty(ScriptPath) || resetDirty)
+            _suppressDirtyTracking = true;
+            try
             {
-                ScriptPath = defaults.ScriptPath;
-                if (resetDirty) _scriptPathUserModified = false;
-            }
+                if (!_scriptPathUserModified || string.IsNullOrEmpty(ScriptPath) || resetDirty)
+                {
+                    ScriptPath = defaults.ScriptPath;
+                    if (resetDirty) _scriptPathUserModified = false;
+                }
 
-            if (!_argumentsUserModified || string.IsNullOrEmpty(Arguments) || resetDirty)
+                if (!_argumentsUserModified || string.IsNullOrEmpty(Arguments) || resetDirty)
+                {
+                    Arguments = defaults.Arguments;
+                    if (resetDirty) _argumentsUserModified = false;
+                }
+            }
+            finally
             {
-                Arguments = defaults.Arguments;
-                if (resetDirty) _argumentsUserModified = false;
+                _suppressDirtyTracking = false;
             }
         }
 
@@ -315,33 +342,12 @@ public partial class SettingsDialogViewModel : ObservableObject
         // Publish (shared)
         AtomicPublish = config.Publish?.Atomic ?? true;
 
-        // Build targets (shared) — migrate if needed
+        // Build targets (shared) — already migrated by ConfigService
         BuildTargets.Clear();
         foreach (var step in config.Engine?.BuildTargets ?? new())
         {
-            BuildTargets.Add(BuildTargetEditModel.FromStep(MigrateBuildStep(step)));
+            BuildTargets.Add(BuildTargetEditModel.FromStep(step));
         }
-    }
-
-    /// <summary>
-    /// Migrate a build step that lacks BuildMode/UatCommand (from old configs).
-    /// Uses filename-only comparison to detect RunUAT (Council F-3).
-    /// </summary>
-    private static UgsBuildStep MigrateBuildStep(UgsBuildStep step)
-    {
-        if (!string.IsNullOrEmpty(step.BuildMode))
-            return step;  // Already migrated
-
-        var filename = Path.GetFileNameWithoutExtension(step.ScriptPath ?? "");
-        var buildMode = filename.Equals("RunUAT", StringComparison.OrdinalIgnoreCase)
-            ? BuildModes.Uat
-            : BuildModes.Ubt;
-
-        return step with
-        {
-            BuildMode = buildMode,
-            UatCommand = buildMode == BuildModes.Uat ? "BuildCookRun" : null
-        };
     }
 
     [RelayCommand]
@@ -360,7 +366,8 @@ public partial class SettingsDialogViewModel : ObservableObject
             NetworkBase = NetworkBaseUrl,
             Engine = sharedConfig.Engine with
             {
-                BuildTargets = new List<UgsBuildStep>(BuildTargets.Select(x => x.ToStep()))
+                BuildTargets = new List<UgsBuildStep>(BuildTargets.Select(x => x.ToStep())),
+                AutoDetect = AutoDetectEngine
             }
         };
 

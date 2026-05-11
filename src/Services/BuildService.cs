@@ -105,10 +105,10 @@ public class BuildService
                 }
             }
 
-            // 3. Reject shell metacharacters
-            if (expandedScriptPath.IndexOfAny(new[] { '&', '|', ';', '`', '\n' }) >= 0 ||
-                expandedScriptPath.Contains("$(", StringComparison.Ordinal) ||
-                expandedScriptPath.Contains("${", StringComparison.Ordinal))
+            // 3. Reject shell metacharacters (check raw unexpanded path, not expanded)
+            if (step.ScriptPath.IndexOfAny(new[] { '&', '|', ';', '`', '\n' }) >= 0 ||
+                step.ScriptPath.Contains("$(", StringComparison.Ordinal) ||
+                step.ScriptPath.Contains("${", StringComparison.Ordinal))
             {
                 return new BuildResult(BuildStatus.Failed, step.Id,
                     $"Build error: Script path '{expandedScriptPath}' contains shell metacharacters.");
@@ -140,10 +140,14 @@ public class BuildService
 
             process.Start();
 
-            var stdout = await process.StandardOutput.ReadToEndAsync(linkedCts.Token);
-            var stderr = await process.StandardError.ReadToEndAsync(linkedCts.Token);
-
+            // Read stdout and stderr concurrently to avoid deadlock
+            // (child process can fill stderr pipe buffer while we're reading stdout)
+            var stdoutTask = process.StandardOutput.ReadToEndAsync(linkedCts.Token);
+            var stderrTask = process.StandardError.ReadToEndAsync(linkedCts.Token);
             await process.WaitForExitAsync(linkedCts.Token);
+
+            var stdout = await stdoutTask;
+            var stderr = await stderrTask;
 
             log.Report(stdout);
             if (!string.IsNullOrWhiteSpace(stderr)) log.Report(stderr);

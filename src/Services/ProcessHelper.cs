@@ -40,6 +40,8 @@ public static class ProcessHelper
                 }
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 {
+                    // Kill parent first, then children
+                    try { process.Kill(); } catch { /* best effort */ }
                     try
                     {
                         Process.Start(new ProcessStartInfo
@@ -53,6 +55,8 @@ public static class ProcessHelper
                 }
                 else // Linux
                 {
+                    // Kill parent first, then the process group
+                    try { process.Kill(); } catch { /* best effort */ }
                     try
                     {
                         Process.Start(new ProcessStartInfo
@@ -67,9 +71,7 @@ public static class ProcessHelper
             }
         }
         catch { /* best effort */ }
-        finally
-        {
-            try { process.Dispose(); } catch { }
-        }
+        // Note: callers own the process lifecycle and should Dispose the Process object.
+        // Do NOT dispose here to avoid double-dispose (M1).
     }
 }

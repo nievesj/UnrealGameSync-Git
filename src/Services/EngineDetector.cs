@@ -23,7 +23,7 @@ namespace SourceGit.Services;
 /// </summary>
 public static class EngineDetector
 {
-    private static readonly ConcurrentDictionary<string, (DateTime ConfigWriteTime, string EnginePath)> _cache = new();
+    private static readonly ConcurrentDictionary<string, (DateTime ConfigWriteTime, DateTime LocalWriteTime, string EnginePath)> _cache = new();
 
     /// <summary>
     /// Detect the engine path for a UE project. Returns empty string if not found.
@@ -35,11 +35,15 @@ public static class EngineDetector
         var configPath = ConfigService.GetConfigPath(repoPath);
         var configWrite = File.Exists(configPath) ? File.GetLastWriteTimeUtc(configPath) : DateTime.MinValue;
 
-        if (_cache.TryGetValue(repoPath, out var cached) && cached.ConfigWriteTime == configWrite)
+        // Also check local.json write time (fixes H-2: cache must invalidate on local.json changes)
+        var localPath = ConfigService.GetLocalConfigPath(repoPath);
+        var localWrite = File.Exists(localPath) ? File.GetLastWriteTimeUtc(localPath) : DateTime.MinValue;
+
+        if (_cache.TryGetValue(repoPath, out var cached) && cached.ConfigWriteTime == configWrite && cached.LocalWriteTime == localWrite)
             return cached.EnginePath;
 
         var result = DetectCore(meta, repoPath);
-        _cache[repoPath] = (configWrite, result);
+        _cache[repoPath] = (configWrite, localWrite, result);
         return result;
     }
 

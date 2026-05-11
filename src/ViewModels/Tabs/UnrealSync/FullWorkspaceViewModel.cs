@@ -384,6 +384,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     public void Dispose()
     {
         ResetCancellationToken();
+        _editorProcess?.Dispose();
     }
 
     private string FormatZipName(string template, UgsPackageProfile profile)

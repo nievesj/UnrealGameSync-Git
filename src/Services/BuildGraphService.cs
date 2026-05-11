@@ -81,9 +81,13 @@ public class BuildGraphService
             process = new Process { StartInfo = psi };
             process.Start();
 
-            var stdout = await process.StandardOutput.ReadToEndAsync(linkedCts.Token);
-            var stderr = await process.StandardError.ReadToEndAsync(linkedCts.Token);
+            // Read stdout and stderr concurrently to avoid deadlock
+            var stdoutTask = process.StandardOutput.ReadToEndAsync(linkedCts.Token);
+            var stderrTask = process.StandardError.ReadToEndAsync(linkedCts.Token);
             await process.WaitForExitAsync(linkedCts.Token);
+
+            var stdout = await stdoutTask;
+            var stderr = await stderrTask;
 
             sw.Stop();
             log.Report(stdout);
