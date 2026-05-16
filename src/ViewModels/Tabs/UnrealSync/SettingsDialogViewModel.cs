@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -24,14 +26,16 @@ public partial class SettingsDialogViewModel : ObservableObject
 {
     private readonly string _repoPath;
     private readonly string _enginePath;
+    private readonly string _uprojectPath;
 
-    // Derived from repo — used for variable expansion hints
+    // Derived from the selected .uproject — used for variable expansion hints
     public string ProjectName
     {
         get
         {
-            var files = Directory.GetFiles(_repoPath, "*.uproject", SearchOption.TopDirectoryOnly);
-            return files.Length > 0 ? Path.GetFileNameWithoutExtension(files[0]) : "Project";
+            return !string.IsNullOrEmpty(_uprojectPath)
+                ? Path.GetFileNameWithoutExtension(_uprojectPath)
+                : "Project";
         }
     }
 
@@ -180,7 +184,7 @@ public partial class SettingsDialogViewModel : ObservableObject
                 _suppressDirtyTracking = true;
                 try
                 {
-                    var defaults = ComputeDefaults(BuildModes.Ubt, null);
+                    var defaults = ComputeDefaults(BuildModes.Ubt, null!);
                     Arguments = defaults.Arguments;
                 }
                 finally
@@ -222,7 +226,7 @@ public partial class SettingsDialogViewModel : ObservableObject
         /// <summary>
         /// Compute platform-aware defaults for the given build mode and UAT command.
         /// </summary>
-        public (string ScriptPath, string Arguments) ComputeDefaults(string buildMode, string uatCommand)
+        public (string ScriptPath, string Arguments) ComputeDefaults(string buildMode, string? uatCommand)
         {
             var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
             var scriptExt = isWindows ? ".bat" : ".sh";
@@ -239,7 +243,7 @@ public partial class SettingsDialogViewModel : ObservableObject
             };
         }
 
-        private (string ScriptPath, string Arguments) ComputeUatDefaults(string uatCommand, bool isWindows)
+        private (string ScriptPath, string Arguments) ComputeUatDefaults(string? uatCommand, bool isWindows)
         {
             var scriptExt = isWindows ? ".bat" : ".sh";
             var scriptPath = $"{{EnginePath}}/Engine/Build/BatchFiles/RunUAT{scriptExt}";
@@ -308,10 +312,11 @@ public partial class SettingsDialogViewModel : ObservableObject
         }
     }
 
-    public SettingsDialogViewModel(string repoPath, string enginePath)
+    public SettingsDialogViewModel(string repoPath, string enginePath, string uprojectPath)
     {
         _repoPath = repoPath;
         _enginePath = enginePath;
+        _uprojectPath = uprojectPath;
         LoadFromConfig();
     }
 

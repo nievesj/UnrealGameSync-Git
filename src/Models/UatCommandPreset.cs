@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections.Generic;
 using System.Linq;
 
@@ -53,6 +55,6 @@ public static class UatCommandPresets
         new("Custom", "Custom UAT Command", "", ""),
     };
 
-    public static UatCommandPreset? Find(string id) =>
-        All.FirstOrDefault(p => p.Id == id);
+    public static UatCommandPreset? Find(string? id) =>
+        string.IsNullOrEmpty(id) ? null : All.FirstOrDefault(p => p.Id == id);
 }

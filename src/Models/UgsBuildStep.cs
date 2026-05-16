@@ -1,3 +1,5 @@
+#nullable enable
+
 namespace SourceGit.Models;
 
 /// <summary>

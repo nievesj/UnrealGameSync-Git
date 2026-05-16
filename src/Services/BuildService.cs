@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -20,11 +22,13 @@ public class BuildService
 
     private readonly string _repoPath;
     private readonly string _enginePath;
+    private readonly string _uprojectPath;
 
-    public BuildService(string repoPath, string enginePath)
+    public BuildService(string repoPath, string enginePath, string uprojectPath)
     {
         _repoPath = repoPath;
         _enginePath = enginePath;
+        _uprojectPath = uprojectPath;
     }
 
     /// <summary>
@@ -55,9 +59,8 @@ public class BuildService
 
             // --- Expand template variables ---
             var projectName = Path.GetFileNameWithoutExtension(
-                Directory.GetFiles(_repoPath, "*.uproject", SearchOption.TopDirectoryOnly).FirstOrDefault() ?? "Project");
-            var uprojectFile = Directory.GetFiles(_repoPath, "*.uproject", SearchOption.TopDirectoryOnly).FirstOrDefault() ?? "";
-            var uprojectPath = Path.GetFullPath(uprojectFile);
+                string.IsNullOrEmpty(_uprojectPath) ? "Project" : _uprojectPath);
+            var uprojectPath = string.IsNullOrEmpty(_uprojectPath) ? "" : Path.GetFullPath(_uprojectPath);
 
             var expandedScriptPath = step.ScriptPath.Replace("{ProjectName}", projectName, StringComparison.OrdinalIgnoreCase);
             expandedScriptPath = expandedScriptPath.Replace("{EnginePath}", _enginePath, StringComparison.OrdinalIgnoreCase);

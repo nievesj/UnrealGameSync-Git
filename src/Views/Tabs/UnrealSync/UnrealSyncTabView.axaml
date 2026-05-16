@@ -6,8 +6,8 @@
              x:DataType="vm:UnrealSyncTabViewModel">
     <ContentControl Content="{Binding CurrentBody}">
         <ContentControl.DataTemplates>
-            <DataTemplate DataType="vm:NotUeProjectViewModel">
-                <v:NotUeProjectView />
+            <DataTemplate DataType="vm:SelectUProjectViewModel">
+                <v:SelectUProjectView />
             </DataTemplate>
             <DataTemplate DataType="vm:EngineNotFoundViewModel">
                 <v:EngineNotFoundView />

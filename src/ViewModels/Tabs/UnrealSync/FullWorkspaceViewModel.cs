@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,13 +20,14 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
 {
     private readonly string _repoPath;
     private readonly string _enginePath;
+    private readonly string _uprojectPath;
     private readonly UProjectMeta _meta;
     private UgsConfig _config;
     private readonly GitSyncService _syncService;
     private readonly BuildService _buildService;
     private readonly EditorLauncher _editorLauncher;
-    private CancellationTokenSource _buildCts = null!;
-    private Process _editorProcess = null!;
+    private CancellationTokenSource? _buildCts;
+    private Process? _editorProcess;
     private readonly System.Text.StringBuilder _logBuilder = new();
 
     [ObservableProperty]
@@ -56,6 +59,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
 
     // Exposed for the view code-behind to create SettingsDialog
     public string RepoPath => _repoPath;
+    public string UProjectPath => _uprojectPath;
     [ObservableProperty]
     private string _engineVersionText = "";
 
@@ -87,18 +91,18 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     public ObservableCollection<UgsBuildStep> BuildTargets { get; } = new();
     public ObservableCollection<UgsPackageProfile> PackageProfiles { get; } = new();
 
-    public FullWorkspaceViewModel(string repoPath, string enginePath, UProjectMeta meta, GitSyncService syncService)
+    public FullWorkspaceViewModel(string repoPath, string enginePath, UProjectMeta meta, GitSyncService syncService, string uprojectPath)
     {
         _repoPath = repoPath;
         _enginePath = enginePath;
+        _uprojectPath = uprojectPath;
         _meta = meta;
         _config = ConfigService.LoadConfig(repoPath);
         _syncService = syncService;
-        _buildService = new BuildService(repoPath, enginePath);
+        _buildService = new BuildService(repoPath, enginePath, uprojectPath);
         _editorLauncher = new EditorLauncher(enginePath);
 
-        ProjectName = System.IO.Path.GetFileNameWithoutExtension(
-            System.IO.Directory.GetFiles(repoPath, "*.uproject")[0]);
+        ProjectName = System.IO.Path.GetFileNameWithoutExtension(uprojectPath);
         ModuleCount = meta.Modules?.Count ?? 0;
         PluginCount = meta.Plugins?.Count ?? 0;
         EngineAssociation = meta.EngineAssociation ?? "";
@@ -206,7 +210,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
                     _config.BuildDefaults?.OutputDirectory ?? "Saved/StagedBuilds"));
 
                 var result = await _buildService.ExecuteAllAsync(
-                    new List<UgsBuildStep>(BuildTargets), progress, _buildCts.Token, archiveDir).ConfigureAwait(true);
+                    new List<UgsBuildStep>(BuildTargets), progress, _buildCts!.Token, archiveDir).ConfigureAwait(true);
                 AppendLog($"\nBuild {result.Status}: {result.Message}");
             }
             else
@@ -233,10 +237,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     {
         try
         {
-            var uprojectFiles = System.IO.Directory.GetFiles(_repoPath, "*.uproject");
-            if (uprojectFiles.Length == 0) { AppendLog("\nNo .uproject found."); return; }
-
-            _editorProcess = _editorLauncher.Launch(uprojectFiles[0]);
+            _editorProcess = _editorLauncher.Launch(_uprojectPath);
             if (_editorProcess != null)
                 AppendLog("\nEditor launched.");
         }
@@ -270,7 +271,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
                 profile.Platform,
                 profile.Configuration,
                 profile.IncludePdb,
-                progress, _buildCts.Token).ConfigureAwait(true);
+                progress, _buildCts!.Token).ConfigureAwait(true);
 
             AppendLog($"\nStage {stageResult.Status}: {stageResult.Message}");
 
@@ -282,7 +283,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
             var zipResult = await buildGraph.CreateZipAsync(
                 stageResult.StagingDirectory, zipPath,
                 _config.Archive?.ExcludePdb ?? true,
-                progress, _buildCts.Token).ConfigureAwait(true);
+                progress, _buildCts!.Token).ConfigureAwait(true);
 
             AppendLog($"\nZip created: {zipResult}");
             LastZipPath = zipResult;
@@ -387,7 +388,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         _editorProcess?.Dispose();
     }
 
-    private string FormatZipName(string template, UgsPackageProfile profile)
+    private string FormatZipName(string? template, UgsPackageProfile profile)
     {
         var shortSha = CommitText?.Length >= 7 ? CommitText[..7] : "unknown";
         return (template ?? "{target}-{platform}-{config}-{shortSha}.zip")
