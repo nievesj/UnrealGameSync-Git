@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace SourceGit.ViewModels.Tabs.UnrealSync;
+namespace UGSGit.ViewModels.Tabs.UnrealSync;
 
 public class NotUeProjectViewModel : ObservableObject
 {

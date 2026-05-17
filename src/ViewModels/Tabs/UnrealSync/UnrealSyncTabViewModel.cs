@@ -5,10 +5,10 @@ using Avalonia.Threading;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-using SourceGit.Models;
-using SourceGit.Services;
+using UGSGit.Models;
+using UGSGit.Services;
 
-namespace SourceGit.ViewModels.Tabs.UnrealSync;
+namespace UGSGit.ViewModels.Tabs.UnrealSync;
 
 public enum SyncTabMode
 {

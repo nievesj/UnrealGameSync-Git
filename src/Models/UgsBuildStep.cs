@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace SourceGit.Models;
+namespace UGSGit.Models;
 
 /// <summary>
 /// Build step definition that aligns with the buildTargets config in .unrealsync.json.

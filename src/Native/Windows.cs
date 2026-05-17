@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -12,7 +12,7 @@ using Avalonia.Controls;
 using Avalonia.Platform;
 using Avalonia.Threading;
 
-namespace SourceGit.Native
+namespace UGSGit.Native
 {
     [SupportedOSPlatform("windows")]
     internal class Windows : OS.IBackend

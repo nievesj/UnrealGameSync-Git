@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 
-using SourceGit.Models;
+using UGSGit.Models;
 
-namespace SourceGit.ViewModels.Tabs.UnrealSync;
+namespace UGSGit.ViewModels.Tabs.UnrealSync;
 
 public class UnrealSyncManifest : IPluginManifest
 {
@@ -10,7 +10,7 @@ public class UnrealSyncManifest : IPluginManifest
     public string DisplayName => "UnrealSync";
     public string Description => "Unreal Engine workspace sync, build, and launch workflow for Git";
     public string Version => "0.1.0";
-    public string Author => "SourceGit";
+    public string Author => "UGSGit";
     public bool IsGlobalByDefault => true;
     public int DefaultSortOrder => 100;
 

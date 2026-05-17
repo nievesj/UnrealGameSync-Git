@@ -1,7 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="clr-namespace:SourceGit.ViewModels.Tabs"
-             x:Class="SourceGit.Views.Tabs.HelloWorldBody"
+             xmlns:vm="clr-namespace:UGSGit.ViewModels.Tabs"
+             x:Class="UGSGit.Views.Tabs.HelloWorldBody"
              x:DataType="vm:HelloWorldBodyViewModel">
     <Border Background="{DynamicResource Brush.Background}"
             CornerRadius="8"

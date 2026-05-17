@@ -6,20 +6,20 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-using SourceGit.Models;
+using UGSGit.Models;
 
-namespace SourceGit.Services;
+namespace UGSGit.Services;
 
 /// <summary>
-/// Delegates git operations to SourceGit's Commands infrastructure to avoid
+/// Delegates git operations to UGSGit's Commands infrastructure to avoid
 /// index.lock conflicts. Fixes RC-9.
 ///
 /// TODO (Phase 2): This is a Phase 1 stub that runs raw "git" processes directly,
-/// bypassing SourceGit's Commands infrastructure (command logging, lock management,
-/// UI integration). Refactor to use SourceGit.Commands.* once we understand the
+/// bypassing UGSGit's Commands infrastructure (command logging, lock management,
+/// UI integration). Refactor to use UGSGit.Commands.* once we understand the
 /// internal API and the repo is open.
 ///
-/// TODO (Phase 2): Integrate with SourceGit's operation tracking API once one
+/// TODO (Phase 2): Integrate with UGSGit's operation tracking API once one
 /// exists (e.g. RepositoryState, OperationTracker, or IsBusy on ViewModels.Repository).
 /// Currently no such API exists — the app's own pattern is the index.lock heuristic
 /// (see ViewModels.Repository.AutoFetchAsync).
@@ -110,10 +110,10 @@ public class GitSyncService
                 "Working tree is dirty. Commit or stash changes before syncing.");
         }
 
-        // Run git pull --rebase via SourceGit's Commands
+        // Run git pull --rebase via UGSGit's Commands
         try
         {
-            // Use SourceGit's command runner pattern
+            // Use UGSGit's command runner pattern
             var result = await RunGitCommandAsync(
                 $"pull --rebase origin {branch}", log, ct);
 

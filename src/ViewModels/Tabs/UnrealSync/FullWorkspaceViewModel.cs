@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-using SourceGit.Models;
-using SourceGit.Services;
+using UGSGit.Models;
+using UGSGit.Services;
 
-namespace SourceGit.ViewModels.Tabs.UnrealSync;
+namespace UGSGit.ViewModels.Tabs.UnrealSync;
 
 public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
 {

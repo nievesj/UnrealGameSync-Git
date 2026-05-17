@@ -1,9 +1,9 @@
 using Avalonia;
 using Avalonia.Media;
 
-using SourceGit.Models;
+using UGSGit.Models;
 
-namespace SourceGit.ViewModels.Tabs
+namespace UGSGit.ViewModels.Tabs
 {
     public class RepositoryTab : IRepositoryTab
     {

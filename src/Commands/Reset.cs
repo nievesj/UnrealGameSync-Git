@@ -1,4 +1,4 @@
-﻿namespace SourceGit.Commands
+namespace UGSGit.Commands
 {
     public class Reset : Command
     {

@@ -13,10 +13,10 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 
-using SourceGit.Models;
-using SourceGit.Services;
+using UGSGit.Models;
+using UGSGit.Services;
 
-namespace SourceGit.ViewModels.Tabs.UnrealSync;
+namespace UGSGit.ViewModels.Tabs.UnrealSync;
 
 /// <summary>
 /// ViewModel shown when no .uproject is found or multiple are found.

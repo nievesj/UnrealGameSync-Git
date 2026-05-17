@@ -1,4 +1,4 @@
-﻿namespace SourceGit.Models
+namespace UGSGit.Models
 {
     public class RepositoryStatus
     {

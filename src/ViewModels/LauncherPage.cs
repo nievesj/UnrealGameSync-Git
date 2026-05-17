@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -7,10 +7,10 @@ using Avalonia.Threading;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-using SourceGit.Models;
-using SourceGit.ViewModels.Tabs;
+using UGSGit.Models;
+using UGSGit.ViewModels.Tabs;
 
-namespace SourceGit.ViewModels
+namespace UGSGit.ViewModels
 {
     public class LauncherPage : ObservableObject
     {

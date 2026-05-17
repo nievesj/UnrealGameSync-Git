@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace SourceGit.Models
+namespace UGSGit.Models
 {
     /// <summary>
     /// Interface for plugin manifests. Every external plugin DLL must contain a class

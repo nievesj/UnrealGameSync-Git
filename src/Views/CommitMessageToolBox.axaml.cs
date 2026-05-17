@@ -17,7 +17,7 @@ using AvaloniaEdit.Editing;
 using AvaloniaEdit.Rendering;
 using AvaloniaEdit.Utils;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     public class CommitMessageCodeCompletionData : ICompletionData
     {

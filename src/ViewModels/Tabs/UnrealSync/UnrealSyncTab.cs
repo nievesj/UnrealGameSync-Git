@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 using Avalonia;
 
-using SourceGit.Models;
+using UGSGit.Models;
 
-namespace SourceGit.ViewModels.Tabs.UnrealSync;
+namespace UGSGit.ViewModels.Tabs.UnrealSync;
 
 public class UnrealSyncTab : IRepositoryTab
 {

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 
-using SourceGit.Models;
+using UGSGit.Models;
 
-namespace SourceGit.ViewModels.Tabs
+namespace UGSGit.ViewModels.Tabs
 {
     /// <summary>
     /// Creates a HelloWorld tab with context-based TabId.
@@ -13,7 +13,7 @@ namespace SourceGit.ViewModels.Tabs
         public string DisplayName => "Hello World";
         public string Description => "Reference plugin demonstrating the tab system";
         public string Version => "1.0.0";
-        public string Author => "SourceGit";
+        public string Author => "UGSGit";
         public bool IsGlobalByDefault => true;
         public int DefaultSortOrder => 500;
 

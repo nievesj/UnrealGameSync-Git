@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-using SourceGit.Services;
+using UGSGit.Services;
 
-namespace SourceGit.ViewModels.Tabs.UnrealSync;
+namespace UGSGit.ViewModels.Tabs.UnrealSync;
 
 /// <summary>
 /// Lightweight toolbar status display: shows current branch and commit info.

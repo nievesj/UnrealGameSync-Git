@@ -1,8 +1,8 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="clr-namespace:SourceGit.ViewModels.Tabs.UnrealSync"
-             xmlns:c="clr-namespace:SourceGit.Converters"
-             x:Class="SourceGit.Views.Tabs.UnrealSync.SelectUProjectView"
+             xmlns:vm="clr-namespace:UGSGit.ViewModels.Tabs.UnrealSync"
+             xmlns:c="clr-namespace:UGSGit.Converters"
+             x:Class="UGSGit.Views.Tabs.UnrealSync.SelectUProjectView"
              x:DataType="vm:SelectUProjectViewModel">
 
     <Border Background="{DynamicResource Brush.Background}"

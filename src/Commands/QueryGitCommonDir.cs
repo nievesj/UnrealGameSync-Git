@@ -1,7 +1,7 @@
-﻿using System.IO;
+using System.IO;
 using System.Threading.Tasks;
 
-namespace SourceGit.Commands
+namespace UGSGit.Commands
 {
     public class QueryGitCommonDir : Command
     {

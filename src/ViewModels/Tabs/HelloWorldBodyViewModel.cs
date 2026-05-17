@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace SourceGit.ViewModels.Tabs
+namespace UGSGit.ViewModels.Tabs
 {
     public class HelloWorldBodyViewModel : ObservableObject
     {

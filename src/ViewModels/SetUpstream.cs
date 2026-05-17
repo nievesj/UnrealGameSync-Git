@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SourceGit.ViewModels
+namespace UGSGit.ViewModels
 {
     public class SetUpstream : Popup
     {

@@ -21,7 +21,7 @@ using AvaloniaEdit.Rendering;
 using AvaloniaEdit.TextMate;
 using AvaloniaEdit.Utils;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     public class MergeConflictTextPresenter : TextEditor
     {

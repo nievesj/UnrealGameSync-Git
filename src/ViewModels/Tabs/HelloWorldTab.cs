@@ -1,8 +1,8 @@
 using Avalonia;
 
-using SourceGit.Models;
+using UGSGit.Models;
 
-namespace SourceGit.ViewModels.Tabs
+namespace UGSGit.ViewModels.Tabs
 {
     public class HelloWorldTab : IRepositoryTab
     {

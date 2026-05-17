@@ -14,7 +14,7 @@ using Avalonia.Media.Fonts;
 using Avalonia.Styling;
 using Avalonia.Threading;
 
-namespace SourceGit
+namespace UGSGit
 {
     public partial class App : Application
     {
@@ -62,8 +62,8 @@ namespace SourceGit
             builder.ConfigureFonts(manager =>
             {
                 var monospace = new EmbeddedFontCollection(
-                    new Uri("fonts:SourceGit", UriKind.Absolute),
-                    new Uri("avares://SourceGit/Resources/Fonts", UriKind.Absolute));
+                    new Uri("fonts:UGSGit", UriKind.Absolute),
+                    new Uri("avares://UGSGit/Resources/Fonts", UriKind.Absolute));
                 manager.AddFontCollection(monospace);
             });
 
@@ -187,7 +187,7 @@ namespace SourceGit
             {
                 if (!string.IsNullOrEmpty(defaultFont))
                 {
-                    monospaceFont = $"fonts:SourceGit#JetBrains Mono,{defaultFont}";
+                    monospaceFont = $"fonts:UGSGit#JetBrains Mono,{defaultFont}";
                     resDic.Add("Fonts.Monospace", FontFamily.Parse(monospaceFont));
                 }
             }
@@ -417,7 +417,7 @@ namespace SourceGit
 
         private bool TryLaunchAsAskpass(IClassicDesktopStyleApplicationLifetime desktop)
         {
-            var launchAsAskpass = Environment.GetEnvironmentVariable("SOURCEGIT_LAUNCH_AS_ASKPASS");
+            var launchAsAskpass = Environment.GetEnvironmentVariable("UGSGIT_LAUNCH_AS_ASKPASS");
             if (launchAsAskpass is not "TRUE")
                 return false;
 
@@ -526,7 +526,7 @@ namespace SourceGit
                     using var client = new HttpClient();
                     client.Timeout = TimeSpan.FromSeconds(5);
 
-                    var data = await client.GetStringAsync("https://sourcegit-scm.github.io/data/version.json");
+                    var data = await client.GetStringAsync("https://raw.githubusercontent.com/nievesj/UnrealGameSync-Git/main/VERSION.json");
                     var ver = JsonSerializer.Deserialize(data, JsonCodeGen.Default.Version);
                     if (ver == null)
                         return;

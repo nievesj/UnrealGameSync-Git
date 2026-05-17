@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 
-namespace SourceGit.Views.Tabs.UnrealSync;
+namespace UGSGit.Views.Tabs.UnrealSync;
 
 public partial class FullWorkspaceView : UserControl
 {

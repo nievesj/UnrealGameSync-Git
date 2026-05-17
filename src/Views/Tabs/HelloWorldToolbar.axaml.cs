@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace SourceGit.Views.Tabs
+namespace UGSGit.Views.Tabs
 {
     public partial class HelloWorldToolbar : UserControl
     {

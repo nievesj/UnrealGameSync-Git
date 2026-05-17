@@ -1,6 +1,6 @@
 using System;
 
-namespace SourceGit.Models
+namespace UGSGit.Models
 {
     public interface IRepositoryTab : IDisposable
     {

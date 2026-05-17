@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
-namespace SourceGit.Models;
+namespace UGSGit.Models;
 
 /// <summary>
 /// Parsed .uproject file metadata. Uses a tolerant JSON parser that handles

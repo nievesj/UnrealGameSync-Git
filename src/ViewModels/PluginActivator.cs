@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-using SourceGit.Models;
-using SourceGit.ViewModels.Tabs;
+using UGSGit.Models;
+using UGSGit.ViewModels.Tabs;
 
-namespace SourceGit.ViewModels
+namespace UGSGit.ViewModels
 {
     /// <summary>
     /// Creates tab instances from enabled plugins for a specific repository.

@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace SourceGit.Models;
+namespace UGSGit.Models;
 
 /// <summary>
 /// Model for UE's Engine/Build/Build.version JSON file.

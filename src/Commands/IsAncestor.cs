@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 
-namespace SourceGit.Commands
+namespace UGSGit.Commands
 {
     public class IsAncestor : Command
     {
