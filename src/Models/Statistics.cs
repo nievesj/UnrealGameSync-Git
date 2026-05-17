@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -9,7 +9,7 @@ using LiveChartsCore.SkiaSharpView.Painting;
 
 using SkiaSharp;
 
-namespace SourceGit.Models
+namespace UGSGit.Models
 {
     public enum StatisticsMode
     {

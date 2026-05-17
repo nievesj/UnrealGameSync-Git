@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.Json;
 using Avalonia.Collections;
 
-namespace SourceGit.Models
+namespace UGSGit.Models
 {
     public class RepositoryUIStates
     {
@@ -206,6 +206,24 @@ namespace SourceGit.Models
             get;
             set;
         } = [];
+
+        public string ActiveTabId
+        {
+            get;
+            set;
+        } = "repository";
+
+        public Dictionary<string, bool> PerRepoPluginOverrides
+        {
+            get;
+            set;
+        } = new();
+
+        /// <summary>
+        /// Ensures PerRepoPluginOverrides is never null (handles source-gen deserialization
+        /// bypassing the auto-property initializer when field is absent from JSON).
+        /// </summary>
+        public Dictionary<string, bool> SafePerRepoPluginOverrides => PerRepoPluginOverrides ??= new();
 
         public string LastCommitMessage
         {

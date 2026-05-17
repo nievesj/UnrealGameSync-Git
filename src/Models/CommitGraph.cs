@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 using Avalonia;
 using Avalonia.Media;
 
-namespace SourceGit.Models
+namespace UGSGit.Models
 {
     public record CommitGraphLayout(double StartY, double ClipWidth, double RowHeight);
 

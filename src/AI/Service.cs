@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ClientModel;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
@@ -7,7 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using OpenAI;
 using OpenAI.Chat;
 
-namespace SourceGit.AI
+namespace UGSGit.AI
 {
     public class Service : ObservableObject
     {

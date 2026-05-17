@@ -35,30 +35,30 @@ if [[ ! -f "appimagetool" ]]; then
     chmod +x appimagetool
 fi
 
-rm -f SourceGit/*.dbg
-rm -f SourceGit/*.pdb
+rm -f UGSGit/*.dbg
+rm -f UGSGit/*.pdb
 
-mkdir -p SourceGit.AppDir/opt
-mkdir -p SourceGit.AppDir/usr/share/metainfo
-mkdir -p SourceGit.AppDir/usr/share/applications
+mkdir -p UGSGit.AppDir/opt
+mkdir -p UGSGit.AppDir/usr/share/metainfo
+mkdir -p UGSGit.AppDir/usr/share/applications
 
-cp -r SourceGit SourceGit.AppDir/opt/sourcegit
-desktop-file-install resources/_common/applications/sourcegit.desktop --dir SourceGit.AppDir/usr/share/applications \
-    --set-icon com.sourcegit_scm.SourceGit --set-key=Exec --set-value=AppRun
-mv SourceGit.AppDir/usr/share/applications/{sourcegit,com.sourcegit_scm.SourceGit}.desktop
-cp resources/_common/icons/sourcegit.png SourceGit.AppDir/com.sourcegit_scm.SourceGit.png
-ln -rsf SourceGit.AppDir/opt/sourcegit/sourcegit SourceGit.AppDir/AppRun
-ln -rsf SourceGit.AppDir/usr/share/applications/com.sourcegit_scm.SourceGit.desktop SourceGit.AppDir
-cp resources/appimage/sourcegit.appdata.xml SourceGit.AppDir/usr/share/metainfo/com.sourcegit_scm.SourceGit.appdata.xml
+cp -r UGSGit UGSGit.AppDir/opt/ugsgit
+desktop-file-install resources/_common/applications/ugsgit.desktop --dir UGSGit.AppDir/usr/share/applications \
+    --set-icon com.nievesj.UGSGit --set-key=Exec --set-value=AppRun
+mv UGSGit.AppDir/usr/share/applications/{ugsgit,com.nievesj.UGSGit}.desktop
+cp resources/_common/icons/ugsgit.png UGSGit.AppDir/com.nievesj.UGSGit.png
+ln -rsf UGSGit.AppDir/opt/ugsgit/ugsgit UGSGit.AppDir/AppRun
+ln -rsf UGSGit.AppDir/usr/share/applications/com.nievesj.UGSGit.desktop UGSGit.AppDir
+cp resources/appimage/ugsgit.appdata.xml UGSGit.AppDir/usr/share/metainfo/com.nievesj.UGSGit.appdata.xml
 
-ARCH="$appimage_arch" ./appimagetool -v SourceGit.AppDir "sourcegit-$VERSION.linux.$arch.AppImage"
+ARCH="$appimage_arch" ./appimagetool -v UGSGit.AppDir "ugsgit-$VERSION.linux.$arch.AppImage"
 
-mkdir -p resources/deb/opt/sourcegit/
+mkdir -p resources/deb/opt/ugsgit/
 mkdir -p resources/deb/usr/bin
 mkdir -p resources/deb/usr/share/applications
 mkdir -p resources/deb/usr/share/icons
-cp -f SourceGit/* resources/deb/opt/sourcegit
-ln -rsf resources/deb/opt/sourcegit/sourcegit resources/deb/usr/bin
+cp -f UGSGit/* resources/deb/opt/ugsgit
+ln -rsf resources/deb/opt/ugsgit/ugsgit resources/deb/usr/bin
 cp -r resources/_common/applications resources/deb/usr/share
 cp -r resources/_common/icons resources/deb/usr/share
 
@@ -80,7 +80,7 @@ sed -i -e "s/^Version:.*/Version: $VERSION/" \
     resources/deb/DEBIAN/control
 
 # Build deb package with gzip compression
-dpkg-deb -Zgzip --root-owner-group --build resources/deb "sourcegit_$VERSION-1_$arch.deb"
+dpkg-deb -Zgzip --root-owner-group --build resources/deb "ugsgit_$VERSION-1_$arch.deb"
 
 rpmbuild -bb --target="$target" resources/rpm/SPECS/build.spec --define "_topdir $(pwd)/resources/rpm" --define "_version $VERSION"
-mv "resources/rpm/RPMS/$target/sourcegit-$VERSION-1.$target.rpm" ./
+mv "resources/rpm/RPMS/$target/ugsgit-$VERSION-1.$target.rpm" ./

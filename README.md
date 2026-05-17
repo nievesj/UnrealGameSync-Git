@@ -1,10 +1,10 @@
-# SourceGit - Opensource Git GUI client.
+# UGSGit - Unreal Game Sync Git Client
 
-[![stars](https://img.shields.io/github/stars/sourcegit-scm/sourcegit.svg)](https://github.com/sourcegit-scm/sourcegit/stargazers)
-[![forks](https://img.shields.io/github/forks/sourcegit-scm/sourcegit.svg)](https://github.com/sourcegit-scm/sourcegit/forks)
-[![license](https://img.shields.io/github/license/sourcegit-scm/sourcegit.svg)](LICENSE)
-[![latest](https://img.shields.io/github/v/release/sourcegit-scm/sourcegit.svg)](https://github.com/sourcegit-scm/sourcegit/releases/latest)
-[![downloads](https://img.shields.io/github/downloads/sourcegit-scm/sourcegit/total)](https://github.com/sourcegit-scm/sourcegit/releases)
+[![stars](https://img.shields.io/github/stars/nievesj/UnrealGameSync-Git.svg)](https://github.com/nievesj/UnrealGameSync-Git/stargazers)
+[![forks](https://img.shields.io/github/forks/nievesj/UnrealGameSync-Git.svg)](https://github.com/nievesj/UnrealGameSync-Git/forks)
+[![license](https://img.shields.io/github/license/nievesj/UnrealGameSync-Git.svg)](LICENSE)
+[![latest](https://img.shields.io/github/v/release/nievesj/UnrealGameSync-Git.svg)](https://github.com/nievesj/UnrealGameSync-Git/releases/latest)
+[![downloads](https://img.shields.io/github/downloads/nievesj/UnrealGameSync-Git/total)](https://github.com/nievesj/UnrealGameSync-Git/releases)
 
 ## Screenshots
 
@@ -18,37 +18,39 @@
 
 * Custom
 
-  You can find custom themes from [sourcegit-theme](https://github.com/sourcegit-scm/sourcegit-theme.git). And welcome to share your own themes.
+  You can find custom themes from [sourcegit-theme](https://github.com/sourcegit-scm/sourcegit-theme.git). And welcome
+  to share your own themes.
 
 ## Highlights
 
 * Supports Windows/macOS/Linux
 * Opensource/Free
 * Fast
-* Deutsch/English/Español/Bahasa Indonesia/Français/Italiano/Português/Русский/Українська/简体中文/繁體中文/日本語/தமிழ் (Tamil)/한국어
+* Deutsch/English/Español/Bahasa
+  Indonesia/Français/Italiano/Português/Русский/Українська/简体中文/繁體中文/日本語/தமிழ் (Tamil)/한국어
 * Built-in light/dark themes
 * Customize theme
 * Visual commit graph
 * Supports SSH access with each remote
 * GIT commands with GUI
-  * Clone/Fetch/Pull/Push...
-  * Merge/Rebase/Reset/Revert/Cherry-pick...
-  * Amend/Reword/Squash
-  * Interactive rebase
-  * Branches
-  * Remotes
-  * Tags
-  * Stashes
-  * Submodules
-  * Worktrees
-  * Archive
-  * Diff
-  * Save as patch/apply
-  * File histories
-  * Blame
-  * Revision Diffs
-  * Branch Diff
-  * Image Diff - Side-By-Side/Swipe/Blend
+    * Clone/Fetch/Pull/Push...
+    * Merge/Rebase/Reset/Revert/Cherry-pick...
+    * Amend/Reword/Squash
+    * Interactive rebase
+    * Branches
+    * Remotes
+    * Tags
+    * Stashes
+    * Submodules
+    * Worktrees
+    * Archive
+    * Diff
+    * Save as patch/apply
+    * File histories
+    * Blame
+    * Revision Diffs
+    * Branch Diff
+    * Image Diff - Side-By-Side/Swipe/Blend
 * Git command logs
 * Search commits
 * GitFlow
@@ -68,7 +70,9 @@
 
 **To use this tool, you need to install Git(>=2.25.1) first.**
 
-You can download the latest stable from [Releases](https://github.com/sourcegit-scm/sourcegit/releases/latest) or download workflow artifacts from [GitHub Actions](https://github.com/sourcegit-scm/sourcegit/actions) to try this app based on latest commits.
+You can download the latest stable from [Releases](https://github.com/nievesj/UnrealGameSync-Git/releases/latest) or
+download workflow artifacts from [GitHub Actions](https://github.com/nievesj/UnrealGameSync-Git/actions) to try this app
+based on latest commits.
 
 This software creates a folder, which is platform-dependent, to store user settings, downloaded avatars and crash logs.
 
@@ -80,7 +84,8 @@ This software creates a folder, which is platform-dependent, to store user setti
 
 > [!TIP]
 > * You can open this data storage directory from the main menu `Open Data Storage Directory`.
-> * You can create a `data` folder next to the `SourceGit` executable to force this app to store data (user settings, downloaded avatars and crash logs) into it (Portable-Mode). Only works with Windows packages and Linux AppImages.
+> * You can create a `data` folder next to the `SourceGit` executable to force this app to store data (user settings,
+    downloaded avatars and crash logs) into it (Portable-Mode). Only works with Windows packages and Linux AppImages.
 
 For **Windows** users:
 
@@ -90,7 +95,7 @@ For **Windows** users:
   scoop bucket add extras
   scoop install sourcegit
   ```
-* Pre-built binaries can be found in [Releases](https://github.com/sourcegit-scm/sourcegit/releases/latest)
+* Pre-built binaries can be found in [Releases](https://github.com/nievesj/UnrealGameSync-Git/releases/latest)
 
 > [!NOTE]
 > `git-flow` is no longer shipped with **Git for Windows** since `2.51.1`. You can use it by following these steps:
@@ -104,19 +109,27 @@ For **macOS** users:
   ```shell
   brew install --cask sourcegit
   ```
-* If you want to install `SourceGit.app` from GitHub Release manually, you need run following command to make sure it works:
+* If you want to install `UGSGit.app` from GitHub Release manually, you need run following command to make sure it
+  works:
   ```shell
-  sudo xattr -cr /Applications/SourceGit.app
+  sudo xattr -cr /Applications/UGSGit.app
   ```
-> [!NOTE]
-> macOS packages in the `Release` page of this project are all unsigned. If you are worried about potential security issues with the above command, you can download the signed package from the [distribution repository](https://github.com/ybeapps/homebrew-sourcegit/releases) provided by [@ybeapps](https://github.com/ybeapps) (there is no need to execute the above command while installing `SourceGit`).
 
-* Make sure [git-credential-manager](https://github.com/git-ecosystem/git-credential-manager/releases) is installed on your mac.
-* You can run `echo $PATH > ~/Library/Application\ Support/SourceGit/PATH` to generate a custom PATH env file to introduce `PATH` env to SourceGit.
+> [!NOTE]
+> macOS packages in the `Release` page of this project are all unsigned. If you are worried about potential security
+> issues with the above command, you can download the signed package from
+> the [distribution repository](https://github.com/ybeapps/homebrew-sourcegit/releases) provided
+> by [@ybeapps](https://github.com/ybeapps) (there is no need to execute the above command while installing `UGSGit`).
+
+* Make sure [git-credential-manager](https://github.com/git-ecosystem/git-credential-manager/releases) is installed on
+  your mac.
+* You can run `echo $PATH > ~/Library/Application\ Support/SourceGit/PATH` to generate a custom PATH env file to
+  introduce `PATH` env to SourceGit.
 
 For **Linux** users:
 
-* Thanks [@aikawayataro](https://github.com/aikawayataro) for providing `rpm` and `deb` repositories, hosted on [Codeberg](https://codeberg.org/yataro/-/packages).
+* Thanks [@aikawayataro](https://github.com/aikawayataro) for providing `rpm` and `deb` repositories, hosted
+  on [Codeberg](https://codeberg.org/yataro/-/packages).
 
   `deb` how to:
   ```shell
@@ -138,9 +151,11 @@ For **Linux** users:
   sudo dnf install sourcegit
   ```
 
-  If your distribution isn't using `dnf`, please refer to the documentation of your distribution on how to add an `rpm` repository.
+  If your distribution isn't using `dnf`, please refer to the documentation of your distribution on how to add an `rpm`
+  repository.
 
-* Thanks [@gadfly3173](https://github.com/gadfly3173) for providing `deb` repository, hosted on https://deb-repo.gadfly.vip
+* Thanks [@gadfly3173](https://github.com/gadfly3173) for providing `deb` repository, hosted
+  on https://deb-repo.gadfly.vip
 
   ```shell
   # Import GPG key
@@ -162,24 +177,29 @@ For **Linux** users:
   sudo apt install sourcegit
   ```
 
-* `AppImage` files can be found on [AppImage hub](https://appimage.github.io/SourceGit/), `xdg-open` (`xdg-utils`) must be installed to support open native file manager.
-* Make sure [git-credential-manager](https://github.com/git-ecosystem/git-credential-manager/releases) or [git-credential-libsecret](https://pkgs.org/search/?q=git-credential-libsecret) is installed on your Linux.
-* Maybe you need to set environment variable `AVALONIA_SCREEN_SCALE_FACTORS`. See https://github.com/AvaloniaUI/Avalonia/wiki/Configuring-X11-per-monitor-DPI.
-* If you can NOT type accented characters, such as `ê`, `ó`, try to set the environment variable `AVALONIA_IM_MODULE` to `none`.
+* `AppImage` files can be found on [AppImage hub](https://appimage.github.io/SourceGit/), `xdg-open` (`xdg-utils`) must
+  be installed to support open native file manager.
+* Make sure [git-credential-manager](https://github.com/git-ecosystem/git-credential-manager/releases)
+  or [git-credential-libsecret](https://pkgs.org/search/?q=git-credential-libsecret) is installed on your Linux.
+* Maybe you need to set environment variable `AVALONIA_SCREEN_SCALE_FACTORS`.
+  See https://github.com/AvaloniaUI/Avalonia/wiki/Configuring-X11-per-monitor-DPI.
+* If you can NOT type accented characters, such as `ê`, `ó`, try to set the environment variable `AVALONIA_IM_MODULE` to
+  `none`.
 
 ## Commandline arguments
 
-Users can also launcher `SourceGit` from commandline. Usage:
+Users can also launch `UGSGit` from commandline. Usage:
 
 ```
-<SOURCEGIT_EXEC> <DIR>                       // Open repository in existing `SourceGit` instance or a new one
-<SOURCEGIT_EXEC> --file-history <FILE_PATH>  // Launch `SourceGit` to see the history of a file
-<SOURCEGIT_EXEC> --blame <FILE_PATH>         // Launch `SourceGit` to blame a file (HEAD version only) 
+<UGSGIT_EXEC> <DIR>                       // Open repository in existing `UGSGit` instance or a new one
+<UGSGIT_EXEC> --file-history <FILE_PATH>  // Launch `UGSGit` to see the history of a file
+<UGSGIT_EXEC> --blame <FILE_PATH>         // Launch `UGSGit` to blame a file (HEAD version only) 
 ```
 
 ## OpenAI
 
-This software supports using OpenAI or other AI service that has an OpenAI compatible HTTP API to generate commit message. You need configurate the service in `Preference` window.
+This software supports using OpenAI or other AI service that has an OpenAI compatible HTTP API to generate commit
+message. You need configurate the service in `Preference` window.
 
 For `OpenAI`:
 
@@ -187,7 +207,8 @@ For `OpenAI`:
 
 For other AI service:
 
-* The `Server` should fill in a URL equivalent to OpenAI's `https://api.openai.com/v1`. For example, when using `Ollama`, it should be `http://localhost:11434/v1` instead of `http://localhost:11434/api/generate`
+* The `Server` should fill in a URL equivalent to OpenAI's `https://api.openai.com/v1`. For example, when using
+  `Ollama`, it should be `http://localhost:11434/v1` instead of `http://localhost:11434/api/generate`
 * The `API Key` is optional that depends on the service
 
 ## External Tools
@@ -205,19 +226,22 @@ This app supports open repository in external tools listed in the table below.
 | Visual Studio                 | YES     | NO    | NO    |
 
 > [!NOTE]
-> This app will try to find those tools based on some pre-defined or expected locations automatically. If you are using one portable version of these tools, it will not be detected by this app.  
-> To solve this problem you can add a file named `external_editors.json` in app data storage directory and provide the path directly.  
+> This app will try to find those tools based on some pre-defined or expected locations automatically. If you are using
+> one portable version of these tools, it will not be detected by this app.  
+> To solve this problem you can add a file named `external_editors.json` in app data storage directory and provide the
+> path directly.  
 > User can also exclude some editors by using `external_editors.json`.
 
 The format of `external_editors.json`:
+
 ```json
 {
-    "tools": {
-        "Visual Studio Code": "D:\\VSCode\\Code.exe"
-    },
-    "excludes": [
-        "Visual Studio Community 2019"
-    ]
+  "tools": {
+    "Visual Studio Code": "D:\\VSCode\\Code.exe"
+  },
+  "excludes": [
+    "Visual Studio Community 2019"
+  ]
 }
 ```
 
@@ -229,6 +253,7 @@ The format of `external_editors.json`:
 You can define your own conventional commit types (per-repository) by following steps:
 
 1. Create a json file with your own conventional commit type definitions. For example:
+
 ```json
 [
   {
@@ -244,19 +269,22 @@ You can define your own conventional commit types (per-repository) by following 
   }
 ]
 ```
-2. Configure the `Conventional Commit Types` in repository configuration window.  
+
+2. Configure the `Conventional Commit Types` in repository configuration window.
 
 ## Contributing
 
-Everyone is welcome to submit a PR. Please make sure your PR is based on the latest `develop` branch and the target branch of PR is `develop`.
+Everyone is welcome to submit a PR. Please make sure your PR is based on the latest `develop` branch and the target
+branch of PR is `develop`.
 
-In short, here are the commands to get started once [.NET tools are installed](https://dotnet.microsoft.com/en-us/download):
+In short, here are the commands to get started
+once [.NET tools are installed](https://dotnet.microsoft.com/en-us/download):
 
 ```sh
 dotnet nuget add source https://api.nuget.org/v3/index.json -n nuget.org
 dotnet restore
 dotnet build
-dotnet run --project src/SourceGit.csproj
+dotnet run --project src/UGSGit.csproj
 ```
 
 Thanks to all the people who contribute.
@@ -265,11 +293,14 @@ Thanks to all the people who contribute.
 
 ## Translation Status
 
-You can find the current translation status in [TRANSLATION.md](https://github.com/sourcegit-scm/sourcegit/blob/develop/TRANSLATION.md)
+You can find the current translation status
+in [TRANSLATION.md](https://github.com/sourcegit-scm/sourcegit/blob/develop/TRANSLATION.md)
 
 ### Translate Utility Script
 
-A script that assists with translations by reading the target language, comparing it with the base language, and going through missing keys one by one, so the translator can provide the translations interactively without needing to check each key manually.
+A script that assists with translations by reading the target language, comparing it with the base language, and going
+through missing keys one by one, so the translator can provide the translations interactively without needing to check
+each key manually.
 
 #### Usage
 
@@ -279,10 +310,15 @@ Check for a given language (e.g., `pt_BR`) and optionally check for missing tran
 python translate_helper.py pt_BR [--check]
 ```
 
-- `pt_BR` is the target language code (change as needed), it should correspond to a file named `pt_BR.axaml` in the `src/Resources/Locales/` directory, so you can replace it with any other language code you want to translate, e.g., `de_DE`, `es_ES`, etc.
-- `--check` is an optional flag used to only check for missing keys without prompting for translations, useful for getting a list of missing translations.
+- `pt_BR` is the target language code (change as needed), it should correspond to a file named `pt_BR.axaml` in the
+  `src/Resources/Locales/` directory, so you can replace it with any other language code you want to translate, e.g.,
+  `de_DE`, `es_ES`, etc.
+- `--check` is an optional flag used to only check for missing keys without prompting for translations, useful for
+  getting a list of missing translations.
 
-The script will read the base language file (`en_US.axaml`) and the target language file (e.g., `pt_BR.axaml`), identify missing keys, and prompt you to provide translations for those keys. If the `--check` flag is used, it will only list the missing keys without prompting for translations.
+The script will read the base language file (`en_US.axaml`) and the target language file (e.g., `pt_BR.axaml`), identify
+missing keys, and prompt you to provide translations for those keys. If the `--check` flag is used, it will only list
+the missing keys without prompting for translations.
 
 ## Third-Party Components
 

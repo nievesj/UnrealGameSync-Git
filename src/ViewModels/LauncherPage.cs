@@ -1,9 +1,16 @@
-﻿using System;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
+
 using Avalonia.Collections;
+using Avalonia.Threading;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace SourceGit.ViewModels
+using UGSGit.Models;
+using UGSGit.ViewModels.Tabs;
+
+namespace UGSGit.ViewModels
 {
     public class LauncherPage : ObservableObject
     {
@@ -37,6 +44,43 @@ namespace SourceGit.ViewModels
             set;
         } = new AvaloniaList<Models.Notification>();
 
+        public AvaloniaList<RepositoryTabDescriptor> Tabs { get; } = new();
+
+        public RepositoryTabDescriptor SelectedTab
+        {
+            get => _selectedTab;
+            set
+            {
+                var previous = _selectedTab;
+                if (SetProperty(ref _selectedTab, value))
+                {
+                    OnPropertyChanged(nameof(ToolbarContent));
+                    OnPropertyChanged(nameof(BodyContent));
+
+                    if (previous != null)
+                        previous.NotifyDeactivated();
+
+                    if (value != null)
+                    {
+                        value.NotifyActivated();
+                        PersistActiveTabId(value.TabId);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Toolbar content: uses SelectedTab's toolbar if available, otherwise falls back to Data (Welcome page).
+        /// </summary>
+        public object ToolbarContent => _selectedTab?.ToolbarContent ?? _data;
+
+        /// <summary>
+        /// Body content: uses SelectedTab's body if available, otherwise falls back to Data (Welcome page).
+        /// </summary>
+        public object BodyContent => _selectedTab?.BodyContent ?? _data;
+
+        public bool IsTabBarVisible => Tabs.Count > 1;
+
         public LauncherPage()
         {
             _node = new RepositoryNode() { Id = Guid.NewGuid().ToString() };
@@ -44,12 +88,156 @@ namespace SourceGit.ViewModels
 
             // New welcome page will clear the search filter before.
             Welcome.Instance.ClearSearchFilter();
+
+            Tabs.CollectionChanged += (_, _) => OnPropertyChanged(nameof(IsTabBarVisible));
         }
 
         public LauncherPage(RepositoryNode node, Repository repo)
         {
             _node = node;
             _data = repo;
+
+            Tabs.CollectionChanged += (_, _) => OnPropertyChanged(nameof(IsTabBarVisible));
+
+            // Subscribe to plugin state changes for live activation/deactivation
+            PluginRegistry.Instance.PluginStateChanged += OnPluginStateChanged;
+
+            RegisterBuiltInTabs();
+            RestoreActiveTab();
+        }
+
+        /// <summary>
+        /// Called when a Welcome page is reused for a repository (first repo opened).
+        /// Initializes tabs and subscribes to plugin events. Idempotent — safe to call multiple times.
+        /// </summary>
+        public void PromoteToRepositoryPage(RepositoryNode node, Repository repo)
+        {
+            _node = node;
+            _data = repo;
+
+            // Only initialize once — guard against double-promotion
+            if (Tabs.Count == 0)
+            {
+                Tabs.CollectionChanged += (_, _) => OnPropertyChanged(nameof(IsTabBarVisible));
+
+                // Subscribe to plugin state changes for live activation/deactivation
+                PluginRegistry.Instance.PluginStateChanged += OnPluginStateChanged;
+
+                RegisterBuiltInTabs();
+                RestoreActiveTab();
+            }
+        }
+
+        public void AddPluginTab(IRepositoryTab tab)
+        {
+            if (_isDisposed)
+                throw new ObjectDisposedException(nameof(LauncherPage));
+
+            if (!Dispatcher.UIThread.CheckAccess())
+            {
+                Dispatcher.UIThread.Post(() => AddPluginTab(tab));
+                return;
+            }
+
+            // Duplicate TabId guard
+            if (Tabs.Any(t => t.TabId == tab.TabId))
+            {
+                Native.OS.LogException(new InvalidOperationException($"Duplicate tab ID '{tab.TabId}' — ignoring"));
+                return;
+            }
+
+            RepositoryTabDescriptor descriptor;
+            try
+            {
+                // Test that content properties don't throw
+                _ = tab.ToolbarContent;
+                _ = tab.BodyContent;
+                descriptor = new RepositoryTabDescriptor(tab);
+            }
+            catch (Exception ex)
+            {
+                Native.OS.LogException(new InvalidOperationException($"Plugin tab '{tab.TabId}' failed to initialize: {ex.Message}"));
+                descriptor = CreateErrorTabDescriptor(tab.TabId, tab.Title, ex);
+            }
+
+            // Insert at correct position based on SortOrder
+            var insertIndex = 0;
+            for (int i = 0; i < Tabs.Count; i++)
+            {
+                if (Tabs[i].SortOrder <= descriptor.SortOrder)
+                    insertIndex = i + 1;
+                else
+                    break;
+            }
+            Tabs.Insert(insertIndex, descriptor);
+
+            descriptor.RequestClose += OnTabRequestClose;
+        }
+
+        public void RemovePluginTab(IRepositoryTab tab)
+        {
+            if (!Dispatcher.UIThread.CheckAccess())
+            {
+                Dispatcher.UIThread.Post(() => RemovePluginTab(tab));
+                return;
+            }
+
+            var descriptor = Tabs.FirstOrDefault(t => t.Tab == tab);
+            if (descriptor == null)
+                return;
+            if (!descriptor.IsClosable)
+                return;
+
+            descriptor.RequestClose -= OnTabRequestClose;
+
+            // If removing the selected tab, switch to the previous one
+            if (SelectedTab == descriptor)
+            {
+                var fallbackIndex = Math.Max(0, Tabs.IndexOf(descriptor) - 1);
+                SelectedTab = Tabs[fallbackIndex];
+            }
+
+            Tabs.Remove(descriptor);
+            descriptor.Dispose();
+        }
+
+        public void SelectTab(int index)
+        {
+            if (index >= 0 && index < Tabs.Count)
+                SelectedTab = Tabs[index];
+        }
+
+        public void SelectTab(string tabId)
+        {
+            var tab = Tabs.FirstOrDefault(t => t.TabId == tabId);
+            if (tab != null)
+                SelectedTab = tab;
+        }
+
+        public void SelectNextTab(bool reverse = false)
+        {
+            if (Tabs.Count <= 1)
+                return;
+
+            var currentIndex = Tabs.IndexOf(SelectedTab);
+            if (currentIndex < 0)
+                return;
+
+            int nextIndex;
+            if (reverse)
+            {
+                nextIndex = currentIndex - 1;
+                if (nextIndex < 0)
+                    nextIndex = Tabs.Count - 1;
+            }
+            else
+            {
+                nextIndex = currentIndex + 1;
+                if (nextIndex >= Tabs.Count)
+                    nextIndex = 0;
+            }
+
+            SelectedTab = Tabs[nextIndex];
         }
 
         public void ClearNotifications()
@@ -114,9 +302,119 @@ namespace SourceGit.ViewModels
             Popup = null;
         }
 
+        internal void Dispose()
+        {
+            _isDisposed = true;
+
+            // Unsubscribe from plugin state changes
+            PluginRegistry.Instance.PluginStateChanged -= OnPluginStateChanged;
+
+            // Clear activation records for this repository to prevent memory leak (Issue #6)
+            if (_node != null)
+                PluginRegistry.Instance.ClearActivationForRepository(_node.Id);
+
+            foreach (var descriptor in Tabs)
+                descriptor.Dispose();
+            Tabs.Clear();
+        }
+
+        private void OnPluginStateChanged(string pluginId)
+        {
+            // Must run on UI thread
+            if (!Dispatcher.UIThread.CheckAccess())
+            {
+                Dispatcher.UIThread.Post(() => OnPluginStateChanged(pluginId));
+                return;
+            }
+
+            if (_isDisposed || !(_data is Repository repo))
+                return;
+
+            // Find the manifest for this plugin
+            var manifest = PluginRegistry.Instance.AllManifests.FirstOrDefault(m => m.PluginId == pluginId);
+            if (manifest == null)
+                return;
+
+            var uiStates = repo.UIStates;
+            var isEnabled = PluginRegistry.Instance.IsEnabledForRepository(pluginId, uiStates);
+
+            // Check if the plugin's tabs are currently present
+            var pluginTabIds = PluginRegistry.Instance.GetTabIdsForPlugin(pluginId);
+            bool hasPluginTabs = false;
+            foreach (var tab in Tabs)
+            {
+                if (pluginTabIds.Contains(tab.TabId))
+                {
+                    hasPluginTabs = true;
+                    break;
+                }
+            }
+
+            if (isEnabled && !hasPluginTabs)
+            {
+                // Plugin was enabled but not present — activate it
+                PluginActivator.ActivatePlugin(manifest, this, _node);
+            }
+            else if (!isEnabled && hasPluginTabs)
+            {
+                // Plugin was disabled but still present — deactivate it
+                PluginActivator.DeactivatePlugin(manifest, this);
+            }
+        }
+
+        private void RegisterBuiltInTabs()
+        {
+            var repo = _data as Repository;
+            if (repo == null)
+                return;
+
+            var repoTab = new RepositoryTab(repo, _node);
+            Tabs.Add(new RepositoryTabDescriptor(repoTab));
+
+            // Activate enabled plugins for this repository
+            PluginActivator.ActivateEnabledPlugins(this, _node, repo.UIStates);
+
+            SelectedTab = Tabs[0];
+        }
+
+        private void RestoreActiveTab()
+        {
+            if (_data is Repository repo)
+            {
+                var savedTabId = repo.UIStates.ActiveTabId;
+                if (!string.IsNullOrEmpty(savedTabId))
+                {
+                    var tab = Tabs.FirstOrDefault(t => t.TabId == savedTabId);
+                    if (tab != null)
+                        SelectedTab = tab;
+                }
+            }
+            // If savedTabId invalid or tab not found, SelectedTab stays at Tabs[0] (Repository)
+        }
+
+        private void PersistActiveTabId(string tabId)
+        {
+            if (_data is Repository repo)
+                repo.UIStates.ActiveTabId = tabId;
+        }
+
+        private void OnTabRequestClose(object sender, EventArgs e)
+        {
+            if (sender is RepositoryTabDescriptor descriptor)
+                RemovePluginTab(descriptor.Tab);
+        }
+
+        private RepositoryTabDescriptor CreateErrorTabDescriptor(string tabId, string title, Exception error)
+        {
+            var errorTab = new ErrorTab(tabId, title, error);
+            return new RepositoryTabDescriptor(errorTab);
+        }
+
         private RepositoryNode _node = null;
         private object _data = null;
         private Models.DirtyState _dirtyState = Models.DirtyState.None;
         private Popup _popup = null;
+        private RepositoryTabDescriptor _selectedTab = null;
+        private bool _isDisposed = false;
     }
 }

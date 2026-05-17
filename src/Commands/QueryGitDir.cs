@@ -1,6 +1,6 @@
-﻿using System.IO;
+using System.IO;
 
-namespace SourceGit.Commands
+namespace UGSGit.Commands
 {
     public class QueryGitDir : Command
     {

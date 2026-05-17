@@ -7,7 +7,7 @@ using Avalonia.Threading;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace SourceGit.ViewModels
+namespace UGSGit.ViewModels
 {
     public class Launcher : ObservableObject
     {
@@ -346,14 +346,12 @@ namespace SourceGit.ViewModels
                 else
                 {
                     page = _activePage;
-                    page.Node = node;
-                    page.Data = repo;
+                    page.PromoteToRepositoryPage(node, repo);
                 }
             }
             else
             {
-                page.Node = node;
-                page.Data = repo;
+                page.PromoteToRepositoryPage(node, repo);
             }
 
             _activeWorkspace.Repositories.Clear();
@@ -440,6 +438,7 @@ namespace SourceGit.ViewModels
             page.Popup?.Cleanup();
             page.Popup = null;
             page.Data = null;
+            page.Dispose();
         }
 
         private void PostActivePageChanged()

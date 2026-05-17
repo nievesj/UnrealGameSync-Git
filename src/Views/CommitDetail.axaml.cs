@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -8,7 +8,7 @@ using Avalonia.Input;
 using Avalonia.LogicalTree;
 using Avalonia.Platform.Storage;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     public partial class CommitDetail : UserControl
     {

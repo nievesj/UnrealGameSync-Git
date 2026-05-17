@@ -1,2 +1,2 @@
-Remove-Item -Path build\SourceGit\*.pdb -Force
-Compress-Archive -Path build\SourceGit -DestinationPath "build\sourcegit_${env:VERSION}.${env:RUNTIME}.zip" -Force
+Remove-Item -Path build\UGSGit\*.pdb -Force
+Compress-Archive -Path build\UGSGit -DestinationPath "build\ugsgit_${env:VERSION}.${env:RUNTIME}.zip" -Force

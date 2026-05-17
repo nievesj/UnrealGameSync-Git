@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using Avalonia.Data.Converters;
 
-namespace SourceGit.Converters
+namespace UGSGit.Converters
 {
     public static class ObjectConverters
     {
@@ -23,5 +23,20 @@ namespace SourceGit.Converters
         }
 
         public static readonly IsTypeOfConverter IsTypeOf = new IsTypeOfConverter();
+
+        public class IsNotNullConverter : IValueConverter
+        {
+            public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+            {
+                return value != null;
+            }
+
+            public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+            {
+                return new NotImplementedException();
+            }
+        }
+
+        public static readonly IsNotNullConverter IsNotNull = new IsNotNullConverter();
     }
 }

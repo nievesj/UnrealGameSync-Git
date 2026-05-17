@@ -5,8 +5,10 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using UGSGit.Models;
+using UGSGit.ViewModels;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     public class RepositoryTreeNodeToggleButton : ToggleButton
     {
@@ -149,7 +151,19 @@ namespace SourceGit.Views
                     menu.Items.Add(new MenuItem() { Header = "-" });
                     menu.Items.Add(explore);
                     menu.Items.Add(terminal);
+
+                    // Plugin Settings menu item
+                    var pluginSettings = new MenuItem();
+                    pluginSettings.Header = "Plugin Settings...";
+                    pluginSettings.Icon = this.CreateMenuIcon("Icons.Settings");
+                    pluginSettings.Click += (_, e) =>
+                    {
+                        OpenPluginSettingsForNode(node);
+                        e.Handled = true;
+                    };
+
                     menu.Items.Add(new MenuItem() { Header = "-" });
+                    menu.Items.Add(pluginSettings);
                 }
                 else
                 {
@@ -363,6 +377,32 @@ namespace SourceGit.Views
 
                 e.Handled = true;
             }
+        }
+
+        private async void OpenPluginSettingsForNode(ViewModels.RepositoryNode node)
+        {
+            // Find the open repository's UI states
+            var launcher = App.GetLauncher();
+            if (launcher == null) return;
+
+            Models.RepositoryUIStates uiStates = null;
+            foreach (var page in launcher.Pages)
+            {
+                if (page.Data is ViewModels.Repository repo && page.Node == node)
+                {
+                    uiStates = repo.UIStates;
+                    break;
+                }
+            }
+
+            if (uiStates == null) return;
+
+            var vm = new ViewModels.PerRepoPluginDialogViewModel(node.Name, uiStates);
+            var dialog = new PerRepoPluginDialog { DataContext = vm };
+
+            var owner = TopLevel.GetTopLevel(this) as Window;
+            if (owner != null)
+                await dialog.ShowDialog(owner);
         }
 
         private bool _pressedTreeNode = false;

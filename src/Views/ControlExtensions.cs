@@ -1,12 +1,11 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     public static class ControlExtensions
     {
@@ -31,11 +30,11 @@ namespace SourceGit.Views
                 await clipboard.SetTextAsync(text);
         }
 
-        public static Path CreateMenuIcon(this Control control, string iconKey)
+        public static global::Avalonia.Controls.Shapes.Path CreateMenuIcon(this Control control, string iconKey)
         {
             if (control?.FindResource(iconKey) is StreamGeometry geo)
             {
-                return new Path()
+                return new global::Avalonia.Controls.Shapes.Path()
                 {
                     Data = geo,
                     Width = 12,

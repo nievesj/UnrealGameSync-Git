@@ -1,14 +1,13 @@
-﻿using System;
+using System;
 
 using Avalonia.Controls;
-using Avalonia.Controls.Shapes;
 using Avalonia.Media;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
-    public class WorktreeIcon : Path
+    public class WorktreeIcon : global::Avalonia.Controls.Shapes.Path
     {
-        protected override Type StyleKeyOverride => typeof(Path);
+        protected override Type StyleKeyOverride => typeof(global::Avalonia.Controls.Shapes.Path);
 
         protected override void OnDataContextChanged(EventArgs e)
         {

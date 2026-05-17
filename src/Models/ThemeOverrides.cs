@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 using Avalonia.Media;
 
-namespace SourceGit.Models
+namespace UGSGit.Models
 {
     public class ThemeOverrides
     {

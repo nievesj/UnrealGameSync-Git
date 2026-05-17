@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 
-namespace SourceGit.Models
+namespace UGSGit.Models
 {
     public class Notification
     {

@@ -8,7 +8,7 @@ using AvaloniaEdit.Document;
 using AvaloniaEdit.Editing;
 using AvaloniaEdit.TextMate;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     public class UpdateInfoView : TextEditor
     {

@@ -1,0 +1,57 @@
+<v:ChromelessWindow xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    xmlns:vm="using:UGSGit.ViewModels"
+                    xmlns:v="using:UGSGit.Views"
+                    mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="400"
+                    x:Class="UGSGit.Views.PerRepoPluginDialog"
+                    x:DataType="vm:PerRepoPluginDialogViewModel"
+                    Title="Plugin Settings"
+                    SizeToContent="Height"
+                    CanResize="False"
+                    WindowStartupLocation="CenterScreen">
+  <Grid RowDefinitions="Auto,*,Auto" Margin="16">
+    <TextBlock Grid.Row="0" Margin="0,0,0,12"
+               FontSize="14" FontWeight="Bold"
+               Text="{Binding RepositoryName, StringFormat='{}Plugin Settings — {0}'}"/>
+
+    <ScrollViewer Grid.Row="1" MaxHeight="300">
+      <ItemsControl ItemsSource="{Binding Plugins}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:PluginOverrideRow">
+            <Border Margin="0,0,0,6" Padding="8,6" CornerRadius="4"
+                    Background="{DynamicResource Brush.Contents}"
+                    BorderBrush="{DynamicResource Brush.Border2}" BorderThickness="1">
+              <Grid ColumnDefinitions="*,Auto,Auto" RowDefinitions="Auto,Auto">
+                <TextBlock Grid.Row="0" Grid.Column="0"
+                           Text="{Binding DisplayName}" FontWeight="Bold" FontSize="13"/>
+                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Margin="8,0,0,0">
+                  <TextBlock Text="v" FontSize="10" Foreground="{DynamicResource Brush.FG3}" VerticalAlignment="Center"/>
+                  <TextBlock Text="{Binding Version}" FontSize="10" Foreground="{DynamicResource Brush.FG3}" VerticalAlignment="Center"/>
+                </StackPanel>
+                <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                           Text="{Binding Description}" FontSize="11" Foreground="{DynamicResource Brush.FG3}"
+                           TextWrapping="Wrap" Margin="0,2,0,0"/>
+
+                <ComboBox Grid.Row="0" Grid.RowSpan="2" Grid.Column="2"
+                          MinWidth="120" Margin="12,0,0,0"
+                          SelectedIndex="{Binding StateIndex, Mode=TwoWay}"
+                          HorizontalAlignment="Right">
+                  <ComboBoxItem Content="Inherit"/>
+                  <ComboBoxItem Content="Enabled"/>
+                  <ComboBoxItem Content="Disabled"/>
+                </ComboBox>
+              </Grid>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
+
+    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+      <Button Classes="flat" Click="OnResetAll" Content="Reset All to Defaults" Margin="0,0,8,0"/>
+      <Button Classes="flat primary" Click="OnClose" Content="Close" Width="80"/>
+    </StackPanel>
+  </Grid>
+</v:ChromelessWindow>

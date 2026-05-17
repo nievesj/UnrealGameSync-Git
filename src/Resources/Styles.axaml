@@ -1,8 +1,8 @@
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:SourceGit.ViewModels"
-        xmlns:v="using:SourceGit.Views"
-        xmlns:c="using:SourceGit.Converters"
+        xmlns:vm="using:UGSGit.ViewModels"
+        xmlns:v="using:UGSGit.Views"
+        xmlns:c="using:UGSGit.Converters"
         xmlns:ae="using:AvaloniaEdit"
         xmlns:aec="using:AvaloniaEdit.CodeCompletion"
         xmlns:aee="using:AvaloniaEdit.Editing"
@@ -724,6 +724,27 @@
     <Setter Property="Opacity" Value=".85"/>
   </Style>
   <Style Selector="ListBox.launcher_page_tabbar ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Opacity" Value="1"/>
+  </Style>
+
+  <Style Selector="ListBox.plugin_tabbar">
+    <Setter Property="Background" Value="Transparent"/>
+  </Style>
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem">
+    <Setter Property="Padding" Value="0"/>
+    <Setter Property="Margin" Value="0"/>
+    <Setter Property="Height" Value="28"/>
+  </Style>
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Opacity" Value=".5"/>
+  </Style>
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Opacity" Value=".85"/>
+  </Style>
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="Opacity" Value="1"/>
   </Style>

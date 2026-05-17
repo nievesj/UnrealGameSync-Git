@@ -1,0 +1,24 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:UGSGit.ViewModels.Tabs"
+             x:Class="UGSGit.Views.Tabs.HelloWorldBody"
+             x:DataType="vm:HelloWorldBodyViewModel">
+    <Border Background="{DynamicResource Brush.Background}"
+            CornerRadius="8"
+            Margin="16"
+            Padding="32">
+        <StackPanel VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Spacing="12">
+            <TextBlock Text="{Binding Message}"
+                       FontSize="24"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"
+                       Foreground="{DynamicResource Brush.FG1}" />
+            <TextBlock Text="{Binding Status}"
+                       FontSize="14"
+                       HorizontalAlignment="Center"
+                       Foreground="{DynamicResource Brush.FG3}" />
+        </StackPanel>
+    </Border>
+</UserControl>

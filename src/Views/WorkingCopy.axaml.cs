@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -8,7 +8,7 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     public partial class WorkingCopy : UserControl
     {

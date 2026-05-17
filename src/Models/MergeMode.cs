@@ -1,4 +1,4 @@
-﻿namespace SourceGit.Models
+namespace UGSGit.Models
 {
     public class MergeMode(string n, string d, string a)
     {

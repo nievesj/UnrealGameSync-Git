@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 using Avalonia.Controls;
 using Avalonia.Media;
 
-namespace SourceGit
+namespace UGSGit
 {
     public class DateTimeConverter : JsonConverter<DateTime>
     {
@@ -87,5 +87,6 @@ namespace SourceGit
     [JsonSerializable(typeof(List<Models.LFSLock>))]
     [JsonSerializable(typeof(List<Models.VisualStudioInstance>))]
     [JsonSerializable(typeof(ViewModels.Preferences))]
+    [JsonSerializable(typeof(Dictionary<string, bool>))]
     internal partial class JsonCodeGen : JsonSerializerContext { }
 }

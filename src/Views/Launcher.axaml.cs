@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 using Avalonia;
 using Avalonia.Controls;
@@ -8,7 +8,7 @@ using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.VisualTree;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     public partial class Launcher : ChromelessWindow
     {
@@ -252,6 +252,14 @@ namespace SourceGit.Views
                     return;
                 }
 
+                // Ctrl+Tab / Ctrl+Shift+Tab — cycle project-level tabs
+                if (e.Key == Key.Tab)
+                {
+                    vm.ActivePage.SelectNextTab(e.KeyModifiers.HasFlag(KeyModifiers.Shift));
+                    e.Handled = true;
+                    return;
+                }
+
                 if (vm.ActivePage.Data is ViewModels.Repository repo)
                 {
                     switch (e.Key)
@@ -304,6 +312,14 @@ namespace SourceGit.Views
             }
             else if (e.Key == Key.F5)
             {
+                // Ctrl+Tab / Ctrl+Shift+Tab — cycle project-level tabs
+                if (e.Key == Key.Tab)
+                {
+                    vm.ActivePage.SelectNextTab(e.KeyModifiers.HasFlag(KeyModifiers.Shift));
+                    e.Handled = true;
+                    return;
+                }
+
                 if (vm.ActivePage.Data is ViewModels.Repository repo)
                 {
                     repo.RefreshAll();
