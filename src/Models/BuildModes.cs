@@ -1,4 +1,4 @@
-namespace UGSGit.Models;
+namespace SourceGit.Models;
 
 /// <summary>
 /// Build mode constants. Stored as strings in JSON for forward-compatibility.

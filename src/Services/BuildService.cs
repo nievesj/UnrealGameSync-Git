@@ -7,9 +7,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using UGSGit.Models;
+using SourceGit.Models;
 
-namespace UGSGit.Services;
+namespace SourceGit.Services;
 
 /// <summary>
 /// Executes UBT build targets or custom scripts. Has CancellationToken support
@@ -205,4 +205,4 @@ public class BuildService
     }
 }
 
-// BuildStatus and BuildResult moved to UGSGit.Models (fixes L-4).
+// BuildStatus and BuildResult moved to SourceGit.Models (fixes L-4).

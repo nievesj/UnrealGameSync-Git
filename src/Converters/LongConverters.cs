@@ -1,6 +1,6 @@
 using Avalonia.Data.Converters;
 
-namespace UGSGit.Converters
+namespace SourceGit.Converters
 {
     public static class LongConverters
     {

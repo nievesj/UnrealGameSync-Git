@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Avalonia.Collections;
 using Avalonia.Threading;
 
-namespace UGSGit.ViewModels
+namespace SourceGit.ViewModels
 {
     public class AssumeUnchangedManager
     {

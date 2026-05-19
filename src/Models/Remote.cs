@@ -3,7 +3,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Web;
 
-namespace UGSGit.Models
+namespace SourceGit.Models
 {
     public partial class Remote
     {

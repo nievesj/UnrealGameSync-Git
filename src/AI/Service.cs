@@ -7,7 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using OpenAI;
 using OpenAI.Chat;
 
-namespace UGSGit.AI
+namespace SourceGit.AI
 {
     public class Service : ObservableObject
     {

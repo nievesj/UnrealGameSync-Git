@@ -2,9 +2,9 @@ using System.IO;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-using UGSGit.Models;
+using SourceGit.Models;
 
-namespace UGSGit.ViewModels
+namespace SourceGit.ViewModels
 {
     /// <summary>
     /// Represents a single plugin row in the global plugin settings UI.

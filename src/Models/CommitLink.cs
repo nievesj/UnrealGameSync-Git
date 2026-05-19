@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace UGSGit.Models
+namespace SourceGit.Models
 {
     public class CommitLink
     {

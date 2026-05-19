@@ -7,7 +7,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public partial class CommitBaseInfo : UserControl
     {

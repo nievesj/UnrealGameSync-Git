@@ -2,7 +2,7 @@ using System.Globalization;
 using System.IO;
 using Avalonia.Media.Imaging;
 
-namespace UGSGit.Models
+namespace SourceGit.Models
 {
     public class RevisionBinaryFile
     {

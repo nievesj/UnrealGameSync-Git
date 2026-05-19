@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace UGSGit.ViewModels
+namespace SourceGit.ViewModels
 {
     public class Clone : Popup
     {

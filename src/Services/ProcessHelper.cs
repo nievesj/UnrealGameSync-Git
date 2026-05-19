@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace UGSGit.Services;
+namespace SourceGit.Services;
 
 /// <summary>
 /// Shared process utilities: kill process trees portably, etc.

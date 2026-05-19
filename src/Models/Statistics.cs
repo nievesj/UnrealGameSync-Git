@@ -9,7 +9,7 @@ using LiveChartsCore.SkiaSharpView.Painting;
 
 using SkiaSharp;
 
-namespace UGSGit.Models
+namespace SourceGit.Models
 {
     public enum StatisticsMode
     {

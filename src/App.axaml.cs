@@ -14,7 +14,7 @@ using Avalonia.Media.Fonts;
 using Avalonia.Styling;
 using Avalonia.Threading;
 
-namespace UGSGit
+namespace SourceGit
 {
     public partial class App : Application
     {
@@ -62,8 +62,8 @@ namespace UGSGit
             builder.ConfigureFonts(manager =>
             {
                 var monospace = new EmbeddedFontCollection(
-                    new Uri("fonts:UGSGit", UriKind.Absolute),
-                    new Uri("avares://UGSGit/Resources/Fonts", UriKind.Absolute));
+                    new Uri("fonts:SourceGit", UriKind.Absolute),
+                    new Uri("avares://SourceGit/Resources/Fonts", UriKind.Absolute));
                 manager.AddFontCollection(monospace);
             });
 
@@ -187,7 +187,7 @@ namespace UGSGit
             {
                 if (!string.IsNullOrEmpty(defaultFont))
                 {
-                    monospaceFont = $"fonts:UGSGit#JetBrains Mono,{defaultFont}";
+                    monospaceFont = $"fonts:SourceGit#JetBrains Mono,{defaultFont}";
                     resDic.Add("Fonts.Monospace", FontFamily.Parse(monospaceFont));
                 }
             }
@@ -417,7 +417,7 @@ namespace UGSGit
 
         private bool TryLaunchAsAskpass(IClassicDesktopStyleApplicationLifetime desktop)
         {
-            var launchAsAskpass = Environment.GetEnvironmentVariable("UGSGIT_LAUNCH_AS_ASKPASS");
+            var launchAsAskpass = Environment.GetEnvironmentVariable("SOURCEGIT_LAUNCH_AS_ASKPASS");
             if (launchAsAskpass is not "TRUE")
                 return false;
 

@@ -5,7 +5,7 @@ using Avalonia.Threading;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace UGSGit.ViewModels
+namespace SourceGit.ViewModels
 {
     public class Statistics : ObservableObject
     {

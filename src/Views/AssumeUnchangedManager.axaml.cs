@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public partial class AssumeUnchangedManager : ChromelessWindow
     {

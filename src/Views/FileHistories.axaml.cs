@@ -7,7 +7,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public partial class FileHistories : ChromelessWindow
     {

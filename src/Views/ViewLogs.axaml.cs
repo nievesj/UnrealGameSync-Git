@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public partial class ViewLogs : ChromelessWindow
     {

@@ -3,7 +3,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using Avalonia.Media.Imaging;
 
-namespace UGSGit.Models
+namespace SourceGit.Models
 {
     public enum TextDiffLineType
     {

@@ -1,9 +1,9 @@
 using Avalonia.Collections;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-using UGSGit.Models;
+using SourceGit.Models;
 
-namespace UGSGit.ViewModels
+namespace SourceGit.ViewModels
 {
     public class PerRepoPluginDialogViewModel : ObservableObject
     {

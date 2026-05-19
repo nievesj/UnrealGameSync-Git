@@ -1,6 +1,6 @@
 using Avalonia.Media;
 
-namespace UGSGit.Models
+namespace SourceGit.Models
 {
     public class ResetMode(string n, string d, string a, string k, IBrush b)
     {

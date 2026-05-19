@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace UGSGit.ViewModels
+namespace SourceGit.ViewModels
 {
     public class MergeConflictEditor : ObservableObject
     {

@@ -1,6 +1,6 @@
 using Avalonia.Media;
 
-namespace UGSGit.Models
+namespace SourceGit.Models
 {
     public class CommitSignInfo
     {

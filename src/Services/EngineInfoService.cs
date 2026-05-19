@@ -2,9 +2,9 @@ using System;
 using System.IO;
 using System.Text.Json;
 
-using UGSGit.Models;
+using SourceGit.Models;
 
-namespace UGSGit.Services;
+namespace SourceGit.Services;
 
 /// <summary>
 /// Detects engine version and build type from Engine/Build/Build.version.

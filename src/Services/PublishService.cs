@@ -4,9 +4,9 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-using UGSGit.Models;
+using SourceGit.Models;
 
-namespace UGSGit.Services;
+namespace SourceGit.Services;
 
 /// <summary>
 /// Publishes packaged zip files to a network location (UNC or local path).

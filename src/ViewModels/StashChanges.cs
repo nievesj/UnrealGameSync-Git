@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace UGSGit.ViewModels
+namespace SourceGit.ViewModels
 {
     public class StashChanges : Popup
     {

@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 
-namespace UGSGit.Models
+namespace SourceGit.Models
 {
     public class ExternalTool
     {
@@ -37,7 +37,7 @@ namespace UGSGit.Models
 
             try
             {
-                var asset = AssetLoader.Open(new Uri($"avares://UGSGit/Resources/Images/ExternalToolIcons/{icon}.png",
+                var asset = AssetLoader.Open(new Uri($"avares://SourceGit/Resources/Images/ExternalToolIcons/{icon}.png",
                     UriKind.RelativeOrAbsolute));
                 IconImage = new Bitmap(asset);
             }

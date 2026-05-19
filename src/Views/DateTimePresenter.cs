@@ -4,7 +4,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public class DateTimePresenter : TextBlock
     {

@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace UGSGit.Commands
+namespace SourceGit.Commands
 {
     public partial class Blame : Command
     {

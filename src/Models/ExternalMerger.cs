@@ -5,7 +5,7 @@ using System.IO;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 
-namespace UGSGit.Models
+namespace SourceGit.Models
 {
     public class ExternalMerger(string icon, string name, string finder, string mergeCmd, string diffCmd)
     {
@@ -19,7 +19,7 @@ namespace UGSGit.Models
         {
             get
             {
-                var icon = AssetLoader.Open(new Uri($"avares://UGSGit/Resources/Images/ExternalToolIcons/{Icon}.png", UriKind.RelativeOrAbsolute));
+                var icon = AssetLoader.Open(new Uri($"avares://SourceGit/Resources/Images/ExternalToolIcons/{Icon}.png", UriKind.RelativeOrAbsolute));
                 return new Bitmap(icon);
             }
         }

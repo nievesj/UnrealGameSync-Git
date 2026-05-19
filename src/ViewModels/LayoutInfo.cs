@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace UGSGit.ViewModels
+namespace SourceGit.ViewModels
 {
     public class LayoutInfo : ObservableObject
     {

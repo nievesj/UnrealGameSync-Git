@@ -1,8 +1,8 @@
 using Avalonia.Interactivity;
 
-using UGSGit.ViewModels;
+using SourceGit.ViewModels;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public partial class PerRepoPluginDialog : ChromelessWindow
     {

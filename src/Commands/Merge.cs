@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace UGSGit.Commands
+namespace SourceGit.Commands
 {
     public class Merge : Command
     {

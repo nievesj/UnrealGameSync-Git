@@ -6,7 +6,7 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Threading;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public class CommitTimeTextBlock : TextBlock
     {

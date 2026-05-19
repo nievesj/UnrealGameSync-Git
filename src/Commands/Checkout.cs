@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UGSGit.Commands
+namespace SourceGit.Commands
 {
     public class Checkout : Command
     {

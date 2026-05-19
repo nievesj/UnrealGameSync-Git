@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Interactivity;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public partial class PopupRunningStatus : UserControl
     {

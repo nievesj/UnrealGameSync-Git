@@ -1,4 +1,4 @@
-namespace UGSGit.Models;
+namespace SourceGit.Models;
 
 /// <summary>
 /// A package profile defining what to build and stage via BuildGraph.

@@ -1,4 +1,4 @@
-namespace UGSGit.Models
+namespace SourceGit.Models
 {
     /// <summary>
     /// Provides plugins with runtime information without giving them direct access to the app's ViewModels.

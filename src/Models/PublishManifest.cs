@@ -1,7 +1,7 @@
 using System;
 using System.Text.Json.Serialization;
 
-namespace UGSGit.Models;
+namespace SourceGit.Models;
 
 /// <summary>
 /// Sidecar manifest written alongside published zip files.

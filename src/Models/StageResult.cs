@@ -1,6 +1,6 @@
 using System;
 
-namespace UGSGit.Models;
+namespace SourceGit.Models;
 
 /// <summary>
 /// Structured result from BuildGraph staging operation.

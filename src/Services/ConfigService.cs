@@ -4,9 +4,9 @@ using System.IO;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
-using UGSGit.Models;
+using SourceGit.Models;
 
-namespace UGSGit.Services;
+namespace SourceGit.Services;
 
 /// <summary>
 /// Reads and writes .unrealsync.json config files with environment variable expansion,

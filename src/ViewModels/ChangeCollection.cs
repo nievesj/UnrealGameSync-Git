@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 using Avalonia.Collections;
 
-namespace UGSGit.ViewModels
+namespace SourceGit.ViewModels
 {
     public class ChangeCollectionAsTree
     {

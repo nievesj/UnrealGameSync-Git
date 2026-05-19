@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace UGSGit.Models;
+namespace SourceGit.Models;
 
 /// <summary>
 /// Source-generated JSON context for all UnrealSync types.

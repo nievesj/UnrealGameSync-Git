@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace UGSGit.Models;
+namespace SourceGit.Models;
 
 /// <summary>
 /// User-local state persisted in .unrealsync/state.json (gitignored).

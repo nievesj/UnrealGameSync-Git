@@ -1,7 +1,7 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace UGSGit.ViewModels
+namespace SourceGit.ViewModels
 {
     public abstract class InProgressContext
     {

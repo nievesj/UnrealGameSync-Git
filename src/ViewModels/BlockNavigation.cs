@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace UGSGit.ViewModels
+namespace SourceGit.ViewModels
 {
     public enum BlockNavigationDirection
     {

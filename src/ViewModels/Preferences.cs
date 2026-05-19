@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Avalonia.Collections;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace UGSGit.ViewModels
+namespace SourceGit.ViewModels
 {
     public class Preferences : ObservableObject, Models.IPluginStateStore
     {

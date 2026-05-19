@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public partial class FilterModeSwitchButton : UserControl
     {

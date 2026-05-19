@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace UGSGit.Models;
+namespace SourceGit.Models;
 
 /// <summary>
 /// Full .unrealsync.json config model (committed to repo root).

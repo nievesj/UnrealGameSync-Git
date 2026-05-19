@@ -6,7 +6,7 @@ using Avalonia.Input;
 using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public class BranchOrTagNameTextBox : TextBox
     {

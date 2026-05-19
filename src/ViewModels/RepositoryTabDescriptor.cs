@@ -8,9 +8,9 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-using UGSGit.Models;
+using SourceGit.Models;
 
-namespace UGSGit.ViewModels
+namespace SourceGit.ViewModels
 {
     public class RepositoryTabDescriptor : ObservableObject
     {

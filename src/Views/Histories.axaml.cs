@@ -14,7 +14,7 @@ using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public class HistoriesLayout : Grid
     {

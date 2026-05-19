@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 
-namespace UGSGit.ViewModels
+namespace SourceGit.ViewModels
 {
     public class OpenFileCommandPalette : ICommandPalette
     {

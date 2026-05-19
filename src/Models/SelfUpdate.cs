@@ -2,7 +2,7 @@ using System;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
-namespace UGSGit.Models
+namespace SourceGit.Models
 {
     public class Version
     {

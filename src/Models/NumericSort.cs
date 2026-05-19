@@ -1,6 +1,6 @@
 using System;
 
-namespace UGSGit.Models
+namespace SourceGit.Models
 {
     public static class NumericSort
     {

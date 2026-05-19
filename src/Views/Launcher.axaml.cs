@@ -8,7 +8,7 @@ using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.VisualTree;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public partial class Launcher : ChromelessWindow
     {

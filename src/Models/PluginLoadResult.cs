@@ -1,6 +1,6 @@
 using System;
 
-namespace UGSGit.Models
+namespace SourceGit.Models
 {
     /// <summary>
     /// Represents the result of attempting to load a plugin DLL.

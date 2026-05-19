@@ -1,7 +1,7 @@
 using System;
 using System.Text.Json.Serialization;
 
-namespace UGSGit.Models;
+namespace SourceGit.Models;
 
 /// <summary>
 /// Build configuration enum — mirrors UGS's build config dropdown.

@@ -5,10 +5,10 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using UGSGit.Models;
-using UGSGit.ViewModels;
+using SourceGit.Models;
+using SourceGit.ViewModels;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public class RepositoryTreeNodeToggleButton : ToggleButton
     {
