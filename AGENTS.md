@@ -3,7 +3,19 @@
 ## Project
 
 Avalonia-based desktop Git GUI client with Unreal Engine workspace sync.  
-Fork of [SourceGit](https://github.com/sourcegit-scm/sourcegit) with the `UnrealSync` plugin.  
+Fork of [SourceGit](https://github.com/sourcegit-scm/sourcegit).
+
+### Divergence from upstream SourceGit
+
+| Aspect | SourceGit | UGSGit |
+|--------|-----------|--------|
+| Namespace | `SourceGit` | `UGSGit` |
+| Assembly name | `SourceGit` | `ugsgit` |
+| Plugin system | None | Adds full plugin system (manifests, external DLL loading, per-repo enable/disable) |
+| Tabs | Hard-coded: Repository + settings/dialogs | Extensible via `IRepositoryTab`; each plugin contributes tabs |
+| Startup args | Standard desktop | Adds `--history`, `--blame`, `--core-editor`, `--rebase-todo-editor`, `--rebase-message-editor`, `UGSGIT_LAUNCH_AS_ASKPASS` |
+| Built-in plugins | N/A | `HelloWorld` (reference) and `UnrealSync` (Unreal Engine workspace sync) |
+
 Namespace: `UGSGit`.
 
 ## Quick Start
@@ -49,11 +61,32 @@ Runtime IDs: `win-x64`, `win-arm64`, `linux-x64`, `linux-arm64`, `osx-x64`, `osx
 
 ## Plugin System
 
-- Two built-in manifest plugins (always available): `HelloWorldPluginManifest`, `UnrealSyncManifest`
-- External plugins: drop `.dll` files into `plugins/` directory beside the executable
-- Plugin discovery happens at startup in `App.TryLaunchAsNormal()`
-- Built-in manifests registered **before** external discovery (collision detection prevents overrides)
-- Plugin state store is `Preferences` itself (injected via `IPluginStateStore`)
+### Plugin lifecycle
+
+1. **Startup** (`App.TryLaunchAsNormal()`): built-in manifests (`HelloWorldPluginManifest`, `UnrealSyncManifest`) register into `PluginRegistry.Instance` via `RegisterBuiltInManifest()`
+2. **Discovery** (`PluginLoader.Discover()`): scans `<executable>/plugins/` for `.dll` files, loads each in an isolated `AssemblyLoadContext`, finds the first `IPluginManifest` implementation. Collision detection prevents a DLL from overriding a built-in
+3. **Per-repo activation** (`LauncherPage.RegisterBuiltInTabs()` → `PluginActivator.ActivateEnabledPlugins()`): when a repo tab opens, `PluginActivator` iterates all manifests and calls `manifest.CreateTabs(context)` for each enabled plugin. The resulting `IRepositoryTab` instances are appended to the tab bar after the main Repository tab
+4. **Runtime toggle**: plugin state changes (`PluginStateChanged` event on `PluginRegistry`) trigger `LauncherPage.OnPluginStateChanged`, which calls `PluginActivator.ActivatePlugin()` or `DeactivatePlugin()` to add/remove tabs live
+
+### Key types
+
+| Type | Role |
+|------|------|
+| `IPluginManifest` | Plugin entry point — a DLL must have one class implementing this |
+| `IPluginStateStore` | Persistence abstraction — implemented by `Preferences` |
+| `PluginRegistry` | Singleton: holds all manifests, manages enabled state (per-repo override → global default → manifest default) |
+| `PluginLoader` | Static: discovers external DLLs in `plugins/` dir |
+| `PluginActivator` | Static: creates/destroys `IRepositoryTab` instances from manifests |
+| `PluginContext` | Provides repo path, name, git dir, and `IsFirstLoadForRepository` flag |
+| `IRepositoryTab` | Each plugin tab contributes a `BodyContent` (main view) and `ToolbarContent` (status bar) |
+
+### Plugin resolution order (enabled state)
+
+Per-repo override → global default → `manifest.IsGlobalByDefault`
+
+- Per-repo overrides stored in `RepositoryUIStates.PerRepoPluginOverrides` (a dictionary serialized per repo)
+- Global defaults stored in `Preferences` via `IPluginStateStore`
+- UI for managing plugins: `PluginSettingsView` (global) and `PerRepoPluginDialog` (per-repo)
 
 ## Code Style (enforced via .editorconfig)
 
