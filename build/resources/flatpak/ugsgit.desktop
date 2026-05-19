@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=UGSGit
+Comment=Unreal Game Sync Git Client
+Exec=ugsgit.sh
+Icon=com.nievesj.UGSGit
+Terminal=false
+Type=Application
+Categories=Development
+MimeType=inode/directory;

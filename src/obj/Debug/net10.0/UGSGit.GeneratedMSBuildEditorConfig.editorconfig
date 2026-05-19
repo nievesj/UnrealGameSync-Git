@@ -1,0 +1,539 @@
+is_global = true
+build_property.AvaloniaNameGeneratorIsEnabled = true
+build_property.AvaloniaNameGeneratorBehavior = InitializeComponent
+build_property.AvaloniaNameGeneratorDefaultFieldModifier = internal
+build_property.AvaloniaNameGeneratorFilterByPath = *
+build_property.AvaloniaNameGeneratorFilterByNamespace = *
+build_property.AvaloniaNameGeneratorViewFileNamingStrategy = NamespaceAndClassName
+build_property.AvaloniaNameGeneratorAttachDevTools = true
+build_property.MvvmToolkitEnableINotifyPropertyChangingSupport = true
+build_property._MvvmToolkitIsUsingWindowsRuntimePack = false
+build_property.CsWinRTComponent = 
+build_property.CsWinRTAotOptimizerEnabled = 
+build_property.CsWinRTAotWarningLevel = 
+build_property.TargetFramework = net10.0
+build_property.TargetFrameworkIdentifier = .NETCoreApp
+build_property.TargetFrameworkVersion = v10.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows
+build_property.RootNamespace = UGSGit
+build_property.ProjectDir = D:\Projects\UnrealGameSync-Git\src\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.EffectiveAnalysisLevelStyle = 10.0
+build_property.EnableCodeStyleSeverity = 
+
+[D:/Projects/UnrealGameSync-Git/src/App.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Resources/Icons.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Resources/Locales/de_DE.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Resources/Locales/en_US.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Resources/Locales/es_ES.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Resources/Locales/fr_FR.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Resources/Locales/id_ID.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Resources/Locales/it_IT.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Resources/Locales/ja_JP.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Resources/Locales/ko_KR.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Resources/Locales/pt_BR.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Resources/Locales/ru_RU.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Resources/Locales/ta_IN.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Resources/Locales/uk_UA.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Resources/Locales/zh_CN.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Resources/Locales/zh_TW.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Resources/Styles.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Resources/Themes.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/About.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/AddRemote.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/AddSubmodule.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/AddToIgnore.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/AddWorktree.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/AIAssistant.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Alert.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Apply.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/ApplyStash.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Archive.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Askpass.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/AssumeUnchangedManager.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Blame.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/BlameCommandPalette.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/BranchSelector.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/BranchTree.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/CaptionButtons.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/ChangeCollectionView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/ChangeSubmoduleUrl.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/ChangeViewModeSwitcher.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Checkout.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/CheckoutAndFastForward.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/CheckoutBranchFromStash.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/CheckoutCommandPalette.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/CheckoutCommit.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/CherryPick.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Cleanup.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/ClearStashes.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Clone.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/CommitBaseInfo.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/CommitChanges.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/CommitDetail.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/CommitDetailStandalone.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/CommitMessageEditor.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/CommitMessageToolBox.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/CommitRelationTracking.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Compare.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/CompareCommandPalette.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/ConfigureCustomActionControls.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/ConfigureWorkspace.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Confirm.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/ConfirmEmptyCommit.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/ConfirmRestart.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Conflict.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/ConventionalCommitMessageBuilder.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/CreateBranch.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/CreateGroup.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/CreateTag.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/DealWithLocalChangesMethod.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/DeinitSubmodule.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/DeleteBranch.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/DeleteMultipleBranches.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/DeleteMultipleTags.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/DeleteRemote.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/DeleteRepositoryNode.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/DeleteSubmodule.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/DeleteTag.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/DiffView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/DirHistories.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Discard.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/DropStash.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/EditBranchDescription.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/EditRemote.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/EditRepositoryNode.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/ExecuteCustomAction.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/ExecuteCustomActionCommandPalette.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Fetch.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/FetchInto.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/FileHistories.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/FileHistoryCommandPalette.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/FilterModeInGraph.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/FilterModeSwitchButton.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/GitFlowFinish.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/GitFlowStart.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/GotoRevisionSelector.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Histories.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Hotkeys.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/ImageDiffView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Init.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/InitGitFlow.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/InteractiveRebase.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Launcher.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/LauncherPage.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/LauncherPagesCommandPalette.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/LauncherTabBar.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/LFSFetch.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/LFSLocks.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/LFSPrune.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/LFSPull.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/LFSPush.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/LFSTrackCustomPattern.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/LoadingIcon.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Merge.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/MergeCommandPalette.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/MergeConflictEditor.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/MergeMultiple.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/MoveRepositoryNode.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/MoveSubmodule.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/OpenFileCommandPalette.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/OpenLocalRepository.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/PerRepoPluginDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/PluginSettingsView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/PopupRunningStatus.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Preferences.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/PruneRemote.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/PruneWorktrees.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Pull.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Push.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/PushRevision.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/PushTag.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/PushToNewBranch.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Rebase.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/RemoteProtocolSwitcher.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/RemoveWorktree.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/RenameBranch.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Repository.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/RepositoryCommandPalette.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/RepositoryConfigure.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/RepositoryToolbar.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Reset.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/ResetWithoutCheckout.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Revert.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/RevisionCompare.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/RevisionCompareStandalone.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/RevisionFileContentViewer.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/RevisionFiles.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/RevisionFileTreeView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/ScanRepositories.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/SelfUpdate.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/SetSubmoduleBranch.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/SetUpstream.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/StashChanges.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/StashesPage.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Statistics.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/SubmoduleRevisionCompare.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/SubmodulesView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Tabs/HelloWorldBody.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Tabs/HelloWorldToolbar.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Tabs/UnrealSync/EngineNotFoundView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Tabs/UnrealSync/FullWorkspaceView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Tabs/UnrealSync/NotUeProjectView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Tabs/UnrealSync/SelectUProjectView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Tabs/UnrealSync/SettingsDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Tabs/UnrealSync/StatusPanelView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Tabs/UnrealSync/UnrealSyncTabView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/TagsView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/TextDiffView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/UpdateSubmodules.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/ViewLogs.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/Welcome.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/WelcomeToolbar.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[D:/Projects/UnrealGameSync-Git/src/Views/WorkingCopy.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
