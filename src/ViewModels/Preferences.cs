@@ -254,6 +254,12 @@ namespace UGSGit.ViewModels
             }
         }
 
+        public bool UseStashAndReapplyByDefault
+        {
+            get;
+            set;
+        } = false;
+
         public bool EnableAutoFetch
         {
             get;

@@ -18,6 +18,13 @@ namespace UGSGit.Views
         public DealWithLocalChangesMethod()
         {
             InitializeComponent();
+        }
+
+        protected override void OnPropertyChanged(AvaloniaPropertyChangedEventArgs change)
+        {
+            base.OnPropertyChanged(change);
+
+            if (change.Property == MethodProperty)
             UpdateRadioButtons();
         }
 

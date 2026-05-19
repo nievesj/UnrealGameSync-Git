@@ -125,6 +125,12 @@ namespace UGSGit.ViewModels
             set;
         } = true;
 
+        public bool NoVerify
+        {
+            get;
+            set;
+        }
+
         public AvaloniaList<Models.IssueTracker> IssueTrackers
         {
             get => _repo.IssueTrackers;
@@ -384,7 +390,7 @@ namespace UGSGit.ViewModels
             }
 
             var log = _repo.CreateLog("Interactive Rebase");
-            var succ = await new Commands.InteractiveRebase(_repo.FullPath, On.SHA, AutoStash)
+            var succ = await new Commands.InteractiveRebase(_repo.FullPath, On.SHA, AutoStash, NoVerify)
                 .Use(log)
                 .ExecAsync();
 

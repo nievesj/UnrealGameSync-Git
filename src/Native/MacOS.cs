@@ -94,7 +94,7 @@ namespace UGSGit.Native
         {
             return Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "SourceGit");
+                "UGSGit");
         }
 
         public string FindGitExecutable()

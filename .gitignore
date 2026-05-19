@@ -45,3 +45,5 @@ build.command
 src/Properties/launchSettings.json
 /.agent-work
 /.agentbridge
+*.DotSettings.user
+

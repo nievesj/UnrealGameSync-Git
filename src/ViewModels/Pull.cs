@@ -47,7 +47,7 @@ namespace UGSGit.ViewModels
         {
             get;
             set;
-        } = Models.DealWithLocalChanges.DoNothing;
+        }
 
         public bool UseRebase
         {
@@ -59,6 +59,10 @@ namespace UGSGit.ViewModels
         {
             _repo = repo;
             Current = repo.CurrentBranch;
+
+            DealWithLocalChanges = Preferences.Instance.UseStashAndReapplyByDefault ?
+                Models.DealWithLocalChanges.StashAndReapply :
+                Models.DealWithLocalChanges.DoNothing;
 
             if (specifiedRemoteBranch != null)
             {

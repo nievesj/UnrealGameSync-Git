@@ -65,8 +65,8 @@ namespace UGSGit.Native
             if (Directory.Exists(dataDir))
                 return dataDir;
 
-            // Migrate old data: ~/.config/SourceGit
-            var oldDataDir = Path.Combine(home, ".config", "SourceGit");
+            // Migrate old data: ~/.config/UGSGit
+            var oldDataDir = Path.Combine(home, ".config", "UGSGit");
             if (Directory.Exists(oldDataDir))
             {
                 try
