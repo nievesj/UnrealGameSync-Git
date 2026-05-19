@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using OpenAI.Chat;
 
-namespace SourceGit.AI
+namespace UGSGit.AI
 {
     public class Agent
     {

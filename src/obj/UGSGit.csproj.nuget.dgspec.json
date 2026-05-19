@@ -723,7 +723,7 @@
       }
     },
     "D:\\Projects\\UnrealGameSync-Git\\src\\UGSGit.csproj": {
-      "version": "2026.0.2",
+      "version": "2026.11.0",
       "restore": {
         "projectUniqueName": "D:\\Projects\\UnrealGameSync-Git\\src\\UGSGit.csproj",
         "projectName": "ugsgit",
@@ -775,7 +775,7 @@
           "dependencies": {
             "Avalonia": {
               "target": "Package",
-              "version": "[11.3.13, )"
+              "version": "[11.3.15, )"
             },
             "Avalonia.Controls.DataGrid": {
               "target": "Package",
@@ -783,19 +783,19 @@
             },
             "Avalonia.Desktop": {
               "target": "Package",
-              "version": "[11.3.13, )"
+              "version": "[11.3.15, )"
             },
             "Avalonia.Diagnostics": {
               "target": "Package",
-              "version": "[11.3.13, )"
+              "version": "[11.3.15, )"
             },
             "Avalonia.Fonts.Inter": {
               "target": "Package",
-              "version": "[11.3.13, )"
+              "version": "[11.3.15, )"
             },
             "Avalonia.Themes.Fluent": {
               "target": "Package",
-              "version": "[11.3.13, )"
+              "version": "[11.3.15, )"
             },
             "Azure.AI.OpenAI": {
               "target": "Package",

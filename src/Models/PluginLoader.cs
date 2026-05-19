@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
 
-namespace SourceGit.Models
+namespace UGSGit.Models
 {
     /// <summary>
     /// Scans the plugins/ directory for .NET DLLs, loads assemblies in an isolated

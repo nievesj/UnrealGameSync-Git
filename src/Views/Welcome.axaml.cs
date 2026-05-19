@@ -6,10 +6,10 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.VisualTree;
-using SourceGit.Models;
-using SourceGit.ViewModels;
+using UGSGit.Models;
+using UGSGit.ViewModels;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     public class RepositoryTreeNodeToggleButton : ToggleButton
     {

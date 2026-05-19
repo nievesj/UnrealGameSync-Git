@@ -5,7 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     public partial class OpenLocalRepository : UserControl
     {

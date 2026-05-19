@@ -9,7 +9,7 @@
     <Import Project="$(NuGetPackageRoot)openai\2.10.0\buildTransitive\netstandard2.0\OpenAI.targets" Condition="Exists('$(NuGetPackageRoot)openai\2.10.0\buildTransitive\netstandard2.0\OpenAI.targets')" />
     <Import Project="$(NuGetPackageRoot)harfbuzzsharp.nativeassets.webassembly\8.3.1.1\buildTransitive\netstandard1.0\HarfBuzzSharp.NativeAssets.WebAssembly.targets" Condition="Exists('$(NuGetPackageRoot)harfbuzzsharp.nativeassets.webassembly\8.3.1.1\buildTransitive\netstandard1.0\HarfBuzzSharp.NativeAssets.WebAssembly.targets')" />
     <Import Project="$(NuGetPackageRoot)avalonia.buildservices\11.3.2\buildTransitive\Avalonia.BuildServices.targets" Condition="Exists('$(NuGetPackageRoot)avalonia.buildservices\11.3.2\buildTransitive\Avalonia.BuildServices.targets')" />
-    <Import Project="$(NuGetPackageRoot)avalonia\11.3.13\buildTransitive\Avalonia.targets" Condition="Exists('$(NuGetPackageRoot)avalonia\11.3.13\buildTransitive\Avalonia.targets')" />
+    <Import Project="$(NuGetPackageRoot)avalonia\11.3.15\buildTransitive\Avalonia.targets" Condition="Exists('$(NuGetPackageRoot)avalonia\11.3.15\buildTransitive\Avalonia.targets')" />
     <Import Project="$(NuGetPackageRoot)communitytoolkit.mvvm\8.4.2\buildTransitive\CommunityToolkit.Mvvm.targets" Condition="Exists('$(NuGetPackageRoot)communitytoolkit.mvvm\8.4.2\buildTransitive\CommunityToolkit.Mvvm.targets')" />
   </ImportGroup>
 </Project>

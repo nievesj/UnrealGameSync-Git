@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using Avalonia.Media;
 
-namespace SourceGit.Models
+namespace UGSGit.Models
 {
     public class GitIgnoreFile
     {

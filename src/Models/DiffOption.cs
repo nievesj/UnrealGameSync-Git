@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace SourceGit.Models
+namespace UGSGit.Models
 {
     public class DiffOption
     {

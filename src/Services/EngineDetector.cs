@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 
-using SourceGit.Models;
+using UGSGit.Models;
 
-namespace SourceGit.Services;
+namespace UGSGit.Services;
 
 /// <summary>
 /// Multi-source engine detection following the same algorithm as Unreal Engine's

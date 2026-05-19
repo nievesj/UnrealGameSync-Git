@@ -11,7 +11,7 @@ using BitMiracle.LibTiff.Classic;
 using Pfim;
 using StbImageSharp;
 
-namespace SourceGit.ViewModels
+namespace UGSGit.ViewModels
 {
     public class ImageSource
     {

@@ -3,7 +3,7 @@ using System.IO;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace SourceGit.ViewModels
+namespace UGSGit.ViewModels
 {
     public class RevisionFileTreeNode : ObservableObject
     {

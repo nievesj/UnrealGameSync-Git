@@ -10,7 +10,7 @@ using Avalonia.Threading;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace SourceGit.ViewModels
+namespace UGSGit.ViewModels
 {
     public record InteractiveRebasePrefill(string SHA, Models.InteractiveRebaseAction Action);
     public record InteractiveRebaseReorderItem(string Key, InteractiveRebaseItem Item);

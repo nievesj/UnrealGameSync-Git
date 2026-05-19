@@ -2,14 +2,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:m="using:SourceGit.Models"
-             xmlns:v="using:SourceGit.Views"
-             xmlns:vm="using:SourceGit.ViewModels"
-             xmlns:tabs="using:SourceGit.ViewModels.Tabs"
-             xmlns:vtabs="using:SourceGit.Views.Tabs"
-             xmlns:c="using:SourceGit.Converters"
+             xmlns:m="using:UGSGit.Models"
+             xmlns:v="using:UGSGit.Views"
+             xmlns:vm="using:UGSGit.ViewModels"
+             xmlns:tabs="using:UGSGit.ViewModels.Tabs"
+             xmlns:vtabs="using:UGSGit.Views.Tabs"
+             xmlns:c="using:UGSGit.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="SourceGit.Views.LauncherPage"
+             x:Class="UGSGit.Views.LauncherPage"
              x:DataType="vm:LauncherPage">
   <Grid RowDefinitions="Auto,36,*">
     <!-- Project-Level Tab Bar (only visible when more than 1 tab) -->

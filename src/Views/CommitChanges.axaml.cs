@@ -5,7 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.VisualTree;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     public partial class CommitChanges : UserControl
     {

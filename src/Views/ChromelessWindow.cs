@@ -4,7 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     public class ChromelessWindow : Window
     {

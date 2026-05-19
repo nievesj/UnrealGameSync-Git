@@ -5,7 +5,7 @@ using Avalonia.Data.Converters;
 using Avalonia.Input;
 using Avalonia.Styling;
 
-namespace SourceGit.Converters
+namespace UGSGit.Converters
 {
     public static class StringConverters
     {

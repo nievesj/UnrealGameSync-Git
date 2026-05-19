@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace SourceGit.ViewModels
+namespace UGSGit.ViewModels
 {
     public partial class InitGitFlow : Popup
     {

@@ -14,94 +14,668 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7789da66-4dab-4489-a838-2d612b851791" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/Commands/QueryPickableCommits.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Views/CommitDetailStandalone.axaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Views/CommitDetailStandalone.axaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Views/RevisionCompareStandalone.axaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Views/RevisionCompareStandalone.axaml.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TRANSLATION.md" beforeDir="false" afterPath="$PROJECT_DIR$/TRANSLATION.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/VERSION" beforeDir="false" afterPath="$PROJECT_DIR$/VERSION" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/AI/Agent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/AI/Agent.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/AI/ChatTools.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/AI/ChatTools.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/AI/Service.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/AI/Service.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.Commands.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.Commands.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.Extensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.Extensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.JsonCodeGen.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.JsonCodeGen.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.axaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Add.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Add.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Apply.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Apply.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Archive.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Archive.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/AssumeUnchanged.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/AssumeUnchanged.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Bisect.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Bisect.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Blame.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Blame.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Branch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Branch.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Checkout.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Checkout.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/CherryPick.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/CherryPick.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Clean.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Clean.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Clone.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Clone.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Command.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Command.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Commit.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Commit.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/CompareRevisions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/CompareRevisions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Config.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Config.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/CountLocalChanges.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/CountLocalChanges.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Diff.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Diff.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/DiffTool.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/DiffTool.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Discard.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Discard.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Fetch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Fetch.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/FormatPatch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/FormatPatch.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/GC.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/GC.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/GetFileChangeForAI.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/GetFileChangeForAI.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/GitFlow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/GitFlow.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Init.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Init.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Commands/InteractiveRebase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/InteractiveRebase.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/IsAncestor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/IsAncestor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/IsBareRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/IsBareRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/IsBinary.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/IsBinary.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/IsCommitSHA.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/IsCommitSHA.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/IsConflictResolved.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/IsConflictResolved.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/IsLFSFiltered.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/IsLFSFiltered.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/IssueTracker.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/IssueTracker.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/LFS.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/LFS.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Merge.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Merge.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/MergeTool.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/MergeTool.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Move.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Move.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Pull.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Pull.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Push.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Push.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryAssumeUnchangedFiles.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryAssumeUnchangedFiles.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryBranches.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryBranches.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryCommitChildren.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryCommitChildren.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryCommitFullMessage.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryCommitFullMessage.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryCommitSignInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryCommitSignInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryCommits.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryCommits.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryCommitsForInteractiveRebase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryCommitsForInteractiveRebase.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryCurrentBranch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryCurrentBranch.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryCurrentBranchCommitHashes.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryCurrentBranchCommitHashes.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryFileContent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryFileContent.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryFileHistory.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryFileHistory.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryFileSize.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryFileSize.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryGitCommonDir.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryGitCommonDir.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryGitDir.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryGitDir.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryLocalChanges.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryLocalChanges.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryPickableCommits.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryPickableCommits.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryRefsContainsCommit.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryRefsContainsCommit.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryRemotes.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryRemotes.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryRepositoryRootPath.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryRepositoryRootPath.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryRepositoryStatus.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryRepositoryStatus.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryRevisionByRefName.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryRevisionByRefName.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryRevisionFileNames.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryRevisionFileNames.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryRevisionObjects.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryRevisionObjects.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QuerySingleCommit.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QuerySingleCommit.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryStagedChangesWithAmend.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryStagedChangesWithAmend.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryStagedFileBlobGuid.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryStagedFileBlobGuid.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryStashes.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryStashes.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QuerySubmodules.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QuerySubmodules.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryTags.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryTags.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryTrackStatus.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryTrackStatus.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/QueryUpdatableSubmodules.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/QueryUpdatableSubmodules.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Commands/Rebase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Rebase.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Remote.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Remote.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Remove.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Remove.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Reset.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Reset.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Restore.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Restore.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Revert.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Revert.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/SaveChangesAsPatch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/SaveChangesAsPatch.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/SaveRevisionFile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/SaveRevisionFile.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Stash.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Stash.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Statistics.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Statistics.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Submodule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Submodule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Tag.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Tag.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/UpdateIndexInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/UpdateIndexInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Commands/Worktree.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Commands/Worktree.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Converters/BoolConverters.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Converters/BoolConverters.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Converters/DirtyStateConverters.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Converters/DirtyStateConverters.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Converters/DoubleConverters.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Converters/DoubleConverters.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Converters/FilterModeConverters.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Converters/FilterModeConverters.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Converters/IntConverters.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Converters/IntConverters.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Converters/InteractiveRebaseActionConverters.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Converters/InteractiveRebaseActionConverters.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Converters/ListConverters.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Converters/ListConverters.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Converters/LongConverters.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Converters/LongConverters.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Converters/ObjectConverters.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Converters/ObjectConverters.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Converters/PathConverters.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Converters/PathConverters.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Converters/StringConverters.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Converters/StringConverters.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/ApplyWhiteSpaceMode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/ApplyWhiteSpaceMode.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/AvatarManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/AvatarManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/Bisect.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Bisect.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/Blame.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Blame.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/Bookmarks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Bookmarks.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/Branch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Branch.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/BuildModes.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/BuildModes.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/BuildVersion.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/BuildVersion.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/CRLFMode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/CRLFMode.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/Change.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Change.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/CleanMode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/CleanMode.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Models/Commit.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Commit.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Models/CommitGraph.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/CommitGraph.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/CommitLink.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/CommitLink.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/CommitSignInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/CommitSignInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/CommitTemplate.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/CommitTemplate.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/ConfirmButtonType.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/ConfirmButtonType.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/ConfirmEmptyCommitResult.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/ConfirmEmptyCommitResult.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/Conflict.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Conflict.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/ConventionalCommitType.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/ConventionalCommitType.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/Count.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Count.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/CustomAction.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/CustomAction.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/DateTimeFormat.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/DateTimeFormat.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/DealWithChangesAfterStashing.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/DealWithChangesAfterStashing.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/DealWithLocalChanges.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/DealWithLocalChanges.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/Decorator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Decorator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/DiffOption.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/DiffOption.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/DiffResult.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/DiffResult.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/DirtyState.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/DirtyState.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/EmptyTreeHash.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/EmptyTreeHash.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/EngineInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/EngineInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/ExternalMerger.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/ExternalMerger.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/ExternalTool.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/ExternalTool.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/FileVersion.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/FileVersion.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/GPGFormat.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/GPGFormat.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/GitFlow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/GitFlow.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/GitIgnoreFile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/GitIgnoreFile.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/GitVersions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/GitVersions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/HTTPSValidator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/HTTPSValidator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/HistoryFilter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/HistoryFilter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/HistoryShowFlags.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/HistoryShowFlags.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/ICommandLog.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/ICommandLog.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/IPluginManifest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/IPluginManifest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/IPluginStateStore.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/IPluginStateStore.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/IRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/IRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/IRepositoryTab.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/IRepositoryTab.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/ImageDecoder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/ImageDecoder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/InlineElement.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/InlineElement.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/InlineElementCollector.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/InlineElementCollector.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/InteractiveRebase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/InteractiveRebase.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/IpcChannel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/IpcChannel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/IssueTracker.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/IssueTracker.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/LFSLock.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/LFSLock.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/LFSObject.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/LFSObject.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/Locales.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Locales.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/MergeMode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/MergeMode.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/MergeStrategy.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/MergeStrategy.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/Notification.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Notification.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/Null.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Null.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/NumericSort.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/NumericSort.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/Object.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Object.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/PluginContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/PluginContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/PluginLoadResult.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/PluginLoadResult.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/PluginLoader.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/PluginLoader.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/PluginRegistry.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/PluginRegistry.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/PublishManifest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/PublishManifest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/Remote.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Remote.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/RepositorySettings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/RepositorySettings.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/RepositoryStatus.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/RepositoryStatus.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Models/RepositoryUIStates.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/RepositoryUIStates.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Resources/Icons.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Resources/Icons.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Resources/Locales/de_DE.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Resources/Locales/de_DE.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Resources/Locales/en_US.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Resources/Locales/en_US.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Resources/Locales/es_ES.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Resources/Locales/es_ES.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Resources/Locales/fr_FR.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Resources/Locales/fr_FR.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Resources/Locales/id_ID.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Resources/Locales/id_ID.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Resources/Locales/it_IT.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Resources/Locales/it_IT.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Resources/Locales/ja_JP.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Resources/Locales/ja_JP.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Resources/Locales/ko_KR.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Resources/Locales/ko_KR.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Resources/Locales/pt_BR.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Resources/Locales/pt_BR.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Resources/Locales/ru_RU.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Resources/Locales/ru_RU.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Resources/Locales/ta_IN.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Resources/Locales/ta_IN.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Resources/Locales/uk_UA.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Resources/Locales/uk_UA.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Resources/Locales/zh_CN.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Resources/Locales/zh_CN.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Resources/Locales/zh_TW.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Resources/Locales/zh_TW.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/ResetMode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/ResetMode.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/RevisionFile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/RevisionFile.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/ScanDir.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/ScanDir.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/SelfUpdate.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/SelfUpdate.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/ShellOrTerminal.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/ShellOrTerminal.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/StageResult.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/StageResult.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/Stash.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Stash.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/Statistics.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Statistics.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/Submodule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Submodule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/Tag.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Tag.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/TemplateEngine.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/TemplateEngine.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/TextInlineChange.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/TextInlineChange.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/TextMateHelper.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/TextMateHelper.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/ThemeOverrides.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/ThemeOverrides.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/UProjectMeta.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/UProjectMeta.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/UatCommandPreset.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/UatCommandPreset.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/UgsBuildConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/UgsBuildConfig.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/UgsBuildStep.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/UgsBuildStep.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/UgsConfig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/UgsConfig.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/UgsPackageProfile.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/UgsPackageProfile.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/UgsWorkspaceState.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/UgsWorkspaceState.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/UnrealSyncJsonContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/UnrealSyncJsonContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/User.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/User.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/Watcher.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Watcher.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Models/Worktree.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Models/Worktree.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Native/Linux.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Native/Linux.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Native/MacOS.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Native/MacOS.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Native/OS.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Native/OS.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Native/Windows.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Native/Windows.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Resources/Styles.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Resources/Styles.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SourceGit.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/src/SourceGit.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Resources/Themes.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Resources/Themes.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Services/BuildGraphService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/BuildGraphService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Services/BuildService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/BuildService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Services/ConfigService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/ConfigService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Services/EditorLauncher.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/EditorLauncher.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Services/EngineDetector.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/EngineDetector.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Services/EngineInfoService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/EngineInfoService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Services/GitSyncService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/GitSyncService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Services/ProcessHelper.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/ProcessHelper.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Services/PublishService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Services/PublishService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/AIAssistant.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/AIAssistant.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/AddRemote.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/AddRemote.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/AddSubmodule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/AddSubmodule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/AddToIgnore.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/AddToIgnore.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/AddWorktree.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/AddWorktree.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/Apply.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Apply.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/ApplyStash.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/ApplyStash.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/Archive.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Archive.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/AssumeUnchangedManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/AssumeUnchangedManager.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/Blame.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Blame.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/BlameCommandPalette.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/BlameCommandPalette.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/BlockNavigation.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/BlockNavigation.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/BranchTreeNode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/BranchTreeNode.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/ChangeCollection.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/ChangeCollection.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/ChangeSubmoduleUrl.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/ChangeSubmoduleUrl.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/ChangeTreeNode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/ChangeTreeNode.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ViewModels/Checkout.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Checkout.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ViewModels/CheckoutAndFastForward.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/CheckoutAndFastForward.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/CheckoutBranchFromStash.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/CheckoutBranchFromStash.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/CheckoutCommandPalette.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/CheckoutCommandPalette.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ViewModels/CheckoutCommit.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/CheckoutCommit.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ViewModels/CherryPick.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/CherryPick.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/Cleanup.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Cleanup.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/ClearStashes.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/ClearStashes.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/Clone.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Clone.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/CommandLog.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/CommandLog.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ViewModels/CommitDetail.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/CommitDetail.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ViewModels/Compare.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Compare.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/CompareCommandPalette.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/CompareCommandPalette.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/ConfigureCustomActionControls.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/ConfigureCustomActionControls.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/ConfigureWorkspace.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/ConfigureWorkspace.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/Conflict.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Conflict.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/ConventionalCommitMessageBuilder.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/ConventionalCommitMessageBuilder.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/CreateBranch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/CreateBranch.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/CreateGroup.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/CreateGroup.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/CreateTag.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/CreateTag.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/CustomActionContextMenuLabel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/CustomActionContextMenuLabel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/DeinitSubmodule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/DeinitSubmodule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/DeleteBranch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/DeleteBranch.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/DeleteMultipleBranches.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/DeleteMultipleBranches.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/DeleteMultipleTags.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/DeleteMultipleTags.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/DeleteRemote.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/DeleteRemote.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/DeleteRepositoryNode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/DeleteRepositoryNode.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/DeleteSubmodule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/DeleteSubmodule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/DeleteTag.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/DeleteTag.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/DiffContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/DiffContext.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ViewModels/DirHistories.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/DirHistories.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/Discard.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Discard.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/DropStash.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/DropStash.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/EditBranchDescription.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/EditBranchDescription.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/EditRemote.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/EditRemote.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/EditRepositoryNode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/EditRepositoryNode.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ViewModels/ExecuteCustomAction.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/ExecuteCustomAction.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/ExecuteCustomActionCommandPalette.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/ExecuteCustomActionCommandPalette.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/Fetch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Fetch.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/FetchInto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/FetchInto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/FileHistories.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/FileHistories.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/FileHistoryCommandPalette.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/FileHistoryCommandPalette.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/FilterModeInGraph.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/FilterModeInGraph.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/GitFlowFinish.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/GitFlowFinish.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/GitFlowStart.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/GitFlowStart.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ViewModels/Histories.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Histories.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/ICommandPalette.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/ICommandPalette.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ViewModels/ImageSource.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/ImageSource.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ViewModels/InProgressContexts.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/InProgressContexts.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/Init.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Init.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/InitGitFlow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/InitGitFlow.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ViewModels/InteractiveRebase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/InteractiveRebase.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/LFSFetch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/LFSFetch.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/LFSImageDiff.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/LFSImageDiff.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/LFSLocks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/LFSLocks.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/LFSPrune.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/LFSPrune.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/LFSPull.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/LFSPull.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/LFSPush.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/LFSPush.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/LFSTrackCustomPattern.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/LFSTrackCustomPattern.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/Launcher.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Launcher.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/LauncherPage.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/LauncherPage.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/LauncherPagesCommandPalette.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/LauncherPagesCommandPalette.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/LayoutInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/LayoutInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/Merge.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Merge.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/MergeCommandPalette.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/MergeCommandPalette.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/MergeConflictEditor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/MergeConflictEditor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/MergeMultiple.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/MergeMultiple.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/MoveRepositoryNode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/MoveRepositoryNode.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/MoveSubmodule.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/MoveSubmodule.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/OpenFileCommandPalette.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/OpenFileCommandPalette.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/OpenLocalRepository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/OpenLocalRepository.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/PerRepoPluginDialogViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/PerRepoPluginDialogViewModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/PluginActivator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/PluginActivator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/PluginOverrideRow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/PluginOverrideRow.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/PluginRow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/PluginRow.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/PluginSettingsViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/PluginSettingsViewModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/Popup.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Popup.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ViewModels/Preferences.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Preferences.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/PruneRemote.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/PruneRemote.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/PruneWorktrees.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/PruneWorktrees.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ViewModels/Pull.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Pull.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/Push.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Push.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/PushRevision.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/PushRevision.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/PushTag.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/PushTag.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ViewModels/Rebase.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Rebase.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/RemoveWorktree.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/RemoveWorktree.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/RenameBranch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/RenameBranch.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ViewModels/Repository.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Repository.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ViewModels/RepositoryCommandPalette.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/RepositoryCommandPalette.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/RepositoryConfigure.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/RepositoryConfigure.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/RepositoryNode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/RepositoryNode.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/RepositoryTabDescriptor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/RepositoryTabDescriptor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/Reset.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Reset.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/ResetWithoutCheckout.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/ResetWithoutCheckout.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/Revert.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Revert.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ViewModels/RevisionCompare.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/RevisionCompare.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/RevisionFileTreeNode.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/RevisionFileTreeNode.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/RevisionLFSImage.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/RevisionLFSImage.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/ScanRepositories.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/ScanRepositories.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/SearchCommitContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/SearchCommitContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/SelfUpdate.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/SelfUpdate.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/SetSubmoduleBranch.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/SetSubmoduleBranch.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/SetUpstream.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/SetUpstream.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/StashChanges.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/StashChanges.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/StashesPage.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/StashesPage.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/Statistics.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Statistics.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/SubmoduleCollection.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/SubmoduleCollection.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/SubmoduleRevisionCompare.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/SubmoduleRevisionCompare.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/TagCollection.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/TagCollection.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/TextDiffContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/TextDiffContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/TextLineRange.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/TextLineRange.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/UpdateSubmodules.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/UpdateSubmodules.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/ViewLogs.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/ViewLogs.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/Welcome.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Welcome.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/WorkingCopy.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/WorkingCopy.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/Workspace.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Workspace.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ViewModels/Worktree.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/ViewModels/Worktree.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/AIAssistant.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/AIAssistant.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/AIAssistant.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/AIAssistant.axaml.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/About.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/About.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/About.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/About.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/AddRemote.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/AddRemote.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/AddRemote.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/AddRemote.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/AddSubmodule.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/AddSubmodule.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/AddSubmodule.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/AddSubmodule.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/AddToIgnore.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/AddToIgnore.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/AddToIgnore.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/AddToIgnore.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/AddWorktree.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/AddWorktree.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/AddWorktree.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/AddWorktree.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Alert.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Alert.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Alert.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Alert.axaml.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/Apply.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Apply.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Apply.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Apply.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ApplyStash.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ApplyStash.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ApplyStash.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ApplyStash.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Archive.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Archive.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Archive.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Archive.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Askpass.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Askpass.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Askpass.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Askpass.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/AssumeUnchangedManager.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/AssumeUnchangedManager.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/AssumeUnchangedManager.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/AssumeUnchangedManager.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Avatar.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Avatar.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/BisectStateIndicator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/BisectStateIndicator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Blame.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Blame.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Blame.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Blame.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/BlameCommandPalette.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/BlameCommandPalette.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/BlameCommandPalette.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/BlameCommandPalette.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/BranchOrTagNameTextBox.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/BranchOrTagNameTextBox.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/BranchSelector.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/BranchSelector.axaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/BranchSelector.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/BranchSelector.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/BranchTree.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/BranchTree.axaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/BranchTree.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/BranchTree.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CaptionButtons.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CaptionButtons.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CaptionButtons.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CaptionButtons.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ChangeCollectionView.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ChangeCollectionView.axaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/ChangeCollectionView.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ChangeCollectionView.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ChangeStatusIcon.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ChangeStatusIcon.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ChangeSubmoduleUrl.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ChangeSubmoduleUrl.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ChangeSubmoduleUrl.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ChangeSubmoduleUrl.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ChangeViewModeSwitcher.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ChangeViewModeSwitcher.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ChangeViewModeSwitcher.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ChangeViewModeSwitcher.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Checkout.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Checkout.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Checkout.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Checkout.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CheckoutAndFastForward.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CheckoutAndFastForward.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CheckoutAndFastForward.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CheckoutAndFastForward.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CheckoutBranchFromStash.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CheckoutBranchFromStash.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CheckoutBranchFromStash.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CheckoutBranchFromStash.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CheckoutCommandPalette.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CheckoutCommandPalette.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CheckoutCommandPalette.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CheckoutCommandPalette.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CheckoutCommit.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CheckoutCommit.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CheckoutCommit.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CheckoutCommit.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CherryPick.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CherryPick.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CherryPick.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CherryPick.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ChromelessWindow.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ChromelessWindow.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Cleanup.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Cleanup.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Cleanup.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Cleanup.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ClearStashes.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ClearStashes.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ClearStashes.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ClearStashes.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Clone.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Clone.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Clone.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Clone.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ColorPicker.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ColorPicker.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CommandLogContentPresenter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CommandLogContentPresenter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CommandLogTime.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CommandLogTime.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CommandPaletteDataTemplates.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CommandPaletteDataTemplates.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/CommitBaseInfo.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CommitBaseInfo.axaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/CommitBaseInfo.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CommitBaseInfo.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CommitChanges.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CommitChanges.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CommitChanges.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CommitChanges.axaml.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/CommitDetail.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CommitDetail.axaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/CommitDetail.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CommitDetail.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CommitDetailStandalone.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CommitDetailStandalone.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CommitDetailStandalone.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CommitDetailStandalone.axaml.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/CommitGraph.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CommitGraph.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CommitMessageEditor.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CommitMessageEditor.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CommitMessageEditor.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CommitMessageEditor.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CommitMessagePresenter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CommitMessagePresenter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CommitMessageToolBox.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CommitMessageToolBox.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CommitMessageToolBox.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CommitMessageToolBox.axaml.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/CommitRefsPresenter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CommitRefsPresenter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CommitRelationTracking.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CommitRelationTracking.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CommitRelationTracking.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CommitRelationTracking.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CommitStatusIndicator.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CommitStatusIndicator.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CommitSubjectPresenter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CommitSubjectPresenter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CommitTimeTextBlock.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CommitTimeTextBlock.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/Compare.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Compare.axaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/Compare.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Compare.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CompareCommandPalette.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CompareCommandPalette.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CompareCommandPalette.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CompareCommandPalette.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ConfigureCustomActionControls.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ConfigureCustomActionControls.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ConfigureCustomActionControls.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ConfigureCustomActionControls.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ConfigureWorkspace.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ConfigureWorkspace.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ConfigureWorkspace.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ConfigureWorkspace.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Confirm.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Confirm.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Confirm.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Confirm.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ConfirmEmptyCommit.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ConfirmEmptyCommit.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ConfirmEmptyCommit.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ConfirmEmptyCommit.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ConfirmRestart.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ConfirmRestart.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ConfirmRestart.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ConfirmRestart.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Conflict.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Conflict.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Conflict.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Conflict.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ControlExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ControlExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ConventionalCommitMessageBuilder.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ConventionalCommitMessageBuilder.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ConventionalCommitMessageBuilder.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ConventionalCommitMessageBuilder.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CreateBranch.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CreateBranch.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CreateBranch.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CreateBranch.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CreateGroup.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CreateGroup.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CreateGroup.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CreateGroup.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CreateTag.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CreateTag.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/CreateTag.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/CreateTag.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/DateTimePresenter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DateTimePresenter.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/DealWithLocalChangesMethod.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DealWithLocalChangesMethod.axaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/DealWithLocalChangesMethod.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DealWithLocalChangesMethod.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/DeinitSubmodule.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DeinitSubmodule.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/DeinitSubmodule.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DeinitSubmodule.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/DeleteBranch.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DeleteBranch.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/DeleteBranch.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DeleteBranch.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/DeleteMultipleBranches.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DeleteMultipleBranches.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/DeleteMultipleBranches.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DeleteMultipleBranches.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/DeleteMultipleTags.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DeleteMultipleTags.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/DeleteMultipleTags.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DeleteMultipleTags.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/DeleteRemote.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DeleteRemote.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/DeleteRemote.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DeleteRemote.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/DeleteRepositoryNode.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DeleteRepositoryNode.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/DeleteRepositoryNode.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DeleteRepositoryNode.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/DeleteSubmodule.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DeleteSubmodule.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/DeleteSubmodule.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DeleteSubmodule.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/DeleteTag.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DeleteTag.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/DeleteTag.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DeleteTag.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/DiffView.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DiffView.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/DiffView.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DiffView.axaml.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/DirHistories.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DirHistories.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/DirHistories.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DirHistories.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Discard.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Discard.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Discard.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Discard.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/DropStash.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DropStash.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/DropStash.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/DropStash.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/EditBranchDescription.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/EditBranchDescription.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/EditBranchDescription.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/EditBranchDescription.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/EditRemote.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/EditRemote.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/EditRemote.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/EditRemote.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/EditRepositoryNode.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/EditRepositoryNode.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/EditRepositoryNode.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/EditRepositoryNode.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ExecuteCustomAction.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ExecuteCustomAction.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ExecuteCustomAction.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ExecuteCustomAction.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ExecuteCustomActionCommandPalette.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ExecuteCustomActionCommandPalette.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ExecuteCustomActionCommandPalette.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ExecuteCustomActionCommandPalette.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Fetch.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Fetch.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Fetch.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Fetch.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/FetchInto.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/FetchInto.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/FetchInto.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/FetchInto.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/FileHistories.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/FileHistories.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/FileHistories.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/FileHistories.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/FileHistoryCommandPalette.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/FileHistoryCommandPalette.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/FileHistoryCommandPalette.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/FileHistoryCommandPalette.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/FilterModeInGraph.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/FilterModeInGraph.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/FilterModeInGraph.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/FilterModeInGraph.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/FilterModeSwitchButton.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/FilterModeSwitchButton.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/FilterModeSwitchButton.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/FilterModeSwitchButton.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/GitFlowFinish.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/GitFlowFinish.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/GitFlowFinish.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/GitFlowFinish.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/GitFlowStart.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/GitFlowStart.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/GitFlowStart.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/GitFlowStart.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/GotoRevisionSelector.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/GotoRevisionSelector.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/GotoRevisionSelector.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/GotoRevisionSelector.axaml.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/Histories.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Histories.axaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/Histories.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Histories.axaml.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/Hotkeys.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Hotkeys.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Hotkeys.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Hotkeys.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ImageContainer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ImageContainer.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ImageDiffView.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ImageDiffView.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ImageDiffView.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ImageDiffView.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Init.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Init.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Init.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Init.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/InitGitFlow.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/InitGitFlow.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/InitGitFlow.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/InitGitFlow.axaml.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/InteractiveRebase.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/InteractiveRebase.axaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/InteractiveRebase.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/InteractiveRebase.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/LFSFetch.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/LFSFetch.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/LFSFetch.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/LFSFetch.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/LFSLocks.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/LFSLocks.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/LFSLocks.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/LFSLocks.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/LFSPrune.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/LFSPrune.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/LFSPrune.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/LFSPrune.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/LFSPull.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/LFSPull.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/LFSPull.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/LFSPull.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/LFSPush.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/LFSPush.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/LFSPush.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/LFSPush.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/LFSTrackCustomPattern.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/LFSTrackCustomPattern.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/LFSTrackCustomPattern.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/LFSTrackCustomPattern.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Launcher.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Launcher.axaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/Launcher.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Launcher.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/LauncherPage.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/LauncherPage.axaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/LauncherPage.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/LauncherPage.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/LauncherPagesCommandPalette.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/LauncherPagesCommandPalette.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/LauncherPagesCommandPalette.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/LauncherPagesCommandPalette.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/LauncherTabBar.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/LauncherTabBar.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/LauncherTabBar.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/LauncherTabBar.axaml.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/ListBoxEx.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ListBoxEx.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/LoadingIcon.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/LoadingIcon.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/LoadingIcon.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/LoadingIcon.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Merge.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Merge.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Merge.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Merge.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/MergeCommandPalette.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/MergeCommandPalette.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/MergeCommandPalette.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/MergeCommandPalette.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/MergeConflictEditor.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/MergeConflictEditor.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/MergeConflictEditor.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/MergeConflictEditor.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/MergeMultiple.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/MergeMultiple.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/MergeMultiple.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/MergeMultiple.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/MoveRepositoryNode.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/MoveRepositoryNode.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/MoveRepositoryNode.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/MoveRepositoryNode.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/MoveSubmodule.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/MoveSubmodule.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/MoveSubmodule.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/MoveSubmodule.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/NameHighlightedTextBlock.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/NameHighlightedTextBlock.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/OpenFileCommandPalette.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/OpenFileCommandPalette.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/OpenFileCommandPalette.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/OpenFileCommandPalette.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/OpenLocalRepository.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/OpenLocalRepository.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/OpenLocalRepository.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/OpenLocalRepository.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/PerRepoPluginDialog.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/PerRepoPluginDialog.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/PerRepoPluginDialog.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/PerRepoPluginDialog.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/PluginSettingsView.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/PluginSettingsView.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/PluginSettingsView.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/PluginSettingsView.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/PopupDataTemplates.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/PopupDataTemplates.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/PopupRunningStatus.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/PopupRunningStatus.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/PopupRunningStatus.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/PopupRunningStatus.axaml.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/Preferences.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Preferences.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Preferences.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Preferences.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/PruneRemote.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/PruneRemote.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/PruneRemote.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/PruneRemote.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/PruneWorktrees.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/PruneWorktrees.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/PruneWorktrees.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/PruneWorktrees.axaml.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/Pull.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Pull.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Pull.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Pull.axaml.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/Push.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Push.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Push.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Push.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/PushRevision.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/PushRevision.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/PushRevision.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/PushRevision.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/PushTag.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/PushTag.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/PushTag.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/PushTag.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/PushToNewBranch.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/PushToNewBranch.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/PushToNewBranch.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/PushToNewBranch.axaml.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/Rebase.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Rebase.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Rebase.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Rebase.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/RemoteProtocolSwitcher.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RemoteProtocolSwitcher.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/RemoteProtocolSwitcher.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RemoteProtocolSwitcher.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/RemoveWorktree.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RemoveWorktree.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/RemoveWorktree.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RemoveWorktree.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/RenameBranch.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RenameBranch.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/RenameBranch.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RenameBranch.axaml.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/Repository.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Repository.axaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/Repository.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Repository.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/RepositoryCommandPalette.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RepositoryCommandPalette.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/RepositoryCommandPalette.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RepositoryCommandPalette.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/RepositoryCommandPaletteIcon.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RepositoryCommandPaletteIcon.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/RepositoryCommandPaletteTextBox.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RepositoryCommandPaletteTextBox.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/RepositoryConfigure.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RepositoryConfigure.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/RepositoryConfigure.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RepositoryConfigure.axaml.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/RepositoryToolbar.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RepositoryToolbar.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/RepositoryToolbar.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RepositoryToolbar.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Reset.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Reset.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Reset.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Reset.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ResetWithoutCheckout.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ResetWithoutCheckout.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ResetWithoutCheckout.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ResetWithoutCheckout.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Revert.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Revert.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Revert.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Revert.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/RevisionCompare.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RevisionCompare.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/RevisionCompare.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RevisionCompare.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/RevisionCompareStandalone.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RevisionCompareStandalone.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/RevisionCompareStandalone.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RevisionCompareStandalone.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/RevisionFileContentViewer.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RevisionFileContentViewer.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/RevisionFileContentViewer.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RevisionFileContentViewer.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/RevisionFileTreeView.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RevisionFileTreeView.axaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/RevisionFileTreeView.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RevisionFileTreeView.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/RevisionFiles.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RevisionFiles.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/RevisionFiles.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/RevisionFiles.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ScanRepositories.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ScanRepositories.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ScanRepositories.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ScanRepositories.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/SelfUpdate.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/SelfUpdate.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/SelfUpdate.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/SelfUpdate.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/SetSubmoduleBranch.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/SetSubmoduleBranch.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/SetSubmoduleBranch.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/SetSubmoduleBranch.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/SetUpstream.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/SetUpstream.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/SetUpstream.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/SetUpstream.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/StashChanges.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/StashChanges.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/StashChanges.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/StashChanges.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/StashSubjectPresenter.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/StashSubjectPresenter.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/StashesPage.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/StashesPage.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/StashesPage.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/StashesPage.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Statistics.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Statistics.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/Statistics.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Statistics.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/StealHotKey.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/StealHotKey.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/SubmoduleRevisionCompare.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/SubmoduleRevisionCompare.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/SubmoduleRevisionCompare.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/SubmoduleRevisionCompare.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/SubmodulesView.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/SubmodulesView.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/SubmodulesView.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/SubmodulesView.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/TagsView.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/TagsView.axaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/TagsView.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/TagsView.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/TextDiffView.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/TextDiffView.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/TextDiffView.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/TextDiffView.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/UpdateSubmodules.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/UpdateSubmodules.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/UpdateSubmodules.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/UpdateSubmodules.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ViewLogs.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ViewLogs.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/ViewLogs.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/ViewLogs.axaml.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/Welcome.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Welcome.axaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Views/Welcome.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/Welcome.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/WelcomeToolbar.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/WelcomeToolbar.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/WelcomeToolbar.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/WelcomeToolbar.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/WorkingCopy.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/WorkingCopy.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/WorkingCopy.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/WorkingCopy.axaml.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/WorktreeDepthIcon.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/WorktreeDepthIcon.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Views/WorktreeIcon.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/Views/WorktreeIcon.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/obj/Debug/net10.0/Avalonia/resources" beforeDir="false" afterPath="$PROJECT_DIR$/src/obj/Debug/net10.0/Avalonia/resources" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/obj/Debug/net10.0/UGSGit.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/obj/Debug/net10.0/UGSGit.AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/obj/Debug/net10.0/UGSGit.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/src/obj/Debug/net10.0/UGSGit.AssemblyInfoInputs.cache" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -150,7 +724,7 @@
     "agentbridge.favoriteModels": "[\"ollama-cloud/qwen3.5:397b\",\"ollama-cloud/qwen3-coder:480b\",\"ollama-cloud/qwen3-coder-next\",\"ollama-cloud/minimax-m2.7\",\"ollama-cloud/minimax-m2.5\",\"ollama-cloud/kimi-k2.6\",\"ollama-cloud/kimi-k2.5\",\"ollama-cloud/gpt-oss:120b\",\"ollama-cloud/gpt-oss:20b\",\"ollama-cloud/glm-5.1\",\"ollama-cloud/glm-5\",\"ollama-cloud/glm-4.6\",\"ollama-cloud/glm-4.7\",\"ollama-cloud/gemma4:31b\",\"ollama-cloud/deepseek-v4-pro\",\"ollama-cloud/deepseek-v4-flash\",\"opencode-go/minimax-m2.5\",\"opencode-go/minimax-m2.7\",\"opencode-go/qwen3.6-plus\",\"opencode-go/mimo-v2.5-pro\",\"opencode-go/mimo-v2.5\",\"opencode-go/kimi-k2.6\",\"opencode-go/kimi-k2.5\",\"opencode-go/glm-5.1\",\"opencode-go/glm-5\",\"opencode-go/deepseek-v4-pro\",\"opencode-go/deepseek-v4-flash\",\"opencode/big-pickle\",\"opencode/qwen3.6-plus-free\",\"opencode/minimax-m2.5-free\",\"opencode/deepseek-v4-flash-free\"]",
     "cidr.known.project.marker": "true",
     "codeWithMe.voiceChat.enabledByDefault": "false",
-    "git-widget-placeholder": "Merging merge-temp/v2026.11",
+    "git-widget-placeholder": "merge-temp/v2026.11",
     "ignore.virus.scanning.warn.message": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -195,7 +769,7 @@
       <workItem from="1779120061290" duration="5217000" />
       <workItem from="1779126693889" duration="5586000" />
       <workItem from="1779208622038" duration="1300000" />
-      <workItem from="1779217996020" duration="2667000" />
+      <workItem from="1779217996020" duration="3178000" />
     </task>
     <servers />
   </component>

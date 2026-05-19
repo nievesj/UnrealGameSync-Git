@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 using Avalonia.Data.Converters;
 
-namespace SourceGit.Converters
+namespace UGSGit.Converters
 {
     public static class ListConverters
     {

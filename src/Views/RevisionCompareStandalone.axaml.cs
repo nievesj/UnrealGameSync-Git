@@ -1,4 +1,4 @@
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     public partial class RevisionCompareStandalone : ChromelessWindow
     {

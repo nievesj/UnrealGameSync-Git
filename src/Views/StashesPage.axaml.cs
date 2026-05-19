@@ -6,7 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Platform.Storage;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     public partial class StashesPage : UserControl
     {

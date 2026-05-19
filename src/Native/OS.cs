@@ -9,7 +9,7 @@ using System.Threading;
 using Avalonia;
 using Avalonia.Controls;
 
-namespace SourceGit.Native
+namespace UGSGit.Native
 {
     public static partial class OS
     {

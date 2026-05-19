@@ -1,4 +1,4 @@
-namespace SourceGit.Models;
+namespace UGSGit.Models;
 
 /// <summary>
 /// Detected engine version and build type information.

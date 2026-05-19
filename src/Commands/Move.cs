@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace SourceGit.Commands
+namespace UGSGit.Commands
 {
     public class Move : Command
     {

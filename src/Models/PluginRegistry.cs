@@ -5,7 +5,7 @@ using System.Linq;
 using Avalonia.Collections;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace SourceGit.Models
+namespace UGSGit.Models
 {
     /// <summary>
     /// Singleton that holds all discovered plugin manifests and manages enabled/disabled state.

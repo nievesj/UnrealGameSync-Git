@@ -8,7 +8,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform;
 
-namespace SourceGit.Native
+namespace UGSGit.Native
 {
     [SupportedOSPlatform("linux")]
     internal class Linux : OS.IBackend
@@ -65,8 +65,8 @@ namespace SourceGit.Native
             if (Directory.Exists(dataDir))
                 return dataDir;
 
-            // Migrate old data: ~/.config/SourceGit
-            var oldDataDir = Path.Combine(home, ".config", "SourceGit");
+            // Migrate old data: ~/.config/UGSGit
+            var oldDataDir = Path.Combine(home, ".config", "UGSGit");
             if (Directory.Exists(oldDataDir))
             {
                 try

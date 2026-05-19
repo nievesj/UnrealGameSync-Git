@@ -2,7 +2,7 @@ using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace SourceGit.Commands
+namespace UGSGit.Commands
 {
     public partial class QueryRepositoryStatus : Command
     {

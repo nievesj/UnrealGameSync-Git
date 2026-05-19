@@ -5,7 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     public class CommandLogTime : TextBlock
     {

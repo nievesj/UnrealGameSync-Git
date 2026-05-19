@@ -1,9 +1,9 @@
 using Avalonia.Collections;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-using SourceGit.Models;
+using UGSGit.Models;
 
-namespace SourceGit.ViewModels
+namespace UGSGit.ViewModels
 {
     public class PluginSettingsViewModel : ObservableObject
     {

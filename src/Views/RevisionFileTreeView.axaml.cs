@@ -14,7 +14,7 @@ using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     public class RevisionFileTreeNodeToggleButton : ToggleButton
     {

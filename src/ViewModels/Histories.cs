@@ -8,7 +8,7 @@ using Avalonia.Controls;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace SourceGit.ViewModels
+namespace UGSGit.ViewModels
 {
     public class Histories : ObservableObject
     {

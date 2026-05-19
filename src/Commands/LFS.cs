@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace SourceGit.Commands
+namespace UGSGit.Commands
 {
     public class LFS : Command
     {

@@ -9,7 +9,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform;
 
-namespace SourceGit.Native
+namespace UGSGit.Native
 {
     [SupportedOSPlatform("macOS")]
     internal class MacOS : OS.IBackend
@@ -94,7 +94,7 @@ namespace SourceGit.Native
         {
             return Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "SourceGit");
+                "UGSGit");
         }
 
         public string FindGitExecutable()
