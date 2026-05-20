@@ -1,7 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="clr-namespace:UGSGit.ViewModels.Tabs.UnrealSync"
-             xmlns:v="clr-namespace:UGSGit.Views.Tabs.UnrealSync"
+             xmlns:vm="clr-namespace:UGSGit.ViewModels.Tabs.UnrealSync;assembly=UGSGit.Plugins.UnrealSync"
+             xmlns:v="clr-namespace:UGSGit.Views.Tabs.UnrealSync;assembly=UGSGit.Plugins.UnrealSync"
              x:Class="UGSGit.Views.Tabs.UnrealSync.UnrealSyncTabView"
              x:DataType="vm:UnrealSyncTabViewModel">
     <ContentControl Content="{Binding CurrentBody}">

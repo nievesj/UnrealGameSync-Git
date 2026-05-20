@@ -22,7 +22,7 @@ public partial class FullWorkspaceView : UserControl
         var owner = TopLevel.GetTopLevel(this) as Window;
         if (owner != null)
         {
-            dialog.DataContext = new ViewModels.Tabs.UnrealSync.SettingsDialogViewModel(vm.RepoPath, vm.EnginePathText, vm.UProjectPath);
+            dialog.DataContext = new ViewModels.Tabs.UnrealSync.SettingsDialogViewModel(vm.RepoPath, vm.EnginePathText, vm.UProjectPath, vm.ConfigService);
             await dialog.ShowDialog(owner);
 
             // Refresh build targets and config after settings dialog closes

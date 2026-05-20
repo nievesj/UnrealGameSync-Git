@@ -12,7 +12,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 using UGSGit.Models;
-using UGSGit.Services;
 
 namespace UGSGit.ViewModels.Tabs.UnrealSync;
 
@@ -23,9 +22,12 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     private readonly string _uprojectPath;
     private readonly UProjectMeta _meta;
     private UgsConfig _config;
-    private readonly GitSyncService _syncService;
-    private readonly BuildService _buildService;
-    private readonly EditorLauncher _editorLauncher;
+    private readonly IGitSyncService _syncService;
+    private readonly IBuildService _buildService;
+    private readonly IEditorLauncher _editorLauncher;
+    private readonly IConfigService _configService;
+    private readonly IEngineInfoService _engineInfoService;
+    private readonly PluginContext _context;
     private CancellationTokenSource? _buildCts;
     private Process? _editorProcess;
     private readonly System.Text.StringBuilder _logBuilder = new();
@@ -60,6 +62,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     // Exposed for the view code-behind to create SettingsDialog
     public string RepoPath => _repoPath;
     public string UProjectPath => _uprojectPath;
+    public IConfigService ConfigService => _configService;
     [ObservableProperty]
     private string _engineVersionText = "";
 
@@ -91,16 +94,29 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     public ObservableCollection<UgsBuildStep> BuildTargets { get; } = new();
     public ObservableCollection<UgsPackageProfile> PackageProfiles { get; } = new();
 
-    public FullWorkspaceViewModel(string repoPath, string enginePath, UProjectMeta meta, GitSyncService syncService, string uprojectPath)
+    public FullWorkspaceViewModel(
+        string repoPath,
+        string enginePath,
+        UProjectMeta meta,
+        IGitSyncService syncService,
+        string uprojectPath,
+        IBuildService buildService,
+        IEditorLauncher editorLauncher,
+        IConfigService configService,
+        IEngineInfoService engineInfoService,
+        PluginContext context)
     {
         _repoPath = repoPath;
         _enginePath = enginePath;
         _uprojectPath = uprojectPath;
         _meta = meta;
-        _config = ConfigService.LoadConfig(repoPath);
+        _config = configService.LoadConfig(repoPath);
         _syncService = syncService;
-        _buildService = new BuildService(repoPath, enginePath, uprojectPath);
-        _editorLauncher = new EditorLauncher(enginePath);
+        _buildService = buildService;
+        _editorLauncher = editorLauncher;
+        _configService = configService;
+        _engineInfoService = engineInfoService;
+        _context = context;
 
         ProjectName = System.IO.Path.GetFileNameWithoutExtension(uprojectPath);
         ModuleCount = meta.Modules?.Count ?? 0;
@@ -108,7 +124,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         EngineAssociation = meta.EngineAssociation ?? "";
 
         // Engine info (Phase 1b)
-        var engineInfo = EngineInfoService.Detect(enginePath);
+        var engineInfo = _engineInfoService.Detect(enginePath);
         EngineVersionText = engineInfo.Version;
         EngineBuildType = engineInfo.BuildType;
         EnginePathText = enginePath;
@@ -179,7 +195,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
 
             AppendLog($"\n{result.Message}");
 
-            if (result.Status == GitSyncService.SyncStatus.Success && !string.IsNullOrEmpty(result.CommitSha))
+            if (result.Status == SyncStatus.Success && !string.IsNullOrEmpty(result.CommitSha))
                 CommitText = result.CommitSha;
         }
         catch (System.Exception ex)
@@ -258,7 +274,8 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         {
             ResetCancellationToken();
             var progress = new Progress<string>(AppendLog);
-            var buildGraph = new BuildGraphService(_enginePath, _repoPath, _config);
+            var buildGraphFactory = _context.GetService<Func<string, string, UgsConfig, IBuildGraphService>>()!;
+            var buildGraph = buildGraphFactory(_enginePath, _repoPath, _config);
 
             // Determine zip output path
             var zipName = FormatZipName(_config.Archive?.ZipNaming, profile);
@@ -326,7 +343,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
                 PublishStatusText = $"Publishing... {PublishProgress:P0}";
             });
 
-            var service = new PublishService();
+            var service = _context.GetService<IPublishService>()!;
             var result = await service.PublishZipAsync(
                 LastZipPath,
                 _config.NetworkBase,
@@ -358,7 +375,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     /// </summary>
     public void ReloadConfig()
     {
-        _config = ConfigService.LoadConfig(_repoPath);
+        _config = _configService.LoadConfig(_repoPath);
 
         // Refresh build targets
         BuildTargets.Clear();

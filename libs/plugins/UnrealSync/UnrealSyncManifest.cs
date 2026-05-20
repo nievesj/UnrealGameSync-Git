@@ -16,7 +16,7 @@ public class UnrealSyncManifest : IPluginManifest
 
     public IReadOnlyList<IRepositoryTab> CreateTabs(PluginContext context)
     {
-        var tab = new UnrealSyncTab(context.RepositoryPath);
+        var tab = new UnrealSyncTab(context);
         return new List<IRepositoryTab> { tab };
     }
 }

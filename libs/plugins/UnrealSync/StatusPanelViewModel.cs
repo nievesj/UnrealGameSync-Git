@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-using UGSGit.Services;
+using UGSGit.Models;
 
 namespace UGSGit.ViewModels.Tabs.UnrealSync;
 
@@ -16,7 +16,7 @@ namespace UGSGit.ViewModels.Tabs.UnrealSync;
 public partial class StatusPanelViewModel : ObservableObject
 {
     private readonly string _repoPath;
-    private readonly GitSyncService _syncService;
+    private readonly IGitSyncService _syncService;
 
     [ObservableProperty]
     private string _statusText = "Ready";
@@ -30,7 +30,7 @@ public partial class StatusPanelViewModel : ObservableObject
     [ObservableProperty]
     private string _commitSubject = "";
 
-    public StatusPanelViewModel(string repoPath, GitSyncService syncService)
+    public StatusPanelViewModel(string repoPath, IGitSyncService syncService)
     {
         _repoPath = repoPath;
         _syncService = syncService;

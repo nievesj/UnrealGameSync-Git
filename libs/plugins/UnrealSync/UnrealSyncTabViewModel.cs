@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -6,7 +7,6 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 using UGSGit.Models;
-using UGSGit.Services;
 
 namespace UGSGit.ViewModels.Tabs.UnrealSync;
 
@@ -20,8 +20,9 @@ public enum SyncTabMode
 
 public class UnrealSyncTabViewModel : ObservableObject
 {
+    private readonly PluginContext _context;
     private readonly string _repoPath;
-    private readonly GitSyncService _syncService;
+    private readonly IGitSyncService _syncService;
     private SyncTabMode _mode = SyncTabMode.Detecting;
     private object _currentBody = null!;
 
@@ -39,10 +40,11 @@ public class UnrealSyncTabViewModel : ObservableObject
         private set => SetProperty(ref _mode, value);
     }
 
-    public UnrealSyncTabViewModel(string repoPath)
+    public UnrealSyncTabViewModel(string repoPath, IGitSyncService syncService, PluginContext context)
     {
         _repoPath = repoPath;
-        _syncService = new GitSyncService(repoPath);
+        _syncService = syncService;
+        _context = context;
         StatusPanel = new StatusPanelViewModel(repoPath, _syncService);
     }
 
@@ -53,7 +55,8 @@ public class UnrealSyncTabViewModel : ObservableObject
         await Task.Run(() =>
         {
             // 1. Check if a project file is configured
-            var config = ConfigService.LoadConfig(_repoPath);
+            var configService = _context.GetService<IConfigService>()!;
+            var config = configService.LoadConfig(_repoPath);
             var configuredProject = config.Engine?.ProjectFile;
             string? uprojectPath = null;
 
@@ -85,14 +88,16 @@ public class UnrealSyncTabViewModel : ObservableObject
             }
 
             // 3. Proceed with the selected project
-            ProceedWithProject(uprojectPath);
+            ProceedWithProject(uprojectPath, configService);
         });
     }
 
     private void OnUProjectSelected(string uprojectPath)
     {
+        var configService = _context.GetService<IConfigService>()!;
+
         // Persist the selection to config
-        var config = ConfigService.LoadConfig(_repoPath);
+        var config = configService.LoadConfig(_repoPath);
         var relativePath = System.IO.Path.IsPathRooted(uprojectPath)
             ? System.IO.Path.GetRelativePath(_repoPath, uprojectPath)
             : uprojectPath;
@@ -100,24 +105,36 @@ public class UnrealSyncTabViewModel : ObservableObject
         {
             Engine = config.Engine with { ProjectFile = relativePath }
         };
-        ConfigService.SaveConfig(_repoPath, config);
+        configService.SaveConfig(_repoPath, config);
 
         // Proceed
-        ProceedWithProject(uprojectPath);
+        ProceedWithProject(uprojectPath, configService);
     }
 
-    private void ProceedWithProject(string uprojectPath)
+    private void ProceedWithProject(string uprojectPath, IConfigService configService)
     {
         var json = System.IO.File.ReadAllText(uprojectPath);
         var meta = UProjectMeta.ParseTolerant(json);
-        var enginePath = EngineDetector.Detect(meta, System.IO.Path.GetDirectoryName(uprojectPath)!);
+
+        var engineDetector = _context.GetService<IEngineDetector>()!;
+        var enginePath = engineDetector.Detect(meta, System.IO.Path.GetDirectoryName(uprojectPath)!);
 
         Dispatcher.UIThread.Post(() =>
         {
             if (!string.IsNullOrEmpty(enginePath))
             {
+                var buildServiceFactory = _context.GetService<Func<string, string, IBuildService>>()!;
+                var buildService = buildServiceFactory(enginePath, uprojectPath);
+
+                var editorLauncherFactory = _context.GetService<Func<string, IEditorLauncher>>()!;
+                var editorLauncher = editorLauncherFactory(enginePath);
+
+                var engineInfoService = _context.GetService<IEngineInfoService>()!;
+
                 Mode = SyncTabMode.FullWorkspace;
-                var bodyVm = new FullWorkspaceViewModel(_repoPath, enginePath, meta, _syncService, uprojectPath);
+                var bodyVm = new FullWorkspaceViewModel(
+                    _repoPath, enginePath, meta, _syncService, uprojectPath,
+                    buildService, editorLauncher, configService, engineInfoService, _context);
                 CurrentBody = bodyVm;
             }
             else

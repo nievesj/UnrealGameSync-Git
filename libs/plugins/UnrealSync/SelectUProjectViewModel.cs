@@ -14,7 +14,6 @@ using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 
 using UGSGit.Models;
-using UGSGit.Services;
 
 namespace UGSGit.ViewModels.Tabs.UnrealSync;
 

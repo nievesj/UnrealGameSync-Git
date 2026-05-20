@@ -16,7 +16,7 @@ namespace UGSGit.Services;
 /// Accepts UgsConfig in constructor per finding H-2 (no per-call LoadConfig).
 /// Validates RunUAT path existence per finding M-2.
 /// </summary>
-public class BuildGraphService
+public class BuildGraphService : IBuildGraphService
 {
     private readonly string _enginePath;
     private readonly string _repoPath;

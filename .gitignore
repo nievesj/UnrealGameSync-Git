@@ -47,3 +47,5 @@ src/Properties/launchSettings.json
 /.agentbridge
 *.DotSettings.user
 
+/.idea
+/.idea/.idea.UGSGit

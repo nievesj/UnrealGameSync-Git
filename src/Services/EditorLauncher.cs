@@ -3,13 +3,15 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 
+using UGSGit.Models;
+
 namespace UGSGit.Services;
 
 /// <summary>
 /// Finds and launches the Unreal Engine editor. Cross-platform.
 /// Separate from BuildService to keep concerns clean.
 /// </summary>
-public class EditorLauncher
+public class EditorLauncher : IEditorLauncher
 {
     private readonly string _enginePath;
 

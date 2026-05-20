@@ -27,11 +27,13 @@ public class UnrealSyncTab : IRepositoryTab
 
     public object BodyContent => _bodyView;
 
-    public UnrealSyncTab(string repoPath)
+    public UnrealSyncTab(PluginContext context)
     {
+        var repoPath = context.RepositoryPath;
         TabId = $"unrealsync-{Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(repoPath)))[..8].ToLowerInvariant()}";
 
-        _viewModel = new UnrealSyncTabViewModel(repoPath);
+        var syncService = context.GetService<IGitSyncService>()!;
+        _viewModel = new UnrealSyncTabViewModel(repoPath, syncService, context);
 
         // Create views with DataContext wired up to avoid raw VM type-name rendering
         _toolbarView = new Views.Tabs.UnrealSync.StatusPanelView();
@@ -47,7 +49,10 @@ public class UnrealSyncTab : IRepositoryTab
             t =>
             {
                 if (t.Exception != null)
-                    Native.OS.LogException(t.Exception.Flatten());
+                {
+                    // Exception logged to console; plugin cannot access Native.OS directly
+                    System.Console.Error.WriteLine($"UnrealSync OnActivated error: {t.Exception.Flatten().Message}");
+                }
             },
             TaskContinuationOptions.OnlyOnFaulted);
     }

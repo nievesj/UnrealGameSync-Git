@@ -12,7 +12,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 using UGSGit.Models;
-using UGSGit.Services;
 
 namespace UGSGit.ViewModels.Tabs.UnrealSync;
 
@@ -27,6 +26,7 @@ public partial class SettingsDialogViewModel : ObservableObject
     private readonly string _repoPath;
     private readonly string _enginePath;
     private readonly string _uprojectPath;
+    private readonly IConfigService _configService;
 
     // Derived from the selected .uproject — used for variable expansion hints
     public string ProjectName
@@ -312,11 +312,12 @@ public partial class SettingsDialogViewModel : ObservableObject
         }
     }
 
-    public SettingsDialogViewModel(string repoPath, string enginePath, string uprojectPath)
+    public SettingsDialogViewModel(string repoPath, string enginePath, string uprojectPath, IConfigService configService)
     {
         _repoPath = repoPath;
         _enginePath = enginePath;
         _uprojectPath = uprojectPath;
+        _configService = configService;
         LoadFromConfig();
     }
 
@@ -325,8 +326,8 @@ public partial class SettingsDialogViewModel : ObservableObject
     /// </summary>
     private void LoadFromConfig()
     {
-        var config = ConfigService.LoadConfig(_repoPath);
-        var localState = ConfigService.LoadLocalState(_repoPath);
+        var config = _configService.LoadConfig(_repoPath);
+        var localState = _configService.LoadLocalState(_repoPath);
 
         // Engine (local)
         EnginePathOverride = localState.EnginePathOverride;
@@ -360,8 +361,8 @@ public partial class SettingsDialogViewModel : ObservableObject
     {
         if (!Validate()) return;
 
-        var sharedConfig = ConfigService.LoadConfig(_repoPath);
-        var localState = ConfigService.LoadLocalState(_repoPath);
+        var sharedConfig = _configService.LoadConfig(_repoPath);
+        var localState = _configService.LoadLocalState(_repoPath);
 
         // Update shared config — use with expressions since config types are now immutable records (fixes M-2)
         // Bump version to 2 since we now persist BuildMode/UatCommand (Council F-13)
@@ -414,11 +415,11 @@ public partial class SettingsDialogViewModel : ObservableObject
             };
         }
 
-        ConfigService.SaveConfig(_repoPath, sharedConfig);
+        _configService.SaveConfig(_repoPath, sharedConfig);
 
         // Update local config (fixes D-1: engine path is user-local)
         localState.EnginePathOverride = EnginePathOverride;
-        ConfigService.SaveLocalState(_repoPath, localState);
+        _configService.SaveLocalState(_repoPath, localState);
     }
 
     [RelayCommand]

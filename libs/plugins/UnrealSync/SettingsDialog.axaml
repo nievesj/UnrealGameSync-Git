@@ -1,5 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:c="clr-namespace:UGSGit.Plugins.Converters;assembly=UGSGit.Plugins.UnrealSync"
         xmlns:vm="using:UGSGit.ViewModels.Tabs.UnrealSync"
         x:Class="UGSGit.Views.Tabs.UnrealSync.SettingsDialog"
         x:DataType="vm:SettingsDialogViewModel"
@@ -25,7 +26,7 @@
                              Watermark="C:\Program Files\Epic Games\UE_5.4" />
                     <TextBlock Text="{Binding EnginePathError}"
                                Foreground="Red" FontSize="11"
-                               IsVisible="{Binding EnginePathError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                               IsVisible="{Binding EnginePathError, Converter={x:Static c:StringConverters.IsNotNullOrEmpty}}" />
                 </StackPanel>
             </Border>
 
@@ -40,7 +41,7 @@
                              Watermark="\\build-server\ue-binaries" />
                     <TextBlock Text="{Binding NetworkUrlError}"
                                Foreground="Red" FontSize="11"
-                               IsVisible="{Binding NetworkUrlError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                               IsVisible="{Binding NetworkUrlError, Converter={x:Static c:StringConverters.IsNotNullOrEmpty}}" />
 
                     <Grid ColumnDefinitions="*,*">
                         <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,8,0">

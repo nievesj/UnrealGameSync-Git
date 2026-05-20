@@ -24,18 +24,11 @@ namespace UGSGit.Services;
 /// Currently no such API exists — the app's own pattern is the index.lock heuristic
 /// (see ViewModels.Repository.AutoFetchAsync).
 /// </summary>
-public class GitSyncService
+public class GitSyncService : IGitSyncService
 {
-    public enum SyncStatus { Success, Conflict, Failed }
-
-    public record SyncResult(
-        SyncStatus Status,
-        string Message,
-        string CommitSha = "",
-        TimeSpan? Duration = null
-    );
-
     private readonly string _repoPath;
+
+    public string RepoPath => _repoPath;
 
     public GitSyncService(string repoPath)
     {
@@ -46,7 +39,7 @@ public class GitSyncService
     /// Checks whether .git/index.lock exists, with a brief wait for transient locks.
     /// A lock older than 10 seconds is considered stale and ignored.
     /// </summary>
-    private static async Task<bool> IsRepositoryLockedAsync(string repoPath, CancellationToken ct)
+    private static async Task<bool> IsRepositoryLockedInternalAsync(string repoPath, CancellationToken ct)
     {
         var lockFile = Path.Combine(repoPath, ".git", "index.lock");
         if (!File.Exists(lockFile))
@@ -77,7 +70,7 @@ public class GitSyncService
     {
         for (int attempt = 0; attempt < 3; attempt++)
         {
-            if (!await IsRepositoryLockedAsync(_repoPath, ct).ConfigureAwait(false))
+            if (!await IsRepositoryLockedInternalAsync(_repoPath, ct).ConfigureAwait(false))
                 return null;
 
             if (attempt == 2)
@@ -202,10 +195,15 @@ public class GitSyncService
         return result.ExitCode == 0 ? result.StdOut.Trim() : string.Empty;
     }
 
-    private async Task<bool> HasDirtyWorkingTreeAsync(CancellationToken ct)
+    public async Task<bool> HasDirtyWorkingTreeAsync(CancellationToken ct)
     {
         var result = await RunGitCommandAsync("status --porcelain", new Progress<string>(_ => { }), ct);
         return result.ExitCode == 0 && !string.IsNullOrWhiteSpace(result.StdOut);
+    }
+
+    public async Task<bool> IsRepositoryLockedAsync(CancellationToken ct)
+    {
+        return await IsRepositoryLockedInternalAsync(_repoPath, ct).ConfigureAwait(false);
     }
 
     private async Task<(int ExitCode, string StdOut, string StdErr)> RunGitCommandAsync(
