@@ -2,7 +2,7 @@
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
         <AssemblyName>UGSGit.Plugins.UnrealSync</AssemblyName>
-        <RootNamespace>UGSGit.ViewModels.Tabs.UnrealSync</RootNamespace>
+        <RootNamespace>UGSGit.Plugins.UnrealSync</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>

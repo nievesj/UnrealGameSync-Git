@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace UGSGit.Models;
+namespace UGSGit.PluginAbstractions;
 
 /// <summary>
 /// Build execution abstraction for plugins.

@@ -1,8 +1,8 @@
 using Avalonia.Controls;
 
-using UGSGit.ViewModels.Tabs.UnrealSync;
+using UGSGit.Plugins.UnrealSync.ViewModels;
 
-namespace UGSGit.Views.Tabs.UnrealSync;
+namespace UGSGit.Plugins.UnrealSync.Views;
 
 public partial class SettingsDialog : Window
 {

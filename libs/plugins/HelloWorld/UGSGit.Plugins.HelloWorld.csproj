@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <AssemblyName>UGSGit.Plugins.HelloWorld</AssemblyName>
-    <RootNamespace>UGSGit.ViewModels.Tabs</RootNamespace>
+    <RootNamespace>UGSGit.Plugins.HelloWorld</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>

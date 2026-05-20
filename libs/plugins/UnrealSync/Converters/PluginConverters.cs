@@ -2,7 +2,7 @@ using System;
 
 using Avalonia.Data.Converters;
 
-namespace UGSGit.Plugins.Converters
+namespace UGSGit.Plugins.UnrealSync.Converters
 {
     /// <summary>
     /// Minimal string converters for plugin AXAML files, avoiding dependency on

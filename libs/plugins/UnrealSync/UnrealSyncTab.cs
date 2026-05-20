@@ -5,15 +5,18 @@ using System.Threading.Tasks;
 
 using Avalonia;
 
-using UGSGit.Models;
+using UGSGit.PluginAbstractions;
+using UGSGit.Plugins.UnrealSync.ViewModels;
+using UGSGit.Plugins.UnrealSync.Views;
 
-namespace UGSGit.ViewModels.Tabs.UnrealSync;
+namespace UGSGit.Plugins.UnrealSync;
 
 public class UnrealSyncTab : IRepositoryTab
 {
+    private readonly PluginContext _context;
     private readonly UnrealSyncTabViewModel _viewModel;
-    private readonly Views.Tabs.UnrealSync.UnrealSyncTabView _bodyView;
-    private readonly Views.Tabs.UnrealSync.StatusPanelView _toolbarView;
+    private readonly UnrealSyncTabView _bodyView;
+    private readonly StatusPanelView _toolbarView;
 
     public string Title => "UnrealSync";
     public object Icon => Application.Current?.Resources["Icons.UnrealSync"]!;
@@ -29,17 +32,18 @@ public class UnrealSyncTab : IRepositoryTab
 
     public UnrealSyncTab(PluginContext context)
     {
+        _context = context;
         var repoPath = context.RepositoryPath;
         TabId = $"unrealsync-{Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(repoPath)))[..8].ToLowerInvariant()}";
 
-        var syncService = context.GetService<IGitSyncService>()!;
+        var syncService = context.GetRequiredService<IGitSyncService>();
         _viewModel = new UnrealSyncTabViewModel(repoPath, syncService, context);
 
         // Create views with DataContext wired up to avoid raw VM type-name rendering
-        _toolbarView = new Views.Tabs.UnrealSync.StatusPanelView();
+        _toolbarView = new StatusPanelView();
         _toolbarView.DataContext = _viewModel.StatusPanel;
 
-        _bodyView = new Views.Tabs.UnrealSync.UnrealSyncTabView();
+        _bodyView = new UnrealSyncTabView();
         _bodyView.DataContext = _viewModel;
     }
 
@@ -50,8 +54,9 @@ public class UnrealSyncTab : IRepositoryTab
             {
                 if (t.Exception != null)
                 {
-                    // Exception logged to console; plugin cannot access Native.OS directly
-                    System.Console.Error.WriteLine($"UnrealSync OnActivated error: {t.Exception.Flatten().Message}");
+                    _context.GetService<IPluginLogger>()?.LogError(
+                        $"UnrealSync OnActivated error: {t.Exception.Flatten().Message}",
+                        t.Exception.Flatten());
                 }
             },
             TaskContinuationOptions.OnlyOnFaulted);

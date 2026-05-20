@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 
-using UGSGit.Models;
+using UGSGit.PluginAbstractions;
 
-namespace UGSGit.ViewModels.Tabs
+namespace UGSGit.Plugins.HelloWorld
 {
     /// <summary>
     /// Creates a HelloWorld tab with context-based TabId.

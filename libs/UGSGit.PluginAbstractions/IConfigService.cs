@@ -1,4 +1,4 @@
-namespace UGSGit.Models;
+namespace UGSGit.PluginAbstractions;
 
 /// <summary>
 /// Config persistence abstraction for plugins.

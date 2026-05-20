@@ -1,6 +1,6 @@
 using System;
 
-namespace UGSGit.Models
+namespace UGSGit.PluginAbstractions
 {
     public interface IRepositoryTab : IDisposable
     {

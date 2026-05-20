@@ -6,15 +6,14 @@ using Avalonia.Threading;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-using UGSGit.Models;
+using UGSGit.PluginAbstractions;
 
-namespace UGSGit.ViewModels.Tabs.UnrealSync;
+namespace UGSGit.Plugins.UnrealSync.ViewModels;
 
 public enum SyncTabMode
 {
     Detecting,
     FullWorkspace,
-    NotUeProject,
     EngineNotFound
 }
 
@@ -55,7 +54,7 @@ public class UnrealSyncTabViewModel : ObservableObject
         await Task.Run(() =>
         {
             // 1. Check if a project file is configured
-            var configService = _context.GetService<IConfigService>()!;
+            var configService = _context.GetRequiredService<IConfigService>();
             var config = configService.LoadConfig(_repoPath);
             var configuredProject = config.Engine?.ProjectFile;
             string? uprojectPath = null;
@@ -80,7 +79,7 @@ public class UnrealSyncTabViewModel : ObservableObject
                     // 0 or multiple found — show selection UI
                     Dispatcher.UIThread.Post(() =>
                     {
-                        Mode = SyncTabMode.NotUeProject;
+                        Mode = SyncTabMode.Detecting;
                         CurrentBody = new SelectUProjectViewModel(_repoPath, uprojectFiles, OnUProjectSelected);
                     });
                     return;
@@ -94,7 +93,7 @@ public class UnrealSyncTabViewModel : ObservableObject
 
     private void OnUProjectSelected(string uprojectPath)
     {
-        var configService = _context.GetService<IConfigService>()!;
+        var configService = _context.GetRequiredService<IConfigService>();
 
         // Persist the selection to config
         var config = configService.LoadConfig(_repoPath);
@@ -123,11 +122,11 @@ public class UnrealSyncTabViewModel : ObservableObject
         {
             if (!string.IsNullOrEmpty(enginePath))
             {
-                var buildServiceFactory = _context.GetService<Func<string, string, IBuildService>>()!;
-                var buildService = buildServiceFactory(enginePath, uprojectPath);
+                var buildServiceFactory = _context.GetService<IBuildServiceFactory>()!;
+                var buildService = buildServiceFactory.Create(enginePath, uprojectPath);
 
-                var editorLauncherFactory = _context.GetService<Func<string, IEditorLauncher>>()!;
-                var editorLauncher = editorLauncherFactory(enginePath);
+                var editorLauncherFactory = _context.GetService<IEditorLauncherFactory>()!;
+                var editorLauncher = editorLauncherFactory.Create(enginePath);
 
                 var engineInfoService = _context.GetService<IEngineInfoService>()!;
 

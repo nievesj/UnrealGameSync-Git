@@ -1,4 +1,4 @@
-namespace UGSGit.Models
+namespace UGSGit.PluginAbstractions
 {
     /// <summary>
     /// Abstraction for global plugin state persistence.

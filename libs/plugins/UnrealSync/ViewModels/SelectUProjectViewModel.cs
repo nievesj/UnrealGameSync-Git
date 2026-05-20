@@ -13,9 +13,9 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 
-using UGSGit.Models;
+using UGSGit.PluginAbstractions;
 
-namespace UGSGit.ViewModels.Tabs.UnrealSync;
+namespace UGSGit.Plugins.UnrealSync.ViewModels;
 
 /// <summary>
 /// ViewModel shown when no .uproject is found or multiple are found.

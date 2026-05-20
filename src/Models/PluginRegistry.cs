@@ -5,6 +5,8 @@ using System.Linq;
 using Avalonia.Collections;
 using CommunityToolkit.Mvvm.ComponentModel;
 
+using UGSGit.PluginAbstractions;
+
 namespace UGSGit.Models
 {
     /// <summary>

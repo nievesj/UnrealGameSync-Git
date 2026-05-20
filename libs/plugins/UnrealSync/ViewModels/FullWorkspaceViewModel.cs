@@ -11,9 +11,15 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-using UGSGit.Models;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Threading;
 
-namespace UGSGit.ViewModels.Tabs.UnrealSync;
+using UGSGit.PluginAbstractions;
+using UGSGit.Plugins.UnrealSync.Views;
+
+namespace UGSGit.Plugins.UnrealSync.ViewModels;
 
 public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
 {
@@ -59,10 +65,6 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string _engineAssociation = "";
 
-    // Exposed for the view code-behind to create SettingsDialog
-    public string RepoPath => _repoPath;
-    public string UProjectPath => _uprojectPath;
-    public IConfigService ConfigService => _configService;
     [ObservableProperty]
     private string _engineVersionText = "";
 
@@ -274,8 +276,8 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         {
             ResetCancellationToken();
             var progress = new Progress<string>(AppendLog);
-            var buildGraphFactory = _context.GetService<Func<string, string, UgsConfig, IBuildGraphService>>()!;
-            var buildGraph = buildGraphFactory(_enginePath, _repoPath, _config);
+            var buildGraphFactory = _context.GetService<IBuildGraphServiceFactory>()!;
+            var buildGraph = buildGraphFactory.Create(_enginePath, _config);
 
             // Determine zip output path
             var zipName = FormatZipName(_config.Archive?.ZipNaming, profile);
@@ -363,15 +365,28 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    private void OpenSettings()
+    private async Task OpenSettings()
     {
-        // Intentionally no-op so the view-side Click="OpenSettings" handler runs.
-        // The Avalonia code-behind handles dialog creation and ShowDialogAsync.
+        var dialogVm = new SettingsDialogViewModel(_repoPath, _enginePath, _uprojectPath, _configService);
+        var dialog = new Views.SettingsDialog
+        {
+            DataContext = dialogVm
+        };
+
+        var owner = Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime
+            ? lifetime.MainWindow
+            : null;
+
+        if (owner != null)
+        {
+            await dialog.ShowDialog(owner);
+        }
+
+        ReloadConfig();
     }
 
     /// <summary>
     /// Reload config and refresh build targets/package profiles after settings change.
-    /// Called from the view code-behind after the Settings dialog closes.
     /// </summary>
     public void ReloadConfig()
     {

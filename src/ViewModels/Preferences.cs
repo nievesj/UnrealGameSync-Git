@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 using Avalonia.Collections;
 using CommunityToolkit.Mvvm.ComponentModel;
 
+using UGSGit.PluginAbstractions;
+
 namespace UGSGit.ViewModels
 {
-    public class Preferences : ObservableObject, Models.IPluginStateStore
+    public class Preferences : ObservableObject, IPluginStateStore
     {
         [JsonIgnore]
         public static Preferences Instance
@@ -868,12 +870,12 @@ namespace UGSGit.ViewModels
         private uint _statisticsSampleColor = 0xFF00FF00;
 
         #region IPluginStateStore Implementation
-        bool? Models.IPluginStateStore.GetGlobalState(string pluginId)
+        bool? IPluginStateStore.GetGlobalState(string pluginId)
         {
             return SafeGlobalPluginStates.TryGetValue(pluginId, out var enabled) ? enabled : null;
         }
 
-        void Models.IPluginStateStore.SetGlobalState(string pluginId, bool enabled)
+        void IPluginStateStore.SetGlobalState(string pluginId, bool enabled)
         {
             SafeGlobalPluginStates[pluginId] = enabled;
         }

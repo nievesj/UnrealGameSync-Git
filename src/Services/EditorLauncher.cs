@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 
-using UGSGit.Models;
+using UGSGit.PluginAbstractions;
 
 namespace UGSGit.Services;
 

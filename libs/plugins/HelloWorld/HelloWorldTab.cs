@@ -1,13 +1,14 @@
 using Avalonia;
+using UGSGit.PluginAbstractions;
+using UGSGit.Plugins.HelloWorld.ViewModels;
+using UGSGit.Plugins.HelloWorld.Views;
 
-using UGSGit.Models;
-
-namespace UGSGit.ViewModels.Tabs
+namespace UGSGit.Plugins.HelloWorld
 {
     public class HelloWorldTab : IRepositoryTab
     {
-        private readonly HelloWorldToolbarViewModel _toolbarVM = new();
-        private readonly HelloWorldBodyViewModel _bodyVM = new();
+        private readonly HelloWorldToolbarViewModel _toolbarVM;
+        private readonly HelloWorldBodyViewModel _bodyVM;
 
         public string Title => "Hello World";
         public object Icon => Avalonia.Application.Current?.Resources["Icons.TabHelloWorld"];
@@ -15,8 +16,8 @@ namespace UGSGit.ViewModels.Tabs
         public string TabId { get; }
         public int SortOrder => 500;
 
-        public object ToolbarContent => _toolbarVM;
-        public object BodyContent => _bodyVM;
+        public object ToolbarContent { get; private set; }
+        public object BodyContent { get; private set; }
 
         /// <summary>
         /// Creates a HelloWorld tab with a per-repository-unique TabId.
@@ -24,10 +25,14 @@ namespace UGSGit.ViewModels.Tabs
         /// </summary>
         public HelloWorldTab(string repoPath)
         {
-            // TabId uses repoPath hash for per-repository uniqueness.
-            // NOTE: GetHashCode() is used only for in-memory UI identification, never persisted.
-            // Two different repo paths colliding in GetHashCode is astronomically unlikely in practice.
             TabId = $"hello-world-{repoPath.GetHashCode():x}";
+
+            _bodyVM = new HelloWorldBodyViewModel();
+            _toolbarVM = new HelloWorldToolbarViewModel();
+
+            BodyContent = new HelloWorldBody { DataContext = _bodyVM };
+            ToolbarContent = new HelloWorldToolbar { DataContext = _toolbarVM };
+
             _bodyVM.UpdateStatus("Ready");
         }
 

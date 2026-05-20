@@ -6,7 +6,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-using UGSGit.Models;
+using UGSGit.PluginAbstractions;
 
 namespace UGSGit.Services;
 

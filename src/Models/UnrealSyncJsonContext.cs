@@ -1,10 +1,12 @@
 using System.Text.Json.Serialization;
 
+using UGSGit.PluginAbstractions;
+
 namespace UGSGit.Models;
 
 /// <summary>
-/// Source-generated JSON context for all UnrealSync types.
-/// Required for AOT compatibility when DISABLE_PLUGINS is not set.
+/// Main app's JSON context extending PluginAbstractionsJsonContext.
+/// Registers types for AOT compatibility when DISABLE_PLUGINS is not set.
 /// </summary>
 [JsonSerializable(typeof(UgsConfig))]
 [JsonSerializable(typeof(UgsWorkspaceState))]
@@ -15,4 +17,6 @@ namespace UGSGit.Models;
 [JsonSerializable(typeof(PublishManifest))]
 [JsonSerializable(typeof(BuildResult))]
 [JsonSerializable(typeof(UatCommandPreset))]
-internal partial class UnrealSyncJsonContext : JsonSerializerContext { }
+internal partial class UnrealSyncJsonContext : PluginAbstractionsJsonContext
+{
+}

@@ -11,9 +11,9 @@ using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-using UGSGit.Models;
+using UGSGit.PluginAbstractions;
 
-namespace UGSGit.ViewModels.Tabs.UnrealSync;
+namespace UGSGit.Plugins.UnrealSync.ViewModels;
 
 /// <summary>
 /// ViewModel for the UnrealSync Settings dialog.
@@ -473,59 +473,4 @@ public partial class SettingsDialogViewModel : ObservableObject
         return valid;
     }
 
-    /// <summary>
-    /// Converts between BuildMode string ("Ubt"/"Uat"/"Custom") and ComboBox SelectedIndex (0/1/2).
-    /// </summary>
-    public class BuildModeConverter : Avalonia.Data.Converters.IValueConverter
-    {
-        public static readonly BuildModeConverter Instance = new();
-
-        private static readonly string[] Modes = { BuildModes.Ubt, BuildModes.Uat, BuildModes.Custom };
-
-        public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
-        {
-            if (value is string mode)
-            {
-                var idx = System.Array.IndexOf(Modes, mode);
-                return idx >= 0 ? idx : 0;
-            }
-            return 0;
-        }
-
-        public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
-        {
-            if (value is int idx && idx >= 0 && idx < Modes.Length)
-                return Modes[idx];
-            return BuildModes.Ubt;
-        }
-    }
-
-    /// <summary>
-    /// Provides context-aware watermark text for the ScriptPath TextBox based on BuildMode.
-    /// </summary>
-    public class BuildModeScriptPathHintConverter : Avalonia.Data.Converters.IValueConverter
-    {
-        public static readonly BuildModeScriptPathHintConverter Instance = new();
-
-        public object? Convert(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
-        {
-            if (value is string mode)
-            {
-                return mode switch
-                {
-                    BuildModes.Ubt => "e.g. {EnginePath}/Engine/Build/BatchFiles/Build.bat",
-                    BuildModes.Uat => "e.g. {EnginePath}/Engine/Build/BatchFiles/RunUAT.bat",
-                    BuildModes.Custom => "Path to your custom build script",
-                    _ => "Script path"
-                };
-            }
-            return "Script path";
-        }
-
-        public object? ConvertBack(object? value, Type targetType, object? parameter, System.Globalization.CultureInfo culture)
-        {
-            // One-way converter
-            return null;
-        }
-    }
 }

@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 
 using UGSGit.Models;
+using UGSGit.PluginAbstractions;
 
 namespace UGSGit.Services;
 

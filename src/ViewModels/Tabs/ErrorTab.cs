@@ -3,6 +3,7 @@ using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 using UGSGit.Models;
+using UGSGit.PluginAbstractions;
 
 namespace UGSGit.ViewModels.Tabs
 {

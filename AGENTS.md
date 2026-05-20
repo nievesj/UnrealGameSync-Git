@@ -7,14 +7,14 @@ Fork of [SourceGit](https://github.com/sourcegit-scm/sourcegit).
 
 ### Divergence from upstream SourceGit
 
-| Aspect | SourceGit | UGSGit |
-|--------|-----------|--------|
-| Namespace | `SourceGit` | `UGSGit` |
-| Assembly name | `SourceGit` | `ugsgit` |
-| Plugin system | None | Adds full plugin system (manifests, external DLL loading, per-repo enable/disable) |
-| Tabs | Hard-coded: Repository + settings/dialogs | Extensible via `IRepositoryTab`; each plugin contributes tabs |
-| Startup args | Standard desktop | Adds `--history`, `--blame`, `--core-editor`, `--rebase-todo-editor`, `--rebase-message-editor`, `UGSGIT_LAUNCH_AS_ASKPASS` |
-| Built-in plugins | N/A | `HelloWorld` (reference) and `UnrealSync` (Unreal Engine workspace sync) |
+| Aspect           | SourceGit                                 | UGSGit                                                                                                                      |
+|------------------|-------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| Namespace        | `SourceGit`                               | `UGSGit`                                                                                                                    |
+| Assembly name    | `SourceGit`                               | `ugsgit`                                                                                                                    |
+| Plugin system    | None                                      | Adds full plugin system (manifests, external DLL loading, per-repo enable/disable)                                          |
+| Tabs             | Hard-coded: Repository + settings/dialogs | Extensible via `IRepositoryTab`; each plugin contributes tabs                                                               |
+| Startup args     | Standard desktop                          | Adds `--history`, `--blame`, `--core-editor`, `--rebase-todo-editor`, `--rebase-message-editor`, `UGSGIT_LAUNCH_AS_ASKPASS` |
+| Built-in plugins | N/A                                       | `HelloWorld` (reference) and `UnrealSync` (Unreal Engine workspace sync)                                                    |
 
 Namespace: `UGSGit`.
 
@@ -30,24 +30,58 @@ Requires .NET SDK 10 (see `global.json`: SDK 9.0.0, `rollForward: latestMajor`).
 
 ## Key Commands
 
-| Action | Command |
-|--------|---------|
-| Build | `dotnet build -c Release` |
+| Action                  | Command                                                           |
+|-------------------------|-------------------------------------------------------------------|
+| Build                   | `dotnet build -c Release`                                         |
 | Publish (Release + AOT) | `dotnet publish src/UGSGit.csproj -c Release -o publish -r <RID>` |
-| Format check | `dotnet format --verify-no-changes src/UGSGit.csproj` |
-| Format fix | `dotnet format src/UGSGit.csproj` |
-| Run | `dotnet run --project src/UGSGit.csproj` |
+| Format check            | `dotnet format --verify-no-changes src/UGSGit.csproj`             |
+| Format fix              | `dotnet format src/UGSGit.csproj`                                 |
+| Run                     | `dotnet run --project src/UGSGit.csproj`                          |
 
 Runtime IDs: `win-x64`, `win-arm64`, `linux-x64`, `linux-arm64`, `osx-x64`, `osx-arm64`.
 
 ## Architecture
 
-- **Single project** (`src/UGSGit.csproj`), single solution (`UGSGit.slnx`)
+- **Multi-project** (`UGSGit.slnx`): main app + PluginAbstractions + built-in plugins
 - **MVVM** with CommunityToolkit.Mvvm, ViewModels in `src/ViewModels/`, Views in `src/Views/`
-- **Models** in `src/Models/`, **Commands** (git wrappers) in `src/Commands/`, **Services** in `src/Services/`
+- **Models** in `src/Models/` (app-specific) and `libs/UGSGit.PluginAbstractions/` (shared), **Commands** (git wrappers)
+  in `src/Commands/`, **Services** in `src/Services/`
 - **Native/OS abstraction** in `src/Native/`: `Windows.cs`, `MacOS.cs`, `Linux.cs` implement `IBackend`
 - **App entrypoint**: `App.Main()` in `src/App.axaml.cs` — classic desktop lifetime
-- **UnrealSync plugin** (built-in): `src/ViewModels/Tabs/UnrealSync/`, `src/Views/Tabs/UnrealSync/`
+
+### Projects
+
+| Project                     | Path                              | Purpose                                           |
+|-----------------------------|-----------------------------------|---------------------------------------------------|
+| `UGSGit`                    | `src/UGSGit.csproj`               | Main app (WinExe), plugin host, all services      |
+| `UGSGit.PluginAbstractions` | `libs/UGSGit.PluginAbstractions/` | Zero-dependency contract library (NuGet-packable) |
+| `UGSGit.Plugins.HelloWorld` | `libs/plugins/HelloWorld/`        | Reference plugin (proof of concept)               |
+| `UGSGit.Plugins.UnrealSync` | `libs/plugins/UnrealSync/`        | Unreal Engine workspace sync, build, and launch   |
+
+### Dependency direction
+
+```
+External plugins:          Plugin → Abstractions only (NuGet)
+Built-in plugins:          Plugin → Abstractions + optionally UGSGit (host services)
+Main app → Abstractions:   UGSGit → PluginAbstractions
+Main app → Built-ins:      UGSGit → HelloWorld, UGSGit → UnrealSync
+```
+
+No circular dependencies. Types shared across plugins live in `PluginAbstractions`.
+
+### UGSGit.PluginAbstractions contents
+
+Located at `libs/UGSGit.PluginAbstractions/`. Zero external dependencies (not even Avalonia or CommunityToolkit.Mvvm).
+
+**Plugin contract interfaces:** `IPluginManifest`, `IRepositoryTab`, `PluginContext`, `IPluginStateStore`,
+`PluginLoadResult`
+
+**Service interfaces (9 total):** `IPluginLogger`, `IGitSyncService`, `IBuildService`, `IConfigService`,
+`IEngineDetector`, `IEditorLauncher`, `IPublishService`, `IBuildGraphService`, `IEngineInfoService`
+
+**Model types (14 total):** `UgsConfig`, `UgsWorkspaceState`, `UProjectMeta`, `UgsBuildStep`, `UgsBuildConfig` (includes
+`BuildResult`/`BuildStatus`), `BuildVersion`, `EngineInfo`, `PublishManifest`, `StageResult`, `UatCommandPreset`,
+`BuildModes`, `UgsPackageProfile`, `PublishProgress`/`PublishResult`/`PublishStatus`, `SyncResult`/`SyncStatus`
 
 ## Native AOT & Build Modes
 
@@ -63,22 +97,29 @@ Runtime IDs: `win-x64`, `win-arm64`, `linux-x64`, `linux-arm64`, `osx-x64`, `osx
 
 ### Plugin lifecycle
 
-1. **Startup** (`App.TryLaunchAsNormal()`): built-in manifests (`HelloWorldPluginManifest`, `UnrealSyncManifest`) register into `PluginRegistry.Instance` via `RegisterBuiltInManifest()`
-2. **Discovery** (`PluginLoader.Discover()`): scans `<executable>/plugins/` for `.dll` files, loads each in an isolated `AssemblyLoadContext`, finds the first `IPluginManifest` implementation. Collision detection prevents a DLL from overriding a built-in
-3. **Per-repo activation** (`LauncherPage.RegisterBuiltInTabs()` → `PluginActivator.ActivateEnabledPlugins()`): when a repo tab opens, `PluginActivator` iterates all manifests and calls `manifest.CreateTabs(context)` for each enabled plugin. The resulting `IRepositoryTab` instances are appended to the tab bar after the main Repository tab
-4. **Runtime toggle**: plugin state changes (`PluginStateChanged` event on `PluginRegistry`) trigger `LauncherPage.OnPluginStateChanged`, which calls `PluginActivator.ActivatePlugin()` or `DeactivatePlugin()` to add/remove tabs live
+1. **Startup** (`App.TryLaunchAsNormal()`): built-in manifests (`HelloWorldPluginManifest`, `UnrealSyncManifest`)
+   register into `PluginRegistry.Instance` via `RegisterBuiltInManifest()`
+2. **Discovery** (`PluginLoader.Discover()`): scans `<executable>/plugins/` for `.dll` files, loads each in an isolated
+   `AssemblyLoadContext`, finds the first `IPluginManifest` implementation. Collision detection prevents a DLL from
+   overriding a built-in
+3. **Per-repo activation** (`LauncherPage.RegisterBuiltInTabs()` → `PluginActivator.ActivateEnabledPlugins()`): when a
+   repo tab opens, `PluginActivator` iterates all manifests and calls `manifest.CreateTabs(context)` for each enabled
+   plugin. The resulting `IRepositoryTab` instances are appended to the tab bar after the main Repository tab
+4. **Runtime toggle**: plugin state changes (`PluginStateChanged` event on `PluginRegistry`) trigger
+   `LauncherPage.OnPluginStateChanged`, which calls `PluginActivator.ActivatePlugin()` or `DeactivatePlugin()` to
+   add/remove tabs live
 
 ### Key types
 
-| Type | Role |
-|------|------|
-| `IPluginManifest` | Plugin entry point — a DLL must have one class implementing this |
-| `IPluginStateStore` | Persistence abstraction — implemented by `Preferences` |
-| `PluginRegistry` | Singleton: holds all manifests, manages enabled state (per-repo override → global default → manifest default) |
-| `PluginLoader` | Static: discovers external DLLs in `plugins/` dir |
-| `PluginActivator` | Static: creates/destroys `IRepositoryTab` instances from manifests |
-| `PluginContext` | Provides repo path, name, git dir, and `IsFirstLoadForRepository` flag |
-| `IRepositoryTab` | Each plugin tab contributes a `BodyContent` (main view) and `ToolbarContent` (status bar) |
+| Type                | Role                                                                                                             |
+|---------------------|------------------------------------------------------------------------------------------------------------------|
+| `IPluginManifest`   | Plugin entry point — a DLL must have one class implementing this                                                 |
+| `IPluginStateStore` | Persistence abstraction — implemented by `Preferences`                                                           |
+| `PluginRegistry`    | Singleton: holds all manifests, manages enabled state (per-repo override → global default → manifest default)    |
+| `PluginLoader`      | Static: discovers external DLLs in `plugins/` dir                                                                |
+| `PluginActivator`   | Static: creates/destroys `IRepositoryTab` instances from manifests                                               |
+| `PluginContext`     | Provides repo path, name, git dir, `IsFirstLoadForRepository` flag, and `GetService<T>()` for service resolution |
+| `IRepositoryTab`    | Each plugin tab contributes a `BodyContent` (main view) and `ToolbarContent` (status bar)                        |
 
 ### Plugin resolution order (enabled state)
 
@@ -87,6 +128,38 @@ Per-repo override → global default → `manifest.IsGlobalByDefault`
 - Per-repo overrides stored in `RepositoryUIStates.PerRepoPluginOverrides` (a dictionary serialized per repo)
 - Global defaults stored in `Preferences` via `IPluginStateStore`
 - UI for managing plugins: `PluginSettingsView` (global) and `PerRepoPluginDialog` (per-repo)
+
+### Service injection via PluginContext
+
+Plugins access host services through `PluginContext.GetService<T>()`. Services are registered by `PluginActivator`
+before `CreateTabs()` is called:
+
+```csharp
+var git = context.GetService<IGitSyncService>();
+var config = context.GetService<IConfigService>();
+var logger = context.GetService<IPluginLogger>();
+```
+
+For built-in plugins (that reference the main project via ProjectReference), additional services are available:
+
+- `IBuildService`, `IEditorLauncher`, `IPublishService`, `IBuildGraphService`, `IEngineDetector`, `IEngineInfoService`
+
+For external plugins (NuGet only), `IPluginLogger` is guaranteed; other services may be null.
+
+### Creating a built-in plugin
+
+1. Create new project at `libs/plugins/<PluginName>/<Assembly>.csproj` referencing `PluginAbstractions`
+2. Implement `IPluginManifest` and `IRepositoryTab` (See `docs/plugin-development-guide.md`)
+3. Add project reference to `UGSGit.slnx` and `src/UGSGit.csproj`
+4. Add `TrimmerRootAssembly` for your plugin in `src/UGSGit.csproj`
+5. Register the manifest in `src/App.axaml.cs`: `PluginRegistry.Instance.RegisterBuiltInManifest(new YourManifest())`
+
+### Creating an external plugin
+
+1. Create .NET class library referencing NuGet package `UGSGit.PluginAbstractions`
+2. Implement `IPluginManifest` — only `IPluginLogger` is guaranteed available
+3. Build → copy DLL to `<app>/plugins/<YourAssembly>.dll`
+4. External plugins are incompatible with AOT builds (`DISABLE_PLUGINS` define)
 
 ## Code Style (enforced via .editorconfig)
 
@@ -130,11 +203,11 @@ Clone with `--recurse-submodules` or `git submodule update --init --recursive`.
 
 ## Data Storage
 
-| OS | Path |
-|----|------|
-| Windows | `%APPDATA%\SourceGit` |
-| Linux | `~/.sourcegit` |
-| macOS | `~/Library/Application Support/SourceGit` |
+| OS      | Path                                      |
+|---------|-------------------------------------------|
+| Windows | `%APPDATA%\SourceGit`                     |
+| Linux   | `~/.sourcegit`                            |
+| macOS   | `~/Library/Application Support/SourceGit` |
 
 Portable mode: create a `data` folder next to the executable (Windows/Linux AppImage only).
 
@@ -143,4 +216,5 @@ Portable mode: create a `data` folder next to the executable (Windows/Linux AppI
 - **MSYS Git is NOT supported on Windows.** Use official Git for Windows.
 - Git >= 2.25.1 required.
 - macOS builds from GitHub Releases are unsigned. Either use Homebrew or run `sudo xattr -cr /Applications/UGSGit.app`.
-- Linux: `AVALONIA_SCREEN_SCALE_FACTORS` may need tuning for HiDPI. `AVALONIA_IM_MODULE=none` if accented characters don't work.
+- Linux: `AVALONIA_SCREEN_SCALE_FACTORS` may need tuning for HiDPI. `AVALONIA_IM_MODULE=none` if accented characters
+  don't work.

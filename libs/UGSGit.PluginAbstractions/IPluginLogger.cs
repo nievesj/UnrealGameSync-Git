@@ -1,6 +1,6 @@
 using System;
 
-namespace UGSGit.Models;
+namespace UGSGit.PluginAbstractions;
 
 /// <summary>
 /// Logger abstraction for plugins. Host implementation wraps Native.OS.Log/LogException.

@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace UGSGit.Models;
+namespace UGSGit.PluginAbstractions;
 
 /// <summary>
 /// Editor launch abstraction for plugins.

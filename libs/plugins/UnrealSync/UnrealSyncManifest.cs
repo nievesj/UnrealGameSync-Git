@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 
-using UGSGit.Models;
+using UGSGit.PluginAbstractions;
 
-namespace UGSGit.ViewModels.Tabs.UnrealSync;
+namespace UGSGit.Plugins.UnrealSync;
 
 public class UnrealSyncManifest : IPluginManifest
 {

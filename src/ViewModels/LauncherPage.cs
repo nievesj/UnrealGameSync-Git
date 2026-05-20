@@ -8,6 +8,7 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 using UGSGit.Models;
+using UGSGit.PluginAbstractions;
 using UGSGit.ViewModels.Tabs;
 
 namespace UGSGit.ViewModels

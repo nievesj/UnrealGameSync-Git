@@ -1,4 +1,4 @@
-namespace UGSGit.Models;
+namespace UGSGit.PluginAbstractions;
 
 /// <summary>
 /// Build mode constants. Stored as strings in JSON for forward-compatibility.

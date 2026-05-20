@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.Json;
 
 using UGSGit.Models;
+using UGSGit.PluginAbstractions;
 
 namespace UGSGit.Services;
 

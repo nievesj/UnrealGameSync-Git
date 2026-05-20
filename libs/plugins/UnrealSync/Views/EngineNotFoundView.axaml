@@ -1,7 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="clr-namespace:UGSGit.ViewModels.Tabs.UnrealSync"
-             x:Class="UGSGit.Views.Tabs.UnrealSync.EngineNotFoundView"
+             xmlns:vm="clr-namespace:UGSGit.Plugins.UnrealSync.ViewModels;assembly=UGSGit.Plugins.UnrealSync"
+             x:Class="UGSGit.Plugins.UnrealSync.Views.EngineNotFoundView"
              x:DataType="vm:EngineNotFoundViewModel">
     <Border Background="{DynamicResource Brush.Background}"
             CornerRadius="8"

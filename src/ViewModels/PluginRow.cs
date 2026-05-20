@@ -3,6 +3,7 @@ using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 using UGSGit.Models;
+using UGSGit.PluginAbstractions;
 
 namespace UGSGit.ViewModels
 {

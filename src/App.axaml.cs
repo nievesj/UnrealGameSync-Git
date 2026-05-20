@@ -487,8 +487,8 @@ namespace UGSGit
 
 #if !DISABLE_PLUGINS
             // Register built-in plugin manifests BEFORE external discovery (NEW-3: cross-check requires built-ins first)
-            Models.PluginRegistry.Instance.RegisterBuiltInManifest(new ViewModels.Tabs.HelloWorldPluginManifest());
-            Models.PluginRegistry.Instance.RegisterBuiltInManifest(new ViewModels.Tabs.UnrealSync.UnrealSyncManifest());
+            Models.PluginRegistry.Instance.RegisterBuiltInManifest(new Plugins.HelloWorld.HelloWorldPluginManifest());
+            Models.PluginRegistry.Instance.RegisterBuiltInManifest(new Plugins.UnrealSync.UnrealSyncManifest());
 
             // Discover and load external plugins (disabled in AOT builds via DISABLE_PLUGINS)
             var pluginResults = Models.PluginLoader.Discover();

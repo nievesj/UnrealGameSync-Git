@@ -1,8 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 
-using UGSGit.Models;
+using UGSGit.PluginAbstractions;
 
-namespace UGSGit.ViewModels.Tabs.UnrealSync;
+namespace UGSGit.Plugins.UnrealSync.ViewModels;
 
 public class EngineNotFoundViewModel : ObservableObject
 {

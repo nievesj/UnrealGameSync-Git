@@ -1,4 +1,4 @@
-namespace UGSGit.Models;
+namespace UGSGit.PluginAbstractions;
 
 /// <summary>
 /// Detected engine version and build type information.

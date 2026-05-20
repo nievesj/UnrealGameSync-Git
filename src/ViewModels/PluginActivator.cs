@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using UGSGit.Models;
+using UGSGit.PluginAbstractions;
 using UGSGit.Services;
 using UGSGit.ViewModels.Tabs;
 
@@ -48,21 +49,22 @@ namespace UGSGit.ViewModels
                 IsFirstLoadForRepository = isFirstLoad,
             };
 
+            context.RegisterService<IPluginLogger>(new PluginLoggerAdapter());
             context.RegisterService<IGitSyncService>(new GitSyncService(repoPath));
             context.RegisterService<IConfigService>(new ConfigServiceAdapter());
             context.RegisterService<IEngineDetector>(new EngineDetectorAdapter());
             context.RegisterService<IEngineInfoService>(new EngineInfoServiceAdapter());
 
             // Factories for services that need runtime parameters (enginePath, uprojectPath)
-            context.RegisterService<Func<string, string, IBuildService>>(
-                (enginePath, uprojectPath) => new BuildService(repoPath, enginePath, uprojectPath));
-            context.RegisterService<Func<string, IEditorLauncher>>(
-                (enginePath) => new EditorLauncher(enginePath));
-            context.RegisterService<Func<string, string, UgsConfig, IBuildGraphService>>(
-                (enginePath, rp, config) => new BuildGraphService(enginePath, rp, config));
+            context.RegisterService<IBuildServiceFactory>(new BuildServiceFactory(repoPath));
+            context.RegisterService<IEditorLauncherFactory>(new EditorLauncherFactory());
+            context.RegisterService<IBuildGraphServiceFactory>(new BuildGraphServiceFactory(repoPath));
 
             // Stateless services registered as singletons
             context.RegisterService<IPublishService>(new PublishService());
+
+            // Validate that all required services were registered
+            context.ValidateRequiredServices();
 
             IReadOnlyList<IRepositoryTab> tabs;
             try

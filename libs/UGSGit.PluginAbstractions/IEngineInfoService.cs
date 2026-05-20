@@ -1,4 +1,4 @@
-namespace UGSGit.Models;
+namespace UGSGit.PluginAbstractions;
 
 /// <summary>
 /// Engine info detection abstraction for plugins.

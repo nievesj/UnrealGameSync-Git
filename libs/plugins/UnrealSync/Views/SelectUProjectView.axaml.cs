@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace UGSGit.Views.Tabs.UnrealSync;
+namespace UGSGit.Plugins.UnrealSync.Views;
 
 public partial class SelectUProjectView : UserControl
 {
