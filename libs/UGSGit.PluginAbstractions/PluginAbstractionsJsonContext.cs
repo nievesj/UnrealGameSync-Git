@@ -5,6 +5,7 @@ namespace UGSGit.PluginAbstractions;
 /// <summary>
 /// Source-generated JSON serialization context for all types defined in PluginAbstractions.
 /// External plugins reference this via NuGet package to serialize shared types with AOT compatibility.
+/// This is the base context that <c>UnrealSyncJsonContext</c> extends by referencing types from the UnrealSync plugin.
 /// </summary>
 [JsonSerializable(typeof(UgsConfig))]
 [JsonSerializable(typeof(UgsWorkspaceState))]

@@ -21,6 +21,9 @@ using UGSGit.Plugins.UnrealSync.Views;
 
 namespace UGSGit.Plugins.UnrealSync.ViewModels;
 
+/// <summary>
+/// Main workspace ViewModel handling sync, build, editor launch, packaging, and publishing.
+/// </summary>
 public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
 {
     private readonly string _repoPath;
@@ -38,64 +41,99 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     private Process? _editorProcess;
     private readonly System.Text.StringBuilder _logBuilder = new();
 
+    /// <summary>Current branch name displayed in the status panel.</summary>
     [ObservableProperty]
     private string _branchText = "";
 
+    /// <summary>SHA of the commit the workspace is currently synced to.</summary>
     [ObservableProperty]
     private string _commitText = "";
 
+    /// <summary>Subject line of the current commit.</summary>
     [ObservableProperty]
     private string _commitSubject = "";
 
+    /// <summary>Aggregated log output text displayed in the log panel.</summary>
     [ObservableProperty]
     private string _logOutput = "";
 
+    /// <summary>Indicates whether a sync, build, or package operation is in progress.</summary>
     [ObservableProperty]
     private bool _isBusy;
 
+    /// <summary>Display name of the project derived from the .uproject filename.</summary>
     [ObservableProperty]
     private string _projectName = "";
 
+    /// <summary>Number of modules declared in the .uproject file.</summary>
     [ObservableProperty]
     private int _moduleCount;
 
+    /// <summary>Number of plugins declared in the .uproject file.</summary>
     [ObservableProperty]
     private int _pluginCount;
 
+    /// <summary>Engine association string from the .uproject file.</summary>
     [ObservableProperty]
     private string _engineAssociation = "";
 
+    /// <summary>Detected engine version string (e.g. 5.4).</summary>
     [ObservableProperty]
     private string _engineVersionText = "";
 
+    /// <summary>Engine build configuration type (e.g. Shipping, DebugGame).</summary>
     [ObservableProperty]
     private string _engineBuildType = "";
 
+    /// <summary>Full path to the detected engine root directory.</summary>
     [ObservableProperty]
     private string _enginePathText = "";
 
     // Phase 1b: Package & Publish
+    /// <summary>Whether the Package button is enabled.</summary>
     [ObservableProperty]
     private bool _canPackage = true;
 
+    /// <summary>Whether the Publish button is enabled (true after a successful package).</summary>
     [ObservableProperty]
     private bool _canPublish;
 
+    /// <summary>Path to the last successfully created zip archive.</summary>
     [ObservableProperty]
     private string _lastZipPath = string.Empty;
 
+    /// <summary>Package progress as a value between 0.0 and 1.0.</summary>
     [ObservableProperty]
     private double _packageProgress;
 
+    /// <summary>Publish progress as a value between 0.0 and 1.0.</summary>
     [ObservableProperty]
     private double _publishProgress;
 
+    /// <summary>Status text displayed during or after a publish operation.</summary>
     [ObservableProperty]
     private string _publishStatusText = "";
 
+    /// <summary>Observable collection of configured build target steps.</summary>
     public ObservableCollection<UgsBuildStep> BuildTargets { get; } = new();
+
+    /// <summary>Observable collection of available package profiles.</summary>
     public ObservableCollection<UgsPackageProfile> PackageProfiles { get; } = new();
 
+    /// <summary>
+    /// Initializes a new instance of the FullWorkspaceViewModel with the specified repository context,
+    /// engine path, project metadata, and service dependencies.
+    /// </summary>
+    /// <param name="repoPath">Absolute path to the Git repository root.</param>
+    /// <param name="enginePath">Absolute path to the Unreal Engine root directory.</param>
+    /// <param name="meta">Parsed metadata from the .uproject file, including modules and plugins.</param>
+    /// <param name="syncService">Service for Git sync operations (fetch, pull, status).</param>
+    /// <param name="uprojectPath">Absolute path to the .uproject file.</param>
+    /// <param name="buildService">Service for executing build targets.</param>
+    /// <param name="editorLauncher">Service for launching the Unreal Editor process.</param>
+    /// <param name="configService">Service for loading and saving UnrealSync config files.</param>
+    /// <param name="engineInfoService">Service for detecting engine version and build type.</param>
+    /// <param name="context">Plugin context providing access to additional host services.</param>
     public FullWorkspaceViewModel(
         string repoPath,
         string enginePath,
@@ -183,6 +221,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         _buildCts = new CancellationTokenSource();
     }
 
+    /// <summary>Syncs working tree to latest commit on current branch.</summary>
     [RelayCommand]
     private async Task SyncAsync()
     {
@@ -210,6 +249,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         }
     }
 
+    /// <summary>Runs all configured build targets.</summary>
     [RelayCommand]
     private async Task BuildAsync()
     {
@@ -247,9 +287,11 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         }
     }
 
+    /// <summary>Cancels the active build operation.</summary>
     [RelayCommand]
     private void CancelBuild() => _buildCts?.Cancel();
 
+    /// <summary>Launches the Unreal Editor with the current project.</summary>
     [RelayCommand]
     private void Launch()
     {
@@ -265,6 +307,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         }
     }
 
+    /// <summary>Packages the project using the selected profile.</summary>
     [RelayCommand]
     private async Task PackageAsync(UgsPackageProfile profile)
     {
@@ -323,6 +366,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         }
     }
 
+    /// <summary>Publishes the last built zip to the configured network location.</summary>
     [RelayCommand]
     private async Task PublishAsync()
     {
@@ -364,6 +408,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         }
     }
 
+    /// <summary>Opens the settings dialog for configuring engine paths, build targets, and publish options.</summary>
     [RelayCommand]
     private async Task OpenSettings()
     {
@@ -385,9 +430,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         ReloadConfig();
     }
 
-    /// <summary>
-    /// Reload config and refresh build targets/package profiles after settings change.
-    /// </summary>
+    /// <summary>Reloads config from disk and refreshes build targets + package profiles.</summary>
     public void ReloadConfig()
     {
         _config = _configService.LoadConfig(_repoPath);
@@ -404,6 +447,11 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         LoadPackageProfiles();
     }
 
+    /// <summary>
+    /// Fetches the current branch name and commit SHA from the Git repository.
+    /// </summary>
+    /// <param name="ct">Cancellation token to cancel the fetch operations.</param>
+    /// <returns>A task that completes when both branch and commit have been retrieved.</returns>
     public async Task RefreshAsync(CancellationToken ct)
     {
         try
@@ -414,6 +462,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         catch { /* ignore */ }
     }
 
+    /// <summary>Cancels active build and disposes the editor process.</summary>
     public void Dispose()
     {
         ResetCancellationToken();

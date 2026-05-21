@@ -10,7 +10,12 @@ namespace UGSGit.PluginAbstractions;
 /// </summary>
 public static class BuildModes
 {
+    /// <summary>Unreal Build Tool — compiles C++ code only.</summary>
     public const string Ubt = "Ubt";
+
+    /// <summary>Unreal Automation Tool — cook, package, stage, deploy.</summary>
     public const string Uat = "Uat";
+
+    /// <summary>User-provided script with no pre-populated arguments.</summary>
     public const string Custom = "Custom";
 }

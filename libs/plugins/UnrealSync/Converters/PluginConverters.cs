@@ -17,6 +17,10 @@ namespace UGSGit.Plugins.UnrealSync.Converters
             new FuncValueConverter<string?, bool>(v => !string.IsNullOrEmpty(v));
     }
 
+    /// <summary>
+    /// Minimal object converters for plugin AXAML files, avoiding dependency on
+    /// the main project's UGSGit.Converters namespace (which would create a circular dependency).
+    /// </summary>
     public static class ObjectConverters
     {
         /// <summary>

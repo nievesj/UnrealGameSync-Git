@@ -5,7 +5,9 @@ using System.Linq;
 namespace UGSGit.PluginAbstractions
 {
     /// <summary>
-    /// Provides plugins with runtime information without giving them direct access to the app's ViewModels.
+    /// Provides plugins with runtime information about the repository and host services
+    /// without giving them direct access to the app's ViewModels or internals.
+    /// Also acts as a lightweight dependency injection container for plugin-scoped services.
     /// </summary>
     public class PluginContext
     {
@@ -26,6 +28,8 @@ namespace UGSGit.PluginAbstractions
         /// <summary>
         /// Register a service instance by its interface type.
         /// </summary>
+        /// <typeparam name="T">The service interface type to register.</typeparam>
+        /// <param name="service">The service instance to register. Must not be null.</param>
         public void RegisterService<T>(T service) where T : class
         {
             _services[typeof(T)] = service ?? throw new ArgumentNullException(nameof(service));
@@ -35,6 +39,8 @@ namespace UGSGit.PluginAbstractions
         /// Resolve a registered service by its interface type.
         /// Returns null if not registered.
         /// </summary>
+        /// <typeparam name="T">The service interface type to resolve.</typeparam>
+        /// <returns>The registered service, or null if no service of type T has been registered.</returns>
         public T? GetService<T>() where T : class
         {
             return _services.TryGetValue(typeof(T), out var service) ? service as T : null;
@@ -44,6 +50,9 @@ namespace UGSGit.PluginAbstractions
         /// Resolve a registered service by its interface type.
         /// Throws InvalidOperationException if not registered.
         /// </summary>
+        /// <typeparam name="T">The service interface type to resolve.</typeparam>
+        /// <returns>The registered service instance.</returns>
+        /// <exception cref="InvalidOperationException">No service of type T has been registered.</exception>
         public T GetRequiredService<T>() where T : class
         {
             return _services.TryGetValue(typeof(T), out var service)
@@ -68,6 +77,7 @@ namespace UGSGit.PluginAbstractions
         /// Called by PluginActivator after registration, before CreateTabs().
         /// Throws InvalidOperationException listing missing services.
         /// </summary>
+        /// <exception cref="InvalidOperationException">One or more required services are not registered. Lists the missing service names.</exception>
         public void ValidateRequiredServices()
         {
             var missing = RequiredServices

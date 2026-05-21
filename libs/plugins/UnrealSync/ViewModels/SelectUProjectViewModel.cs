@@ -26,18 +26,36 @@ public partial class SelectUProjectViewModel : ObservableObject
     private readonly string _repoPath;
     private readonly Action<string> _onSelected;
 
+    /// <summary>
+    /// Observable collection of .uproject file paths found in the repository.
+    /// </summary>
     [ObservableProperty]
     private ObservableCollection<string> _discoveredProjects = new();
 
+    /// <summary>
+    /// Currently selected project path from the list, or null.
+    /// </summary>
     [ObservableProperty]
     private string? _selectedProject;
 
+    /// <summary>
+    /// User-facing prompt text showing the current state.
+    /// </summary>
     [ObservableProperty]
     private string _message = "";
 
+    /// <summary>
+    /// Whether any .uproject files were auto-discovered in the repository.
+    /// </summary>
     [ObservableProperty]
     private bool _hasDiscoveredProjects;
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="SelectUProjectViewModel"/>.
+    /// </summary>
+    /// <param name="repoPath">Absolute path to the repository root.</param>
+    /// <param name="discoveredFiles">Paths of .uproject files found in the repo, or empty array.</param>
+    /// <param name="onSelected">Callback invoked when the user confirms a selection.</param>
     public SelectUProjectViewModel(string repoPath, string[] discoveredFiles, Action<string> onSelected)
     {
         _repoPath = repoPath;
@@ -52,6 +70,10 @@ public partial class SelectUProjectViewModel : ObservableObject
             : "Multiple .uproject files found. Select one from the list or browse:";
     }
 
+    /// <summary>
+    /// Opens a file picker for .uproject selection and invokes the callback when confirmed.
+    /// </summary>
+    /// <returns>A task that completes when the dialog closes and selection is processed.</returns>
     [RelayCommand]
     private async Task BrowseAsync()
     {
@@ -91,6 +113,9 @@ public partial class SelectUProjectViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Confirms the selected project and transitions to workspace.
+    /// </summary>
     [RelayCommand]
     private void UseSelected()
     {

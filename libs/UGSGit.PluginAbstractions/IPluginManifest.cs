@@ -30,6 +30,8 @@ namespace UGSGit.PluginAbstractions
         int DefaultSortOrder { get; }
 
         /// <summary>Creates the tab instances for this plugin. May return multiple tabs.</summary>
+        /// <param name="context">Context for the repository, including repo path, name, git dir, and service resolution.</param>
+        /// <returns>A read-only list of <see cref="IRepositoryTab"/> instances contributed by this plugin.</returns>
         /// <remarks>Called on the UI thread. Exceptions are caught and result in an ErrorTab.</remarks>
         IReadOnlyList<IRepositoryTab> CreateTabs(PluginContext context);
     }

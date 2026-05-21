@@ -10,13 +10,30 @@ using UGSGit.PluginAbstractions;
 
 namespace UGSGit.Plugins.UnrealSync.ViewModels;
 
+/// <summary>
+/// Mode indicating which sub-view to display in the tab body.
+/// </summary>
 public enum SyncTabMode
 {
+    /// <summary>
+    /// Scanning the repository for a .uproject file.
+    /// </summary>
     Detecting,
+
+    /// <summary>
+    /// Full workspace view with sync, build, and launch controls.
+    /// </summary>
     FullWorkspace,
+
+    /// <summary>
+    /// Error view shown when the UE engine cannot be detected.
+    /// </summary>
     EngineNotFound
 }
 
+/// <summary>
+/// Orchestrates tab lifecycle, delegates to sub-viewmodels.
+/// </summary>
 public class UnrealSyncTabViewModel : ObservableObject
 {
     private readonly PluginContext _context;
@@ -25,20 +42,35 @@ public class UnrealSyncTabViewModel : ObservableObject
     private SyncTabMode _mode = SyncTabMode.Detecting;
     private object _currentBody = null!;
 
+    /// <summary>
+    /// Read-only reference to the status panel ViewModel.
+    /// </summary>
     public StatusPanelViewModel StatusPanel { get; }
 
+    /// <summary>
+    /// Currently active sub-view (select project / full workspace / engine not found).
+    /// </summary>
     public object CurrentBody
     {
         get => _currentBody;
         private set => SetProperty(ref _currentBody, value);
     }
 
+    /// <summary>
+    /// Current tab mode, drives which sub-view is shown.
+    /// </summary>
     public SyncTabMode Mode
     {
         get => _mode;
         private set => SetProperty(ref _mode, value);
     }
 
+    /// <summary>
+    /// Initializes a new instance of <see cref="UnrealSyncTabViewModel"/>.
+    /// </summary>
+    /// <param name="repoPath">Absolute path to the repository root.</param>
+    /// <param name="syncService">Git sync service for branch and commit queries.</param>
+    /// <param name="context">Plugin context providing service resolution.</param>
     public UnrealSyncTabViewModel(string repoPath, IGitSyncService syncService, PluginContext context)
     {
         _repoPath = repoPath;
@@ -47,6 +79,10 @@ public class UnrealSyncTabViewModel : ObservableObject
         StatusPanel = new StatusPanelViewModel(repoPath, _syncService);
     }
 
+    /// <summary>
+    /// Detects project file and transitions to the appropriate sub-view.
+    /// </summary>
+    /// <returns>A task that completes when project detection finishes.</returns>
     public async Task RefreshAsync()
     {
         Mode = SyncTabMode.Detecting;
@@ -144,6 +180,9 @@ public class UnrealSyncTabViewModel : ObservableObject
         });
     }
 
+    /// <summary>
+    /// Cleans up CurrentBody if it implements <see cref="IDisposable"/>.
+    /// </summary>
     public void Dispose()
     {
         if (CurrentBody is System.IDisposable d)
