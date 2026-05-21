@@ -52,6 +52,9 @@
     </Folder>
 
     <Folder Name="/src/">
+        <Project Path="libs/UGSGit.PluginAbstractions/UGSGit.PluginAbstractions.csproj"/>
+        <Project Path="libs/plugins/HelloWorld/UGSGit.Plugins.HelloWorld.csproj"/>
+        <Project Path="libs/plugins/UnrealSync/UGSGit.Plugins.UnrealSync.csproj"/>
         <Project Path="src/UGSGit.csproj"/>
     </Folder>
 

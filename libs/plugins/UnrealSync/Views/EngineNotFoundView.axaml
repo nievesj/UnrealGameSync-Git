@@ -1,0 +1,41 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:UGSGit.Plugins.UnrealSync.ViewModels;assembly=UGSGit.Plugins.UnrealSync"
+             x:Class="UGSGit.Plugins.UnrealSync.Views.EngineNotFoundView"
+             x:DataType="vm:EngineNotFoundViewModel">
+    <Border Background="{DynamicResource Brush.Background}"
+            CornerRadius="8"
+            Margin="16"
+            Padding="32">
+        <StackPanel VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Spacing="12">
+            <TextBlock Text="&#x2699;"
+                       FontSize="48"
+                       HorizontalAlignment="Center"
+                       Foreground="{DynamicResource Brush.FG3}" />
+            <TextBlock Text="Engine Not Found"
+                       FontSize="18"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"
+                       Foreground="{DynamicResource Brush.FG1}" />
+            <TextBlock Text="{Binding Message}"
+                       FontSize="14"
+                       HorizontalAlignment="Center"
+                       Foreground="{DynamicResource Brush.FG3}" />
+            <TextBlock Text="{Binding EngineAssociation}"
+                       FontSize="12"
+                       HorizontalAlignment="Center"
+                       Foreground="{DynamicResource Brush.FG4}" />
+            <ItemsControl ItemsSource="{Binding PossibleReasons}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource Brush.FG4}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </Border>
+</UserControl>

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using UGSGit.Models;
+using UGSGit.PluginAbstractions;
 
 namespace UGSGit.Services;
 
@@ -16,7 +16,7 @@ namespace UGSGit.Services;
 /// and configurable process timeout (default: 2 hours for UE builds).
 /// Fixes RC-7.
 /// </summary>
-public class BuildService
+public class BuildService : IBuildService
 {
     private static readonly TimeSpan DefaultTimeout = TimeSpan.FromHours(2);
 

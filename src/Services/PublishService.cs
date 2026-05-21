@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using UGSGit.Models;
+using UGSGit.PluginAbstractions;
 
 namespace UGSGit.Services;
 
@@ -13,7 +14,7 @@ namespace UGSGit.Services;
 /// Supports atomic publish (temp → rename) and progress reporting.
 /// Uses 1MB buffer for large binary files (fixes M-3: was 81920).
 /// </summary>
-public class PublishService
+public class PublishService : IPublishService
 {
     /// <summary>
     /// Publish a zip to the network location.
@@ -118,15 +119,4 @@ public class PublishService
             progress?.Report(new PublishProgress(copiedBytes, totalBytes));
         }
     }
-}
-
-public record PublishProgress(long BytesCopied, long TotalBytes);
-public record PublishResult(PublishStatus Status, string Message);
-
-public enum PublishStatus
-{
-    Success,
-    Failed,
-    Cancelled,
-    NothingToPublish
 }

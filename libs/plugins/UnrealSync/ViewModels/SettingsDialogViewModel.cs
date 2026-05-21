@@ -1,0 +1,548 @@
+#nullable enable
+
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
+
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+
+using UGSGit.PluginAbstractions;
+
+namespace UGSGit.Plugins.UnrealSync.ViewModels;
+
+/// <summary>
+/// ViewModel for the UnrealSync Settings dialog.
+/// Engine path override is saved to user-local config (.unrealsync/local.json).
+/// All other settings are saved to team-shared config (.unrealsync.json).
+/// Fixes D-1: engine path is user-local, not team-shared.
+/// </summary>
+public partial class SettingsDialogViewModel : ObservableObject
+{
+    private readonly string _repoPath;
+    private readonly string _enginePath;
+    private readonly string _uprojectPath;
+    private readonly IConfigService _configService;
+
+    /// <summary>Project name derived from the .uproject filename, used for variable expansion hints.</summary>
+    public string ProjectName
+    {
+        get
+        {
+            return !string.IsNullOrEmpty(_uprojectPath)
+                ? Path.GetFileNameWithoutExtension(_uprojectPath)
+                : "Project";
+        }
+    }
+
+    /// <summary>Detected engine root directory path.</summary>
+    public string EnginePath => _enginePath;
+
+    // Engine — saved to LOCAL config (fixes D-1)
+    /// <summary>User-specified override path to the Unreal Engine root directory.</summary>
+    [ObservableProperty] private string _enginePathOverride = string.Empty;
+    /// <summary>Whether to auto-detect the engine path from the .uproject association.</summary>
+    [ObservableProperty] private bool _autoDetectEngine = true;
+
+    // Network — saved to SHARED config
+    /// <summary>Base URL or UNC path for network publish destination.</summary>
+    [ObservableProperty] private string _networkBaseUrl = string.Empty;
+    /// <summary>Archive channel name used for packaging (defaults to Editor).</summary>
+    [ObservableProperty] private string _archiveChannel = "Editor";
+    /// <summary>Publish channel name used for distribution (defaults to Editor).</summary>
+    [ObservableProperty] private string _publishChannel = "Editor";
+    /// <summary>Custom archive channel name when not using a preset channel.</summary>
+    [ObservableProperty] private string _customArchiveChannel = string.Empty;
+    /// <summary>Custom publish channel name when not using a preset channel.</summary>
+    [ObservableProperty] private string _customPublishChannel = string.Empty;
+
+    // Build defaults — saved to SHARED config
+    /// <summary>Default build configuration (e.g. Development, Shipping, DebugGame).</summary>
+    [ObservableProperty] private string _defaultBuildConfig = "Development";
+    /// <summary>Whether to build content when packaging the project.</summary>
+    [ObservableProperty] private bool _buildContentWhenPackaging;
+    /// <summary>Output directory for staged builds relative to the repository root.</summary>
+    [ObservableProperty] private string _outputDirectory = "Saved/StagedBuilds";
+
+    // Publish options — saved to SHARED config
+    /// <summary>Whether to use atomic publish (swap directory atomically on the network share).</summary>
+    [ObservableProperty] private bool _atomicPublish = true;
+
+    // Build Targets — saved to SHARED config
+    /// <summary>Observable collection of mutable build target edit models.</summary>
+    public ObservableCollection<BuildTargetEditModel> BuildTargets { get; } = new();
+
+    /// <summary>Available UAT command presets for the dropdown.</summary>
+    public List<UatCommandPreset> UatPresetList => UatCommandPresets.All;
+
+    /// <summary>Display strings for build mode dropdown (UBT Build, UAT Build, Custom Script).</summary>
+    public List<string> BuildModeOptions { get; } = new() { "UBT Build", "UAT Build", "Custom Script" };
+
+    // Validation errors (fixes H-4)
+    /// <summary>Validation error message for the engine path field.</summary>
+    [ObservableProperty] private string _enginePathError = string.Empty;
+    /// <summary>Validation error message for the network URL field.</summary>
+    [ObservableProperty] private string _networkUrlError = string.Empty;
+
+    /// <summary>
+    /// Available template variables that can be used in build target fields.
+    /// </summary>
+    public record BuildVariable(string Name, string Description);
+
+    public ObservableCollection<BuildVariable> AvailableVariables { get; } = new()
+    {
+        new BuildVariable("{ProjectName}", "The .uproject filename without extension (e.g. MyProject)."),
+        new BuildVariable("{EnginePath}", "The detected engine root directory (e.g., C:\\Program Files\\Epic Games\\UE_5.4)."),
+        new BuildVariable("{ProjectPath}", "Full path to the .uproject file (e.g., C:\\Projects\\MyProject\\MyProject.uproject)."),
+        new BuildVariable("{Target}", "The resolved UBT target name (e.g., MyProjectEditor or MyProject)."),
+        new BuildVariable("{UbtTarget}", "The resolved UBT target name, alias for {Target} (e.g., MyProjectEditor)."),
+        new BuildVariable("{Platform}", "The build platform (e.g., Win64, Linux, Mac, Android, IOS)."),
+        new BuildVariable("{Configuration}", "The build configuration (e.g., Development, DebugGame, Shipping, Test)."),
+        new BuildVariable("{ArchiveDir}", "The configured output/staging directory (e.g., Saved/StagedBuilds). Resolved from BuildDefaults.OutputDirectory."),
+    };
+
+    /// <summary>
+    /// Mutable edit model for build target steps, since UgsBuildStep is an immutable record.
+    /// Supports BuildMode (UBT/UAT/Custom) with per-field dirty tracking for mode switching.
+    /// </summary>
+    /// <summary>Mutable edit model for build target configuration.</summary>
+    public partial class BuildTargetEditModel : ObservableObject
+    {
+        /// <summary>Unique identifier for this build target.</summary>
+        public string Id { get; set; } = Guid.NewGuid().ToString("N")[..8];
+
+        /// <summary>User-visible name for this build target.</summary>
+        public string DisplayName { get; set; } = "New Target";
+
+        // Build mode — determines default ScriptPath and Arguments
+        /// <summary>Build mode string (UBT Build, UAT Build, or Custom Script).</summary>
+        [ObservableProperty] private string _buildMode = BuildModes.Ubt;
+        /// <summary>UAT command preset name used when BuildMode is UAT.</summary>
+        [ObservableProperty] private string _uatCommand = "BuildCookRun";
+
+        // Target type — curated dropdown mapping to UBT target names
+        /// <summary>Curated build type (Editor, Game, Client, Server) used to derive the UBT target string.</summary>
+        [ObservableProperty] private string _buildType = "Editor";
+
+        // Raw UBT target string, stored in config for backward compat
+        /// <summary>Raw UBT target string (e.g. {ProjectName}Editor).</summary>
+        public string Target { get; set; } = "{ProjectName}Editor";
+
+        /// <summary>Target platform for the build (e.g. Win64, Linux, Android).</summary>
+        [ObservableProperty] private string _platform = "Win64";
+
+        /// <summary>Build configuration (e.g. Development, Shipping, DebugGame).</summary>
+        [ObservableProperty] private string _configuration = "Development";
+
+        /// <summary>Path to the build script or executable invoked for this target.</summary>
+        [ObservableProperty] private string _scriptPath = "";
+
+        /// <summary>Command-line arguments passed to the build script.</summary>
+        [ObservableProperty] private string _arguments = "";
+
+        // Dirty tracking — prevents overwriting user edits on mode switches
+        private bool _scriptPathUserModified;
+        private bool _argumentsUserModified;
+        private bool _buildTypeUserModified;
+        private bool _suppressDirtyTracking;
+
+        /// <summary>Sort position for execution order among build targets.</summary>
+        public int OrderIndex { get; set; }
+
+        /// <summary>Whether to run this target on normal (manual) sync.</summary>
+        public bool RunOnNormalSync { get; set; } = true;
+
+        /// <summary>Whether to run this target on scheduled (automatic) sync.</summary>
+        public bool RunOnScheduledSync { get; set; } = false;
+
+        // Whether UatCommand dropdown should be visible
+        /// <summary>Whether the UAT command dropdown should be visible (true when BuildMode is UAT).</summary>
+        public bool ShowUatCommand => BuildMode == BuildModes.Uat;
+
+        partial void OnBuildModeChanged(string value)
+        {
+            OnPropertyChanged(nameof(ShowUatCommand));
+            ApplyDefaults(resetDirty: false);
+        }
+
+        partial void OnUatCommandChanged(string value)
+        {
+            if (BuildMode != BuildModes.Uat) return;
+
+            // Recompute arguments from preset if not user-modified
+            if (!_argumentsUserModified || string.IsNullOrEmpty(Arguments))
+            {
+                _suppressDirtyTracking = true;
+                try
+                {
+                    var preset = UatCommandPresets.Find(UatCommand);
+                    Arguments = preset?.ArgumentsTemplate ?? "";
+                    _argumentsUserModified = false;
+                }
+                finally
+                {
+                    _suppressDirtyTracking = false;
+                }
+            }
+
+            // Auto-adjust BuildType if user hasn't manually changed it
+            var presetForType = UatCommandPresets.Find(UatCommand);
+            if (presetForType?.AutoBuildType is { Length: > 0 } && !_buildTypeUserModified)
+            {
+                _suppressDirtyTracking = true;
+                try { BuildType = presetForType.AutoBuildType; }
+                finally { _suppressDirtyTracking = false; }
+            }
+        }
+
+        partial void OnScriptPathChanged(string value)
+        {
+            if (!_suppressDirtyTracking) _scriptPathUserModified = true;
+        }
+
+        partial void OnArgumentsChanged(string value)
+        {
+            if (!_suppressDirtyTracking) _argumentsUserModified = true;
+        }
+
+        partial void OnBuildTypeChanged(string value)
+        {
+            if (!_suppressDirtyTracking) _buildTypeUserModified = true;
+
+            // In UBT mode, recompute Arguments if not user-modified
+            if (BuildMode == BuildModes.Ubt && !_argumentsUserModified)
+            {
+                _suppressDirtyTracking = true;
+                try
+                {
+                    var defaults = ComputeDefaults(BuildModes.Ubt, null!);
+                    Arguments = defaults.Arguments;
+                }
+                finally
+                {
+                    _suppressDirtyTracking = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Applies mode-appropriate defaults to ScriptPath and Arguments.
+        /// If resetDirty is true, clears dirty flags (used on initial load or after explicit
+        /// "Reset to defaults" action).
+        /// </summary>
+        /// <param name="resetDirty">
+        /// If true, resets the user-modified tracking flags so defaults will be reapplied
+        /// on subsequent mode switches.
+        /// </param>
+        public void ApplyDefaults(bool resetDirty = false)
+        {
+            var defaults = ComputeDefaults(BuildMode, UatCommand);
+
+            _suppressDirtyTracking = true;
+            try
+            {
+                if (!_scriptPathUserModified || string.IsNullOrEmpty(ScriptPath) || resetDirty)
+                {
+                    ScriptPath = defaults.ScriptPath;
+                    if (resetDirty) _scriptPathUserModified = false;
+                }
+
+                if (!_argumentsUserModified || string.IsNullOrEmpty(Arguments) || resetDirty)
+                {
+                    Arguments = defaults.Arguments;
+                    if (resetDirty) _argumentsUserModified = false;
+                }
+            }
+            finally
+            {
+                _suppressDirtyTracking = false;
+            }
+        }
+
+        /// <summary>
+        /// Computes platform-aware defaults for ScriptPath and Arguments based on the
+        /// given build mode and UAT command.
+        /// </summary>
+        /// <param name="buildMode">The build mode string (UBT, UAT, or Custom).</param>
+        /// <param name="uatCommand">The UAT command preset name; used only when buildMode is UAT.</param>
+        /// <returns>
+        /// A tuple containing the default ScriptPath and Arguments strings.
+        /// For Custom mode, both values are empty strings.
+        /// </returns>
+        public (string ScriptPath, string Arguments) ComputeDefaults(string buildMode, string? uatCommand)
+        {
+            var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+            var scriptExt = isWindows ? ".bat" : ".sh";
+
+            return buildMode switch
+            {
+                BuildModes.Ubt => (
+                    ScriptPath: $"{{EnginePath}}/Engine/Build/BatchFiles/Build{scriptExt}",
+                    Arguments: $"-Target=\"{{UbtTarget}} {{Platform}} {{Configuration}} -Project=\\\"{{ProjectPath}}\\\"\" -WaitMutex"
+                ),
+                BuildModes.Uat => ComputeUatDefaults(uatCommand, isWindows),
+                BuildModes.Custom => (ScriptPath: "", Arguments: ""),
+                _ => (ScriptPath: "", Arguments: "")
+            };
+        }
+
+        private (string ScriptPath, string Arguments) ComputeUatDefaults(string? uatCommand, bool isWindows)
+        {
+            var scriptExt = isWindows ? ".bat" : ".sh";
+            var scriptPath = $"{{EnginePath}}/Engine/Build/BatchFiles/RunUAT{scriptExt}";
+
+            var preset = UatCommandPresets.Find(uatCommand);
+            if (preset == null)
+                return (scriptPath, "");
+
+            return (scriptPath, preset.ArgumentsTemplate);
+        }
+
+        /// <summary>
+        /// Converts this edit model to an immutable UgsBuildStep record for persistence.
+        /// The UBT target string is derived from the curated BuildType.
+        /// </summary>
+        /// <returns>An immutable UgsBuildStep record with the current model values.</returns>
+        public UgsBuildStep ToStep()
+        {
+            var ubtTarget = BuildType switch
+            {
+                "Game"   => "{ProjectName}",
+                "Client" => "{ProjectName}Client",
+                "Editor" => "{ProjectName}Editor",
+                "Server" => "{ProjectName}Server",
+                _        => Target ?? "{ProjectName}Editor",
+            };
+            return new UgsBuildStep(
+                Id, DisplayName, ubtTarget, Platform, Configuration,
+                ScriptPath, Arguments,
+                OrderIndex, RunOnNormalSync, RunOnScheduledSync,
+                BuildMode, UatCommand    // new trailing params
+            );
+        }
+
+        /// <summary>
+        /// Creates a BuildTargetEditModel from an immutable UgsBuildStep record,
+        /// preserving backward compatibility for missing BuildMode/UatCommand fields.
+        /// </summary>
+        /// <param name="s">The source UgsBuildStep record.</param>
+        /// <returns>A new BuildTargetEditModel populated from the record values.</returns>
+        public static BuildTargetEditModel FromStep(UgsBuildStep s)
+        {
+            var model = new BuildTargetEditModel
+            {
+                Id = s.Id,
+                DisplayName = s.DisplayName,
+                Target = s.Target,
+                BuildType = InferBuildType(s.Target),
+                Platform = s.Platform,
+                Configuration = s.Configuration,
+                ScriptPath = s.ScriptPath,
+                Arguments = s.Arguments,
+                BuildMode = string.IsNullOrEmpty(s.BuildMode) ? BuildModes.Ubt : s.BuildMode,   // backward compat
+                UatCommand = s.UatCommand ?? "BuildCookRun",                                      // backward compat
+                OrderIndex = s.OrderIndex,
+                RunOnNormalSync = s.RunOnNormalSync,
+                RunOnScheduledSync = s.RunOnScheduledSync
+                // dirty flags default to false — fields are considered "not user-modified" on load
+            };
+
+            return model;
+        }
+
+        /// <summary>
+        /// Infer the curated BuildType from a raw UBT target string.
+        /// Handles both templated ({ProjectName}Editor) and literal (MyProjectEditor) targets.
+        /// </summary>
+        private static string InferBuildType(string target)
+        {
+            if (string.IsNullOrEmpty(target)) return "Editor";
+            var suffix = target.Replace("{ProjectName}", "", StringComparison.OrdinalIgnoreCase);
+            if (string.IsNullOrEmpty(suffix)) return "Game";
+            if (suffix.EndsWith("Editor", StringComparison.OrdinalIgnoreCase)) return "Editor";
+            if (suffix.EndsWith("Client", StringComparison.OrdinalIgnoreCase)) return "Client";
+            if (suffix.EndsWith("Server", StringComparison.OrdinalIgnoreCase)) return "Server";
+            return "Editor";
+        }
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the SettingsDialogViewModel with the specified repository and service context.
+    /// </summary>
+    /// <param name="repoPath">Absolute path to the Git repository root.</param>
+    /// <param name="enginePath">Absolute path to the Unreal Engine root directory.</param>
+    /// <param name="uprojectPath">Absolute path to the .uproject file.</param>
+    /// <param name="configService">Service for loading and saving UnrealSync config files.</param>
+    public SettingsDialogViewModel(string repoPath, string enginePath, string uprojectPath, IConfigService configService)
+    {
+        _repoPath = repoPath;
+        _enginePath = enginePath;
+        _uprojectPath = uprojectPath;
+        _configService = configService;
+        LoadFromConfig();
+    }
+
+    /// <summary>
+    /// Load current config values into the VM properties.
+    /// </summary>
+    private void LoadFromConfig()
+    {
+        var config = _configService.LoadConfig(_repoPath);
+        var localState = _configService.LoadLocalState(_repoPath);
+
+        // Engine (local)
+        EnginePathOverride = localState.EnginePathOverride;
+        AutoDetectEngine = config.Engine?.AutoDetect ?? true;
+
+        // Network (shared)
+        NetworkBaseUrl = config.NetworkBase;
+        ArchiveChannel = config.Archive?.Channel ?? "Editor";
+        PublishChannel = config.Publish?.Channel ?? "Editor";
+        CustomArchiveChannel = config.Archive?.CustomChannel ?? string.Empty;
+        CustomPublishChannel = config.Publish?.CustomChannel ?? string.Empty;
+
+        // Build defaults (shared)
+        DefaultBuildConfig = config.BuildDefaults?.DefaultConfig ?? "Development";
+        BuildContentWhenPackaging = config.BuildDefaults?.BuildContentWhenPackaging ?? false;
+        OutputDirectory = config.BuildDefaults?.OutputDirectory ?? "Saved/StagedBuilds";
+
+        // Publish (shared)
+        AtomicPublish = config.Publish?.Atomic ?? true;
+
+        // Build targets (shared) — already migrated by ConfigService
+        BuildTargets.Clear();
+        foreach (var step in config.Engine?.BuildTargets ?? new())
+        {
+            BuildTargets.Add(BuildTargetEditModel.FromStep(step));
+        }
+    }
+
+    /// <summary>Validates and persists settings to local + shared config.</summary>
+    [RelayCommand]
+    private void Save()
+    {
+        if (!Validate()) return;
+
+        var sharedConfig = _configService.LoadConfig(_repoPath);
+        var localState = _configService.LoadLocalState(_repoPath);
+
+        // Update shared config — use with expressions since config types are now immutable records (fixes M-2)
+        // Bump version to 2 since we now persist BuildMode/UatCommand (Council F-13)
+        sharedConfig = sharedConfig with
+        {
+            Version = 2,
+            NetworkBase = NetworkBaseUrl,
+            Engine = sharedConfig.Engine with
+            {
+                BuildTargets = new List<UgsBuildStep>(BuildTargets.Select(x => x.ToStep())),
+                AutoDetect = AutoDetectEngine
+            }
+        };
+
+        if (sharedConfig.Archive != null)
+        {
+            sharedConfig = sharedConfig with
+            {
+                Archive = sharedConfig.Archive with
+                {
+                    Channel = ArchiveChannel,
+                    CustomChannel = CustomArchiveChannel,
+                }
+            };
+        }
+
+        if (sharedConfig.BuildDefaults != null)
+        {
+            sharedConfig = sharedConfig with
+            {
+                BuildDefaults = sharedConfig.BuildDefaults with
+                {
+                    DefaultConfig = DefaultBuildConfig,
+                    BuildContentWhenPackaging = BuildContentWhenPackaging,
+                    OutputDirectory = OutputDirectory,
+                }
+            };
+        }
+
+        if (sharedConfig.Publish != null)
+        {
+            sharedConfig = sharedConfig with
+            {
+                Publish = sharedConfig.Publish with
+                {
+                    Channel = PublishChannel,
+                    CustomChannel = CustomPublishChannel,
+                    Atomic = AtomicPublish,
+                }
+            };
+        }
+
+        _configService.SaveConfig(_repoPath, sharedConfig);
+
+        // Update local config (fixes D-1: engine path is user-local)
+        localState.EnginePathOverride = EnginePathOverride;
+        _configService.SaveLocalState(_repoPath, localState);
+    }
+
+    /// <summary>Discards changes and closes dialog.</summary>
+    [RelayCommand]
+    private void Cancel()
+    {
+        // Dialog close handled by view
+    }
+
+    /// <summary>Adds a new build target with default values.</summary>
+    [RelayCommand]
+    private void AddBuildTarget()
+    {
+        var newTarget = new BuildTargetEditModel();
+        newTarget.ApplyDefaults(resetDirty: true);  // Pre-populate defaults for UBT mode
+        BuildTargets.Add(newTarget);
+    }
+
+    /// <summary>Removes the specified build target from the collection.</summary>
+    /// <param name="step">The build target edit model to remove.</param>
+    [RelayCommand]
+    private void RemoveBuildTarget(BuildTargetEditModel step)
+    {
+        BuildTargets.Remove(step);
+    }
+
+    /// <summary>
+    /// Validates engine path and network URL before saving.
+    /// Returns false if any field is invalid and sets the corresponding error message.
+    /// </summary>
+    /// <returns>True if all settings are valid; false otherwise.</returns>
+    private bool Validate()
+    {
+        var valid = true;
+        EnginePathError = string.Empty;
+        NetworkUrlError = string.Empty;
+
+        if (!AutoDetectEngine && string.IsNullOrWhiteSpace(EnginePathOverride))
+        {
+            EnginePathError = "Engine path is required when auto-detect is disabled";
+            valid = false;
+        }
+        else if (!string.IsNullOrWhiteSpace(EnginePathOverride) &&
+                 !Directory.Exists(Path.Combine(EnginePathOverride, "Engine", "Binaries")))
+        {
+            EnginePathError = "Engine path does not exist or is invalid";
+            valid = false;
+        }
+
+        if (!string.IsNullOrWhiteSpace(NetworkBaseUrl) &&
+            !Regex.IsMatch(NetworkBaseUrl, @"^(\\\\|https?://)"))
+        {
+            NetworkUrlError = "Base URL must be a valid UNC path or HTTP URL";
+            valid = false;
+        }
+
+        return valid;
+    }
+
+}

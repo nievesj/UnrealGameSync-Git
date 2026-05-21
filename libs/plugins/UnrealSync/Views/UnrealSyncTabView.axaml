@@ -1,0 +1,20 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:UGSGit.Plugins.UnrealSync.ViewModels;assembly=UGSGit.Plugins.UnrealSync"
+             xmlns:v="clr-namespace:UGSGit.Plugins.UnrealSync.Views;assembly=UGSGit.Plugins.UnrealSync"
+             x:Class="UGSGit.Plugins.UnrealSync.Views.UnrealSyncTabView"
+             x:DataType="vm:UnrealSyncTabViewModel">
+    <ContentControl Content="{Binding CurrentBody}">
+        <ContentControl.DataTemplates>
+            <DataTemplate DataType="vm:SelectUProjectViewModel">
+                <v:SelectUProjectView />
+            </DataTemplate>
+            <DataTemplate DataType="vm:EngineNotFoundViewModel">
+                <v:EngineNotFoundView />
+            </DataTemplate>
+            <DataTemplate DataType="vm:FullWorkspaceViewModel">
+                <v:FullWorkspaceView />
+            </DataTemplate>
+        </ContentControl.DataTemplates>
+    </ContentControl>
+</UserControl>

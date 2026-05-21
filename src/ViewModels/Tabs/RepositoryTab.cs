@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Media;
 
 using UGSGit.Models;
+using UGSGit.PluginAbstractions;
 
 namespace UGSGit.ViewModels.Tabs
 {
