@@ -95,6 +95,18 @@
                                    FontSize="12"
                                    Foreground="{DynamicResource Brush.FG3}" />
                     </StackPanel>
+                    <!-- Editor build status + deploy (Phase 1b+: editor build + deploy) -->
+                    <StackPanel Orientation="Horizontal" Spacing="16" Margin="0,4,0,0">
+                        <TextBlock Text="{Binding EditorBuildStatusText}"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource Brush.FG3}" />
+                        <Button Content="Deploy Editor"
+                                Command="{Binding DeployEditorCommand}"
+                                IsEnabled="{Binding !IsBusy}"
+                                FontSize="12"
+                                Padding="8,2"
+                                IsVisible="{Binding EditorBuildAvailable}" />
+                    </StackPanel>
                 </StackPanel>
             </Border>
 

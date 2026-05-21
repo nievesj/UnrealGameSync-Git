@@ -30,6 +30,22 @@ public record class UgsConfig
     [JsonPropertyName("gameChannel")]
     public string GameChannel { get; init; } = "Game";
 
+    /// <summary>
+    /// Base name used for published/downloaded zip files.
+    /// Defaults to the .uproject filename if empty.
+    /// Use this when the zip name differs from the project file name.
+    /// </summary>
+    [JsonPropertyName("binaryName")]
+    public string BinaryName { get; init; } = string.Empty;
+
+    /// <summary>Hex color for editor build badges (e.g. "#00FF00"). Empty = default green.</summary>
+    [JsonPropertyName("editorBadgeColor")]
+    public string EditorBadgeColor { get; init; } = string.Empty;
+
+    /// <summary>Hex color for game build badges (e.g. "#FFA500"). Empty = default orange.</summary>
+    [JsonPropertyName("gameBadgeColor")]
+    public string GameBadgeColor { get; init; } = string.Empty;
+
     /// <summary>Archive/packaging configuration (zip format, profiles, GitHub Actions).</summary>
     [JsonPropertyName("archive")]
     public UgsArchiveConfig Archive { get; init; } = new();

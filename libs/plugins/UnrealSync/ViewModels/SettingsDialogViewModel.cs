@@ -55,6 +55,25 @@ public partial class SettingsDialogViewModel : ObservableObject
     [ObservableProperty] private string _editorChannel = "Editor";
     /// <summary>Channel name for game builds (subdirectory under network base).</summary>
     [ObservableProperty] private string _gameChannel = "Game";
+    /// <summary>Base name for published/downloaded zip files. Empty = use .uproject name.</summary>
+    [ObservableProperty] private string _binaryName = string.Empty;
+    /// <summary>Hex color for editor build badges. Empty = default green.</summary>
+    [ObservableProperty] private string _editorBadgeColor = string.Empty;
+    /// <summary>Hex color for game build badges. Empty = default orange.</summary>
+    [ObservableProperty] private string _gameBadgeColor = string.Empty;
+
+    /// <summary>Preset hex colors for the color picker flyout.</summary>
+    public List<string> PresetColors { get; } = new()
+    {
+        "#00FF00", "#32CD32", "#228B22", "#006400",  // Greens
+        "#FFA500", "#FF8C00", "#FF4500", "#FF6347",  // Oranges/Reds
+        "#1E90FF", "#00BFFF", "#4169E1", "#0000FF",  // Blues
+        "#FFD700", "#FFFF00", "#F0E68C", "#B8860B",  // Yellows
+        "#FF69B4", "#FF1493", "#C71585", "#800080",  // Pinks/Purples
+        "#00CED1", "#20B2AA", "#008B8B", "#5F9EA0",  // Teals
+        "#A9A9A9", "#808080", "#696969", "#000000",  // Grays/Black
+        "#FFFFFF", "#F5F5F5", "#D3D3D3", "#C0C0C0",  // Whites
+    };
 
     // Build defaults — saved to SHARED config
     /// <summary>Output directory for staged builds relative to the repository root.</summary>
@@ -394,6 +413,9 @@ public partial class SettingsDialogViewModel : ObservableObject
         NetworkBaseUrl = config.NetworkBase;
         EditorChannel = config.EditorChannel;
         GameChannel = config.GameChannel;
+        BinaryName = config.BinaryName;
+        EditorBadgeColor = config.EditorBadgeColor;
+        GameBadgeColor = config.GameBadgeColor;
 
         // Build defaults (shared)
         OutputDirectory = config.BuildDefaults?.OutputDirectory ?? "Saved/StagedBuilds";
@@ -431,6 +453,9 @@ public partial class SettingsDialogViewModel : ObservableObject
             },
             EditorChannel = EditorChannel,
             GameChannel = GameChannel,
+            BinaryName = BinaryName,
+            EditorBadgeColor = EditorBadgeColor,
+            GameBadgeColor = GameBadgeColor,
         };
 
         if (sharedConfig.BuildDefaults != null)
@@ -461,6 +486,14 @@ public partial class SettingsDialogViewModel : ObservableObject
         localState.EnginePathOverride = EnginePathOverride;
         _configService.SaveLocalState(_repoPath, localState);
     }
+
+    /// <summary>Sets the editor badge color from a preset swatch.</summary>
+    [RelayCommand]
+    private void SetEditorColor(string color) => EditorBadgeColor = color;
+
+    /// <summary>Sets the game badge color from a preset swatch.</summary>
+    [RelayCommand]
+    private void SetGameColor(string color) => GameBadgeColor = color;
 
     /// <summary>Discards changes and closes dialog.</summary>
     [RelayCommand]

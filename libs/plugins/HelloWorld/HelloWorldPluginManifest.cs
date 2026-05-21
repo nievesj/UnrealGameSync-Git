@@ -24,5 +24,10 @@ namespace UGSGit.Plugins.HelloWorld
                 new HelloWorldTab(context.RepositoryPath)
             };
         }
+
+        /// <summary>
+        /// HelloWorld plugin does not contribute commit annotations.
+        /// </summary>
+        public IReadOnlyList<ICommitAnnotator>? CommitAnnotators => null;
     }
 }

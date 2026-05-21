@@ -118,6 +118,18 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string _publishStatusText = "";
 
+    /// <summary>Status text for the editor binary build deployment.</summary>
+    [ObservableProperty]
+    private string _editorBuildStatusText = "";
+
+    /// <summary>Whether the deployed editor binary matches the current commit.</summary>
+    [ObservableProperty]
+    private bool _editorBuildIsCurrent;
+
+    /// <summary>Whether a newer editor binary build is available on the network.</summary>
+    [ObservableProperty]
+    private bool _editorBuildAvailable;
+
     /// <summary>Observable collection of configured build target steps.</summary>
     public ObservableCollection<UgsBuildStep> BuildTargets { get; } = new();
 
@@ -241,7 +253,22 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
             AppendLog($"\n{result.Message}");
 
             if (result.Status == SyncStatus.Success && !string.IsNullOrEmpty(result.CommitSha))
+            {
                 CommitText = result.CommitSha;
+
+                // Non-blocking binary deploy if network is configured
+                if (!string.IsNullOrEmpty(_config.NetworkBase))
+                {
+                    try
+                    {
+                        await DeployEditorAsync();
+                    }
+                    catch (System.Exception ex)
+                    {
+                        AppendLog($"\nPost-sync deploy error: {ex.Message}");
+                    }
+                }
+            }
         }
         catch (System.Exception ex)
         {
@@ -415,6 +442,106 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         }
     }
 
+    /// <summary>Deploys the precompiled editor binary for the current commit.</summary>
+    [RelayCommand]
+    private async Task DeployEditorAsync()
+    {
+        if (IsBusy) return;
+        IsBusy = true;
+
+        try
+        {
+            var deployService = _context.GetService<IDeployService>()!;
+            var shortSha = CommitText?.Length >= 9 ? CommitText[..9] : CommitText;
+            var progress = new Progress<string>(AppendLog);
+
+            if (string.IsNullOrEmpty(shortSha))
+            {
+                AppendLog("No commit to deploy.");
+                return;
+            }
+
+            // Check if this SHA is already deployed
+            var localState = _configService.LoadLocalState(_repoPath);
+            if (string.Equals(localState.LastDeployedArchiveSha, shortSha, StringComparison.OrdinalIgnoreCase))
+            {
+                AppendLog($"Editor build {shortSha} is already deployed.");
+                return;
+            }
+
+            var binaryName = !string.IsNullOrEmpty(_config.BinaryName)
+                ? _config.BinaryName
+                : ProjectName;
+
+            var result = await deployService.DeployAsync(
+                _repoPath, _config.NetworkBase, _config.EditorChannel,
+                binaryName, shortSha, progress, CancellationToken.None).ConfigureAwait(true);
+
+            AppendLog(result.Message);
+
+            if (result.Status == DeployStatus.Success)
+            {
+                await RefreshEditorBuildStatusAsync();
+            }
+        }
+        catch (System.Exception ex)
+        {
+            AppendLog($"\nDeploy error: {ex.Message}");
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    /// <summary>Refreshes the editor build status fields from local state and network.</summary>
+    private async Task RefreshEditorBuildStatusAsync()
+    {
+        try
+        {
+            var localState = _configService.LoadLocalState(_repoPath);
+            var shortSha = CommitText?.Length >= 9 ? CommitText[..9] : CommitText;
+            var deployedSha = localState.LastDeployedArchiveSha;
+
+            if (string.IsNullOrEmpty(deployedSha))
+            {
+                EditorBuildStatusText = "none";
+                EditorBuildIsCurrent = false;
+            }
+            else if (string.Equals(deployedSha, shortSha, StringComparison.OrdinalIgnoreCase))
+            {
+                EditorBuildStatusText = $"Editor build: {deployedSha} (current)";
+                EditorBuildIsCurrent = true;
+            }
+            else
+            {
+                EditorBuildStatusText = $"Editor build: {deployedSha} (behind)";
+                EditorBuildIsCurrent = false;
+            }
+
+            // Check if a newer build is available on the network
+            EditorBuildAvailable = false;
+            if (!string.IsNullOrEmpty(_config.NetworkBase) && !string.IsNullOrEmpty(shortSha))
+            {
+                var deployService = _context.GetService<IDeployService>(); // returns null if not registered
+                if (deployService != null)
+                {
+                    var binaryName = !string.IsNullOrEmpty(_config.BinaryName)
+                        ? _config.BinaryName
+                        : ProjectName;
+                    var found = await deployService.FindBuildForCommitAsync(
+                        _config.NetworkBase, _config.EditorChannel, binaryName,
+                        shortSha, CancellationToken.None).ConfigureAwait(true);
+                    EditorBuildAvailable = found != null;
+                }
+            }
+        }
+        catch
+        {
+            // Status display is best-effort; silently ignore errors
+        }
+    }
+
     /// <summary>Opens the settings dialog for configuring engine paths, build targets, and publish options.</summary>
     [RelayCommand]
     private async Task OpenSettings()
@@ -456,6 +583,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
 
     /// <summary>
     /// Fetches the current branch name and commit SHA from the Git repository.
+    /// Also refreshes the editor build deployment status.
     /// </summary>
     /// <param name="ct">Cancellation token to cancel the fetch operations.</param>
     /// <returns>A task that completes when both branch and commit have been retrieved.</returns>
@@ -465,6 +593,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         {
             BranchText = await _syncService.GetCurrentBranchAsync(ct).ConfigureAwait(true);
             CommitText = await _syncService.GetCurrentCommitAsync(ct).ConfigureAwait(true);
+            await RefreshEditorBuildStatusAsync();
         }
         catch { /* ignore */ }
     }

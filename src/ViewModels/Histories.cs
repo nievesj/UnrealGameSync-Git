@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Avalonia.Collections;
@@ -193,6 +195,36 @@ namespace UGSGit.ViewModels
             }
 
             Graph = Models.CommitGraph.Generate(commits, firstParentOnly, highlighting, extraHeads);
+
+            // Fetch annotations asynchronously and apply when ready
+            _ = FetchAnnotationsAsync(commits);
+        }
+
+        private async Task FetchAnnotationsAsync(List<Models.Commit> commits)
+        {
+            try
+            {
+                var provider = Services.HostServices.AnnotationProvider;
+                var shas = commits.Select(c => c.SHA.Length >= 9 ? c.SHA[..9] : c.SHA).Distinct().ToList();
+                var annotations = await provider.GetAnnotationsAsync(shas, CancellationToken.None).ConfigureAwait(true);
+
+                // Apply annotations to commits
+                foreach (var commit in commits)
+                {
+                    var shortSha = commit.SHA.Length >= 9 ? commit.SHA[..9] : commit.SHA;
+                    if (annotations.TryGetValue(shortSha, out var list))
+                        commit.Annotations = new List<PluginAbstractions.CommitAnnotation>(list);
+                    else
+                        commit.Annotations = null;
+                }
+
+                // Trigger visual refresh of annotation presenters
+                OnPropertyChanged(nameof(Commits));
+            }
+            catch
+            {
+                // Silently ignore — annotation failures must not break the graph
+            }
         }
 
         public Models.BisectState UpdateBisectInfo()

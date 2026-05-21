@@ -20,6 +20,7 @@ public class UnrealSyncTab : IRepositoryTab
     private readonly UnrealSyncTabViewModel _viewModel;
     private readonly UnrealSyncTabView _bodyView;
     private readonly StatusPanelView _toolbarView;
+    private readonly UnrealSyncBuildAnnotator? _annotator;
 
     /// <summary>
     /// Tab title shown in the tab bar.
@@ -75,10 +76,25 @@ public class UnrealSyncTab : IRepositoryTab
 
         _bodyView = new UnrealSyncTabView();
         _bodyView.DataContext = _viewModel;
+
+        // Register commit annotator for build availability badges
+        var deployService = context.GetService<IDeployService>();
+        var configService = context.GetService<IConfigService>();
+        var annotationProvider = context.GetService<ICommitAnnotationProvider>();
+        if (deployService != null && configService != null)
+        {
+            var projectName = Path.GetFileNameWithoutExtension(context.RepositoryPath);
+            _annotator = new UnrealSyncBuildAnnotator(deployService, configService, context.RepositoryPath, projectName);
+        }
+
+        // Register annotator with the host-level provider so badges appear in the commit graph
+        if (_annotator != null && annotationProvider != null)
+            annotationProvider.Register(_annotator);
     }
 
     /// <summary>
     /// Triggers async refresh of repository state.
+    /// Annotator is registered in constructor via PluginContext.
     /// </summary>
     public void OnActivated()
     {
@@ -96,12 +112,21 @@ public class UnrealSyncTab : IRepositoryTab
     }
 
     /// <summary>
-    /// No-op (tab does not require cleanup on deactivation).
+    /// Unregisters the commit annotator when the tab is deactivated.
     /// </summary>
-    public void OnDeactivated() { }
+    public void OnDeactivated()
+    {
+        if (_annotator != null)
+            _context.GetService<ICommitAnnotationProvider>()?.Unregister(_annotator);
+    }
 
     /// <summary>
-    /// Disposes the viewModel and cancels any pending operations.
+    /// Disposes the viewModel and unregisters the annotator.
     /// </summary>
-    public void Dispose() => _viewModel.Dispose();
+    public void Dispose()
+    {
+        if (_annotator != null)
+            _context.GetService<ICommitAnnotationProvider>()?.Unregister(_annotator);
+        _viewModel.Dispose();
+    }
 }

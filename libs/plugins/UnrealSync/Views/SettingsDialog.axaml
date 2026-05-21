@@ -62,6 +62,78 @@
                                      Watermark="Game" />
                         </StackPanel>
                     </Grid>
+
+                    <TextBlock Text="Binary name (zip prefix, defaults to .uproject name):"
+                               FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
+                    <TextBox Text="{Binding BinaryName}"
+                             Watermark="{Binding ProjectName}" />
+
+                    <TextBlock Text="Badge colors (click swatch to pick):"
+                               FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
+                    <Grid ColumnDefinitions="*,*">
+                        <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,8,0">
+                            <TextBlock Text="Editor:" FontSize="11"
+                                       Foreground="{DynamicResource Brush.FG3}" />
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Button Grid.Column="0" Width="28" Height="28" Margin="0,0,8,0"
+                                        CornerRadius="4"
+                                        Background="{Binding EditorBadgeColor, Converter={x:Static c:HexToBrushConverter.Instance}, ConverterParameter=#00FF00}">
+                                    <Button.Flyout>
+                                        <Flyout>
+                                            <ItemsControl ItemsSource="{Binding $parent[Window].((vm:SettingsDialogViewModel)DataContext).PresetColors}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel MaxWidth="180" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Button Width="24" Height="24" Margin="2"
+                                                                Background="{Binding ., Converter={x:Static c:HexToBrushConverter.Instance}}"
+                                                                Command="{Binding $parent[ItemsControl].((vm:SettingsDialogViewModel)DataContext).SetEditorColorCommand}"
+                                                                CommandParameter="{Binding .}" />
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </Flyout>
+                                    </Button.Flyout>
+                                </Button>
+                                <TextBox Grid.Column="1" Text="{Binding EditorBadgeColor}"
+                                         Watermark="#00FF00" />
+                            </Grid>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Spacing="4">
+                            <TextBlock Text="Game:" FontSize="11"
+                                       Foreground="{DynamicResource Brush.FG3}" />
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Button Grid.Column="0" Width="28" Height="28" Margin="0,0,8,0"
+                                        CornerRadius="4"
+                                        Background="{Binding GameBadgeColor, Converter={x:Static c:HexToBrushConverter.Instance}, ConverterParameter=#FFA500}">
+                                    <Button.Flyout>
+                                        <Flyout>
+                                            <ItemsControl ItemsSource="{Binding $parent[Window].((vm:SettingsDialogViewModel)DataContext).PresetColors}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel MaxWidth="180" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Button Width="24" Height="24" Margin="2"
+                                                                Background="{Binding ., Converter={x:Static c:HexToBrushConverter.Instance}}"
+                                                                Command="{Binding $parent[ItemsControl].((vm:SettingsDialogViewModel)DataContext).SetGameColorCommand}"
+                                                                CommandParameter="{Binding .}" />
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </Flyout>
+                                    </Button.Flyout>
+                                </Button>
+                                <TextBox Grid.Column="1" Text="{Binding GameBadgeColor}"
+                                         Watermark="#FFA500" />
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
                 </StackPanel>
             </Border>
 

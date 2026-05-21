@@ -1,6 +1,8 @@
 using System;
+using System.Globalization;
 
 using Avalonia.Data.Converters;
+using Avalonia.Media;
 
 namespace UGSGit.Plugins.UnrealSync.Converters
 {
@@ -28,5 +30,43 @@ namespace UGSGit.Plugins.UnrealSync.Converters
         /// </summary>
         public static readonly FuncValueConverter<object?, bool> IsNotNull =
             new FuncValueConverter<object?, bool>(v => v != null);
+    }
+
+    /// <summary>
+    /// Converts a hex color string to a SolidColorBrush.
+    /// Returns the ConverterParameter (or Transparent brush) if empty/invalid.
+    /// </summary>
+    public class HexToBrushConverter : IValueConverter
+    {
+        public static readonly HexToBrushConverter Instance = new();
+
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        {
+            Color defaultColor = Colors.Transparent;
+            if (parameter is string paramStr && !string.IsNullOrWhiteSpace(paramStr))
+            {
+                try { defaultColor = Color.Parse(paramStr); } catch { }
+            }
+
+            var v = value as string;
+            if (string.IsNullOrWhiteSpace(v))
+                return new SolidColorBrush(defaultColor);
+
+            var hex = v.Trim();
+            if (!hex.StartsWith("#"))
+                hex = "#" + hex;
+
+            try
+            {
+                return new SolidColorBrush(Color.Parse(hex));
+            }
+            catch
+            {
+                return new SolidColorBrush(defaultColor);
+            }
+        }
+
+        public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+            => throw new NotSupportedException();
     }
 }
