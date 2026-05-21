@@ -102,6 +102,10 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string _lastZipPath = string.Empty;
 
+    /// <summary>Channel name the last zip should be published to (Editor or Game).</summary>
+    [ObservableProperty]
+    private string _lastZipChannel = "Editor";
+
     /// <summary>Package progress as a value between 0.0 and 1.0.</summary>
     [ObservableProperty]
     private double _packageProgress;
@@ -349,6 +353,9 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
 
             AppendLog($"\nZip created: {zipResult}");
             LastZipPath = zipResult;
+            LastZipChannel = profile.EditorTarget.EndsWith("Editor", StringComparison.OrdinalIgnoreCase)
+                ? _config.EditorChannel
+                : _config.GameChannel;
             CanPublish = true;
         }
         catch (OperationCanceledException)
@@ -380,7 +387,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
                 return;
             }
 
-            var publishChannel = _config.Publish?.Channel ?? "Editor";
+            var publishChannel = LastZipChannel;
             var atomic = _config.Publish?.Atomic ?? true;
 
             var progress = new Progress<PublishProgress>(p =>

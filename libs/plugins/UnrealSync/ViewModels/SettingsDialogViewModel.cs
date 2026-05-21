@@ -51,20 +51,12 @@ public partial class SettingsDialogViewModel : ObservableObject
     // Network — saved to SHARED config
     /// <summary>Base URL or UNC path for network publish destination.</summary>
     [ObservableProperty] private string _networkBaseUrl = string.Empty;
-    /// <summary>Archive channel name used for packaging (defaults to Editor).</summary>
-    [ObservableProperty] private string _archiveChannel = "Editor";
-    /// <summary>Publish channel name used for distribution (defaults to Editor).</summary>
-    [ObservableProperty] private string _publishChannel = "Editor";
-    /// <summary>Custom archive channel name when not using a preset channel.</summary>
-    [ObservableProperty] private string _customArchiveChannel = string.Empty;
-    /// <summary>Custom publish channel name when not using a preset channel.</summary>
-    [ObservableProperty] private string _customPublishChannel = string.Empty;
+    /// <summary>Channel name for editor builds (subdirectory under network base).</summary>
+    [ObservableProperty] private string _editorChannel = "Editor";
+    /// <summary>Channel name for game builds (subdirectory under network base).</summary>
+    [ObservableProperty] private string _gameChannel = "Game";
 
     // Build defaults — saved to SHARED config
-    /// <summary>Default build configuration (e.g. Development, Shipping, DebugGame).</summary>
-    [ObservableProperty] private string _defaultBuildConfig = "Development";
-    /// <summary>Whether to build content when packaging the project.</summary>
-    [ObservableProperty] private bool _buildContentWhenPackaging;
     /// <summary>Output directory for staged builds relative to the repository root.</summary>
     [ObservableProperty] private string _outputDirectory = "Saved/StagedBuilds";
 
@@ -400,14 +392,10 @@ public partial class SettingsDialogViewModel : ObservableObject
 
         // Network (shared)
         NetworkBaseUrl = config.NetworkBase;
-        ArchiveChannel = config.Archive?.Channel ?? "Editor";
-        PublishChannel = config.Publish?.Channel ?? "Editor";
-        CustomArchiveChannel = config.Archive?.CustomChannel ?? string.Empty;
-        CustomPublishChannel = config.Publish?.CustomChannel ?? string.Empty;
+        EditorChannel = config.EditorChannel;
+        GameChannel = config.GameChannel;
 
         // Build defaults (shared)
-        DefaultBuildConfig = config.BuildDefaults?.DefaultConfig ?? "Development";
-        BuildContentWhenPackaging = config.BuildDefaults?.BuildContentWhenPackaging ?? false;
         OutputDirectory = config.BuildDefaults?.OutputDirectory ?? "Saved/StagedBuilds";
 
         // Publish (shared)
@@ -440,20 +428,10 @@ public partial class SettingsDialogViewModel : ObservableObject
             {
                 BuildTargets = new List<UgsBuildStep>(BuildTargets.Select(x => x.ToStep())),
                 AutoDetect = AutoDetectEngine
-            }
+            },
+            EditorChannel = EditorChannel,
+            GameChannel = GameChannel,
         };
-
-        if (sharedConfig.Archive != null)
-        {
-            sharedConfig = sharedConfig with
-            {
-                Archive = sharedConfig.Archive with
-                {
-                    Channel = ArchiveChannel,
-                    CustomChannel = CustomArchiveChannel,
-                }
-            };
-        }
 
         if (sharedConfig.BuildDefaults != null)
         {
@@ -461,8 +439,6 @@ public partial class SettingsDialogViewModel : ObservableObject
             {
                 BuildDefaults = sharedConfig.BuildDefaults with
                 {
-                    DefaultConfig = DefaultBuildConfig,
-                    BuildContentWhenPackaging = BuildContentWhenPackaging,
                     OutputDirectory = OutputDirectory,
                 }
             };
@@ -474,8 +450,6 @@ public partial class SettingsDialogViewModel : ObservableObject
             {
                 Publish = sharedConfig.Publish with
                 {
-                    Channel = PublishChannel,
-                    CustomChannel = CustomPublishChannel,
                     Atomic = AtomicPublish,
                 }
             };

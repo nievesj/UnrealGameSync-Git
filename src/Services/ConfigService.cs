@@ -123,19 +123,6 @@ public static class ConfigService
 
     private static UgsConfig ExpandEnvVarsInConfig(UgsConfig config)
     {
-        // Expand env vars in CI config (uses with expressions since config is now an immutable record)
-        if (config.Ci?.TeamCity is { } tc && !string.IsNullOrEmpty(tc.AccessToken))
-        {
-            var resolved = ResolveEnvVars(tc.AccessToken);
-            config = config with
-            {
-                Ci = config.Ci with
-                {
-                    TeamCity = tc with { AccessToken = resolved }
-                }
-            };
-        }
-
         return config;
     }
 

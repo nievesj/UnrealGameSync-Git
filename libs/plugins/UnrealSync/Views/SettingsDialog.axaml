@@ -23,7 +23,10 @@
                                FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
                     <TextBox Text="{Binding EnginePathOverride}"
                              IsEnabled="{Binding !AutoDetectEngine}"
-                             Watermark="C:\Program Files\Epic Games\UE_5.4" />
+                             Watermark="{Binding EnginePath}" />
+                    <TextBlock Text="{Binding EnginePath, StringFormat='Auto-detected: {0}'}"
+                               FontSize="11" Foreground="{DynamicResource Brush.FG3}"
+                               IsVisible="{Binding AutoDetectEngine}" />
                     <TextBlock Text="{Binding EnginePathError}"
                                Foreground="Red" FontSize="11"
                                IsVisible="{Binding EnginePathError, Converter={x:Static c:StringConverters.IsNotNullOrEmpty}}" />
@@ -43,29 +46,20 @@
                                Foreground="Red" FontSize="11"
                                IsVisible="{Binding NetworkUrlError, Converter={x:Static c:StringConverters.IsNotNullOrEmpty}}" />
 
+                    <TextBlock Text="Channels (subdirectories under network base):"
+                               FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
                     <Grid ColumnDefinitions="*,*">
                         <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,8,0">
-                            <TextBlock Text="Archive channel:" FontSize="11"
+                            <TextBlock Text="Editor builds:" FontSize="11"
                                        Foreground="{DynamicResource Brush.FG3}" />
-                            <TextBox Text="{Binding ArchiveChannel}" />
+                            <TextBox Text="{Binding EditorChannel}"
+                                     Watermark="Editor" />
                         </StackPanel>
                         <StackPanel Grid.Column="1" Spacing="4">
-                            <TextBlock Text="Publish channel:" FontSize="11"
+                            <TextBlock Text="Game builds:" FontSize="11"
                                        Foreground="{DynamicResource Brush.FG3}" />
-                            <TextBox Text="{Binding PublishChannel}" />
-                        </StackPanel>
-                    </Grid>
-
-                    <Grid ColumnDefinitions="*,*">
-                        <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,8,0">
-                            <TextBlock Text="Custom archive channel:" FontSize="11"
-                                       Foreground="{DynamicResource Brush.FG3}" />
-                            <TextBox Text="{Binding CustomArchiveChannel}" />
-                        </StackPanel>
-                        <StackPanel Grid.Column="1" Spacing="4">
-                            <TextBlock Text="Custom publish channel:" FontSize="11"
-                                       Foreground="{DynamicResource Brush.FG3}" />
-                            <TextBox Text="{Binding CustomPublishChannel}" />
+                            <TextBox Text="{Binding GameChannel}"
+                                     Watermark="Game" />
                         </StackPanel>
                     </Grid>
                 </StackPanel>
@@ -75,13 +69,6 @@
             <Border Background="{DynamicResource Brush.Card}" CornerRadius="6" Padding="12">
                 <StackPanel Spacing="8">
                     <TextBlock Text="Build Defaults" FontWeight="SemiBold" FontSize="14" />
-
-                    <TextBlock Text="Default config:" FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
-                    <ComboBox SelectedItem="{Binding DefaultBuildConfig}" />
-                    <!-- Items: Development, DebugGame, Shipping, Test — bound in code-behind -->
-
-                    <CheckBox Content="Build content when packaging"
-                              IsChecked="{Binding BuildContentWhenPackaging}" />
 
                     <TextBlock Text="Output directory:" FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
                     <TextBox Text="{Binding OutputDirectory}" Watermark="Saved/StagedBuilds" />
