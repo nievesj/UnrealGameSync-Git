@@ -25,6 +25,8 @@ public class DeployService : IDeployService
     private const int DownloadBufferSize = 1048576; // 1MB
     private const int ShortShaLength = 9;
 
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<(string projectName, string targetName), Regex> _regexCache = new();
+
     /// <inheritdoc/>
     public async Task<IReadOnlyList<DeployBuildInfo>> DiscoverAsync(
         string networkBase, string channel, string projectName, CancellationToken ct)
@@ -32,17 +34,24 @@ public class DeployService : IDeployService
         var results = new List<DeployBuildInfo>();
         var searchDir = Path.Combine(networkBase, channel);
         var targetName = string.IsNullOrEmpty(channel) ? "Editor" : channel;
-        var pattern = new Regex($@"(?i){Regex.Escape(projectName)}{Regex.Escape(targetName)}-([0-9a-f]+)\.zip", RegexOptions.Compiled);
+        var pattern = _regexCache.GetOrAdd(
+            (projectName, targetName),
+            key => new Regex($@"(?i){Regex.Escape(key.projectName)}{Regex.Escape(key.targetName)}-([0-9a-f]+)\.zip", RegexOptions.Compiled));
 
         try
         {
+            // Apply a 30-second timeout to network operations to prevent SMB hangs
+            using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            timeoutCts.CancelAfter(TimeSpan.FromSeconds(30));
+            var effectiveCt = timeoutCts.Token;
+
             if (!Directory.Exists(searchDir))
                 return results;
 
             var files = Directory.GetFiles(searchDir, $"{projectName}{targetName}-*.zip");
             foreach (var file in files)
             {
-                ct.ThrowIfCancellationRequested();
+                effectiveCt.ThrowIfCancellationRequested();
 
                 FileInfo fi;
                 try

@@ -123,7 +123,27 @@ public static class ConfigService
 
     private static UgsConfig ExpandEnvVarsInConfig(UgsConfig config)
     {
-        return config;
+        return config with
+        {
+            NetworkBase = ResolveEnvVars(config.NetworkBase),
+            BinaryName = ResolveEnvVars(config.BinaryName),
+            EditorBadgeColor = ResolveEnvVars(config.EditorBadgeColor),
+            GameBadgeColor = ResolveEnvVars(config.GameBadgeColor),
+            Engine = config.Engine with
+            {
+                Path = ResolveEnvVars(config.Engine.Path),
+                ProjectFile = ResolveEnvVars(config.Engine.ProjectFile),
+                EditorArguments = ResolveEnvVars(config.Engine.EditorArguments),
+            },
+            Archive = config.Archive with
+            {
+                ZipNaming = ResolveEnvVars(config.Archive.ZipNaming),
+            },
+            BuildDefaults = config.BuildDefaults with
+            {
+                OutputDirectory = ResolveEnvVars(config.BuildDefaults.OutputDirectory),
+            },
+        };
     }
 
     /// <summary>

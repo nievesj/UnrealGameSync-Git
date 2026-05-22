@@ -40,6 +40,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     private CancellationTokenSource? _buildCts;
     private Process? _editorProcess;
     private readonly System.Text.StringBuilder _logBuilder = new();
+    private int _isBusyFlag;
 
     /// <summary>Current branch name displayed in the status panel.</summary>
     [ObservableProperty]
@@ -58,8 +59,25 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     private string _logOutput = "";
 
     /// <summary>Indicates whether a sync, build, or package operation is in progress.</summary>
-    [ObservableProperty]
-    private bool _isBusy;
+    public bool IsBusy => _isBusyFlag != 0;
+
+    /// <summary>Atomically acquires the busy flag and notifies binding. Returns true if acquired, false if already busy.</summary>
+    private bool TrySetBusy()
+    {
+        if (Interlocked.CompareExchange(ref _isBusyFlag, 1, 0) == 0)
+        {
+            OnPropertyChanged(nameof(IsBusy));
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>Clears the busy flag and notifies binding.</summary>
+    private void ClearBusy()
+    {
+        Interlocked.Exchange(ref _isBusyFlag, 0);
+        OnPropertyChanged(nameof(IsBusy));
+    }
 
     /// <summary>Display name of the project derived from the .uproject filename.</summary>
     [ObservableProperty]
@@ -228,21 +246,20 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
 
     private void ResetCancellationToken()
     {
-        var old = Interlocked.Exchange(ref _buildCts!, null);
+        var replacement = new CancellationTokenSource();
+        var old = Interlocked.Exchange(ref _buildCts, replacement);
         if (old != null)
         {
             try { if (!old.IsCancellationRequested) old.Cancel(); } catch { }
             old.Dispose();
         }
-        _buildCts = new CancellationTokenSource();
     }
 
     /// <summary>Syncs working tree to latest commit on current branch.</summary>
     [RelayCommand]
     private async Task SyncAsync()
     {
-        if (IsBusy) return;
-        IsBusy = true;
+        if (!TrySetBusy()) return;
 
         try
         {
@@ -276,7 +293,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         }
         finally
         {
-            IsBusy = false;
+            ClearBusy();
         }
     }
 
@@ -284,8 +301,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task BuildAsync()
     {
-        if (IsBusy) return;
-        IsBusy = true;
+        if (!TrySetBusy()) return;
 
         try
         {
@@ -314,7 +330,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         finally
         {
             _buildCts = null;
-            IsBusy = false;
+            ClearBusy();
         }
     }
 
@@ -342,8 +358,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task PackageAsync(UgsPackageProfile profile)
     {
-        if (IsBusy) return;
-        IsBusy = true;
+        if (!TrySetBusy()) return;
         CanPublish = false;
 
         try
@@ -396,7 +411,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         finally
         {
             _buildCts = null;
-            IsBusy = false;
+            ClearBusy();
         }
     }
 
@@ -446,8 +461,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task DeployEditorAsync()
     {
-        if (IsBusy) return;
-        IsBusy = true;
+        if (!TrySetBusy()) return;
 
         try
         {
@@ -490,7 +504,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         }
         finally
         {
-            IsBusy = false;
+            ClearBusy();
         }
     }
 

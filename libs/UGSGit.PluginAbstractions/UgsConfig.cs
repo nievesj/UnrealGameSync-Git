@@ -12,7 +12,7 @@ public record class UgsConfig
 {
     /// <summary>Config schema version number. Increment on breaking format changes.</summary>
     [JsonPropertyName("version")]
-    public int Version { get; init; } = 1;
+    public int Version { get; init; } = 2;
 
     /// <summary>Engine path, targets, and project file configuration.</summary>
     [JsonPropertyName("engine")]

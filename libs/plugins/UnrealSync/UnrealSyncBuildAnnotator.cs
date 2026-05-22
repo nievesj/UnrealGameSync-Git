@@ -17,6 +17,7 @@ public class UnrealSyncBuildAnnotator : ICommitAnnotator
 {
     private readonly IDeployService _deployService;
     private readonly IConfigService _configService;
+    private readonly IPluginLogger? _logger;
     private readonly string _repoPath;
     private readonly string _projectName;
 
@@ -30,11 +31,13 @@ public class UnrealSyncBuildAnnotator : ICommitAnnotator
     public UnrealSyncBuildAnnotator(
         IDeployService deployService,
         IConfigService configService,
+        IPluginLogger? logger,
         string repoPath,
         string projectName)
     {
         _deployService = deployService;
         _configService = configService;
+        _logger = logger;
         _repoPath = repoPath;
         _projectName = projectName;
     }
@@ -144,9 +147,14 @@ public class UnrealSyncBuildAnnotator : ICommitAnnotator
 
             return builds;
         }
-        catch
+        catch (OperationCanceledException)
         {
-            // Network unreachable — return empty, don't crash the graph
+            // Cancellation — not an error
+            return null;
+        }
+        catch (Exception ex)
+        {
+            _logger?.Log($"Build discovery failed for channel '{channel}': {ex.Message}");
             return null;
         }
     }

@@ -28,10 +28,6 @@ public class UgsWorkspaceState
     [JsonPropertyName("afterSyncActions")]
     public UgsAfterSyncActions AfterSyncActions { get; init; } = new();
 
-    /// <summary>Channel name for this workspace (e.g. "Editor", "Game").</summary>
-    [JsonPropertyName("channel")]
-    public string Channel { get; init; } = "Editor";
-
     /// <summary>Override path to the Unreal Engine root, overrides auto-detected path.</summary>
     [JsonPropertyName("enginePathOverride")]
     public string EnginePathOverride { get; set; } = string.Empty;

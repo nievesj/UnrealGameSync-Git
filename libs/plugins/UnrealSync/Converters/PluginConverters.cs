@@ -45,7 +45,8 @@ namespace UGSGit.Plugins.UnrealSync.Converters
             Color defaultColor = Colors.Transparent;
             if (parameter is string paramStr && !string.IsNullOrWhiteSpace(paramStr))
             {
-                try { defaultColor = Color.Parse(paramStr); } catch { }
+                try { defaultColor = Color.Parse(paramStr); }
+                catch (FormatException) { /* invalid default color — fall through */ }
             }
 
             var v = value as string;
@@ -60,7 +61,7 @@ namespace UGSGit.Plugins.UnrealSync.Converters
             {
                 return new SolidColorBrush(Color.Parse(hex));
             }
-            catch
+            catch (FormatException)
             {
                 return new SolidColorBrush(defaultColor);
             }

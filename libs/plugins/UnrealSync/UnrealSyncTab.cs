@@ -30,7 +30,9 @@ public class UnrealSyncTab : IRepositoryTab
     /// <summary>
     /// Tab icon resource key.
     /// </summary>
-    public object Icon => Application.Current?.Resources["Icons.UnrealSync"]!;
+    public object Icon => Application.Current?.Resources.TryGetValue("Icons.UnrealSync", out var icon) == true
+        ? icon!
+        : "🔧";
 
     /// <summary>
     /// Whether the tab can be closed by the user (always true).
@@ -84,7 +86,8 @@ public class UnrealSyncTab : IRepositoryTab
         if (deployService != null && configService != null)
         {
             var projectName = Path.GetFileNameWithoutExtension(context.RepositoryPath);
-            _annotator = new UnrealSyncBuildAnnotator(deployService, configService, context.RepositoryPath, projectName);
+            var logger = context.GetService<IPluginLogger>();
+            _annotator = new UnrealSyncBuildAnnotator(deployService, configService, logger, context.RepositoryPath, projectName);
         }
 
         // Register annotator with the host-level provider so badges appear in the commit graph

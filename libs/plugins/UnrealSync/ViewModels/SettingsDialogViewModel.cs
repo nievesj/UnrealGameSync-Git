@@ -446,7 +446,7 @@ public partial class SettingsDialogViewModel : ObservableObject
         {
             Version = 2,
             NetworkBase = NetworkBaseUrl,
-            Engine = sharedConfig.Engine with
+            Engine = (sharedConfig.Engine ?? new UgsEngineConfig()) with
             {
                 BuildTargets = new List<UgsBuildStep>(BuildTargets.Select(x => x.ToStep())),
                 AutoDetect = AutoDetectEngine
