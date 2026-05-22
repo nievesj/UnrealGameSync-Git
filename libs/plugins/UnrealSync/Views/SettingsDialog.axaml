@@ -33,6 +33,8 @@
                 </StackPanel>
             </Border>
 
+            <Rectangle Fill="{DynamicResource Brush.Border2}" Height=".6" HorizontalAlignment="Stretch" Margin="0,8" />
+
             <!-- Network Location section -->
             <Border Background="{DynamicResource Brush.Card}" CornerRadius="6" Padding="12">
                 <StackPanel Spacing="8">
@@ -137,6 +139,8 @@
                 </StackPanel>
             </Border>
 
+            <Rectangle Fill="{DynamicResource Brush.Border2}" Height=".6" HorizontalAlignment="Stretch" Margin="0,8" />
+
             <!-- Build Defaults section -->
             <Border Background="{DynamicResource Brush.Card}" CornerRadius="6" Padding="12">
                 <StackPanel Spacing="8">
@@ -147,6 +151,8 @@
                 </StackPanel>
             </Border>
 
+            <Rectangle Fill="{DynamicResource Brush.Border2}" Height=".6" HorizontalAlignment="Stretch" Margin="0,8" />
+
             <!-- Publish Options section -->
             <Border Background="{DynamicResource Brush.Card}" CornerRadius="6" Padding="12">
                 <StackPanel Spacing="8">
@@ -155,6 +161,8 @@
                               IsChecked="{Binding AtomicPublish}" />
                 </StackPanel>
             </Border>
+
+            <Rectangle Fill="{DynamicResource Brush.Border2}" Height=".6" HorizontalAlignment="Stretch" Margin="0,8" />
 
             <!-- Build Targets section -->
             <Border Background="{DynamicResource Brush.Card}" CornerRadius="6" Padding="12">
@@ -241,7 +249,7 @@
                                         <StackPanel Orientation="Horizontal" Spacing="4">
                                             <TextBlock Text="{Binding Name}" FontFamily="Cascadia Code, Consolas, monospace" FontSize="11" Foreground="{DynamicResource Brush.Accent}" />
                                             <TextBlock Text="—" FontSize="11" Foreground="{DynamicResource Brush.FG4}" />
-                                            <TextBlock Text="{Binding Description}" FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
+                                            <TextBlock Text="{Binding Description}" FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
                                         </StackPanel>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>

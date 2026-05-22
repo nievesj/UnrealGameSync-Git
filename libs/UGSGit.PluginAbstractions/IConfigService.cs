@@ -7,14 +7,14 @@ namespace UGSGit.PluginAbstractions;
 public interface IConfigService
 {
     /// <summary>
-    /// Loads the team-shared UGS configuration from the repository's <c>.unrealsync.json</c> file.
+    /// Loads the team-shared UGS configuration from the repository's <c>.unrealsync-settings.json</c> file.
     /// </summary>
     /// <param name="repoPath">Absolute path to the repository root.</param>
     /// <returns>The deserialized configuration, or a default <see cref="UgsConfig"/> if the file does not exist.</returns>
     UgsConfig LoadConfig(string repoPath);
 
     /// <summary>
-    /// Saves the team-shared UGS configuration to the repository's <c>.unrealsync.json</c> file.
+    /// Saves the team-shared UGS configuration to the repository's <c>.unrealsync-settings.json</c> file.
     /// </summary>
     /// <param name="repoPath">Absolute path to the repository root.</param>
     /// <param name="config">The configuration to persist.</param>

@@ -53,16 +53,25 @@ public class UnrealSyncTabViewModel : ObservableObject
     public object CurrentBody
     {
         get => _currentBody;
-        private set => SetProperty(ref _currentBody, value);
+        private set
+        {
+            if (SetProperty(ref _currentBody, value))
+                OnPropertyChanged(nameof(IsDetecting));
+        }
     }
 
     /// <summary>
-    /// Current tab mode, drives which sub-view is shown.
+    /// True when the tab is scanning for a .uproject file and no sub-view has been assigned yet.
     /// </summary>
+    public bool IsDetecting => Mode == SyncTabMode.Detecting && CurrentBody == null;
     public SyncTabMode Mode
     {
         get => _mode;
-        private set => SetProperty(ref _mode, value);
+        private set
+        {
+            if (SetProperty(ref _mode, value))
+                OnPropertyChanged(nameof(IsDetecting));
+        }
     }
 
     /// <summary>

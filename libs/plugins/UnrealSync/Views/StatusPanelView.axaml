@@ -3,14 +3,10 @@
              xmlns:vm="clr-namespace:UGSGit.Plugins.UnrealSync.ViewModels;assembly=UGSGit.Plugins.UnrealSync"
              x:Class="UGSGit.Plugins.UnrealSync.Views.StatusPanelView"
              x:DataType="vm:StatusPanelViewModel">
-    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-        <TextBlock Text="{Binding BranchText, StringFormat='● {0}'}"
+    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="8,0,0,0">
+        <TextBlock Text="{Binding BranchText}"
                    FontWeight="Bold"
                    VerticalAlignment="Center"
                    Foreground="{DynamicResource Brush.FG1}" />
-        <TextBlock Text="{Binding CommitText}"
-                   FontSize="12"
-                   VerticalAlignment="Center"
-                   Foreground="{DynamicResource Brush.FG3}" />
     </StackPanel>
 </UserControl>

@@ -10,14 +10,14 @@ using UGSGit.PluginAbstractions;
 namespace UGSGit.Services;
 
 /// <summary>
-/// Reads and writes .unrealsync.json config files with environment variable expansion,
+/// Reads and writes .unrealsync-settings.json config files with environment variable expansion,
 /// version migration, and user-local state persistence.
 /// </summary>
 public static class ConfigService
 {
-    private const string ConfigFileName = ".unrealsync.json";
+    private const string ConfigFileName = ".unrealsync-settings.json";
     private const string LocalConfigDir = ".unrealsync";
-    private const string LocalConfigFile = "local.json";
+    private const string LocalConfigFile = "local-ue-path.json";
 
     private static readonly Regex EnvVarRegex = new(@"\$\{(\w+)\}", RegexOptions.Compiled);
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -68,7 +68,7 @@ public static class ConfigService
     }
 
     /// <summary>
-    /// Load user-local state from .unrealsync/local.json (gitignored).
+    /// Load user-local state from .unrealsync/local-ue-path.json (gitignored).
     /// </summary>
     public static UgsWorkspaceState LoadLocalState(string repoPath)
     {
@@ -82,7 +82,7 @@ public static class ConfigService
     }
 
     /// <summary>
-    /// Save user-local state to .unrealsync/local.json.
+    /// Save user-local state to .unrealsync/local-ue-path.json.
     /// </summary>
     public static void SaveLocalState(string repoPath, UgsWorkspaceState state)
     {
@@ -96,7 +96,7 @@ public static class ConfigService
     }
 
     /// <summary>
-    /// Save the team-shared config to .unrealsync.json in the repo root.
+    /// Save the team-shared config to .unrealsync-settings.json in the repo root.
     /// </summary>
     public static void SaveConfig(string repoPath, UgsConfig config)
     {

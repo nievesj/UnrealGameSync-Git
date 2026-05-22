@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace UGSGit.PluginAbstractions;
 
 /// <summary>
-/// Full .unrealsync.json config model (committed to repo root).
+/// Full .unrealsync-settings.json config model (committed to repo root).
 /// Uses named provider schema (not typed arrays) per RC-4 fix.
 /// All nested types are immutable records with init-only properties (fixes M-2).
 /// </summary>

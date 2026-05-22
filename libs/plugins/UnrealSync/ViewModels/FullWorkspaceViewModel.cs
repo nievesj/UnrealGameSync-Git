@@ -42,9 +42,9 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     private readonly System.Text.StringBuilder _logBuilder = new();
     private int _isBusyFlag;
 
-    /// <summary>Current branch name displayed in the status panel.</summary>
+    /// <summary>Static header label displayed in the status panel.</summary>
     [ObservableProperty]
-    private string _branchText = "";
+    private string _branchText = "Unreal Game Sync for Git";
 
     /// <summary>SHA of the commit the workspace is currently synced to.</summary>
     [ObservableProperty]
@@ -566,6 +566,10 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
             DataContext = dialogVm
         };
 
+        // Wire Cancel → close dialog (fixes CANCEL button)
+        void OnRequestClose() => dialog.Close();
+        dialogVm.RequestClose += OnRequestClose;
+
         var owner = Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime
             ? lifetime.MainWindow
             : null;
@@ -575,6 +579,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
             await dialog.ShowDialog(owner);
         }
 
+        dialogVm.RequestClose -= OnRequestClose;
         ReloadConfig();
     }
 
@@ -605,7 +610,6 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     {
         try
         {
-            BranchText = await _syncService.GetCurrentBranchAsync(ct).ConfigureAwait(true);
             CommitText = await _syncService.GetCurrentCommitAsync(ct).ConfigureAwait(true);
             await RefreshEditorBuildStatusAsync();
         }

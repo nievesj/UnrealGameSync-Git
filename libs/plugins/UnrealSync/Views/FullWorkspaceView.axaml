@@ -12,20 +12,8 @@
                 Padding="12"
                 Margin="0,0,0,8">
             <StackPanel Spacing="8">
+                <!-- Header row removed: redundant label -->
                 <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TextBlock Text="{Binding BranchText}"
-                               FontWeight="Bold"
-                               VerticalAlignment="Center"
-                               Foreground="{DynamicResource Brush.FG1}" />
-                    <TextBlock Text="{Binding CommitText}"
-                               FontSize="12"
-                               VerticalAlignment="Center"
-                               Foreground="{DynamicResource Brush.FG3}" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <Button Content="Sync Now"
-                            Command="{Binding SyncCommand}"
-                            IsEnabled="{Binding !IsBusy}" />
                     <Button Content="Build"
                             Command="{Binding BuildCommand}"
                             IsEnabled="{Binding !IsBusy}" />
@@ -62,8 +50,8 @@
             </StackPanel>
         </Border>
 
-        <!-- Project Info + Output Log (split) -->
-        <Grid Grid.Row="1" RowDefinitions="Auto,*">
+        <!-- Project Info + Build Targets + Output Log -->
+        <Grid Grid.Row="1" RowDefinitions="Auto,Auto,Auto,Auto,*">
             <!-- Project Info (Phase 1b: engine version, build type, path) -->
             <Border Grid.Row="0"
                     Background="{DynamicResource Brush.ContentBG}"
@@ -110,13 +98,18 @@
                 </StackPanel>
             </Border>
 
-            <!-- Build Targets + Output Log -->
-            <Grid Grid.Row="1" RowDefinitions="Auto,*">
-                <Border Grid.Row="0"
-                        Background="{DynamicResource Brush.ContentBG}"
-                        CornerRadius="6"
-                        Padding="12"
-                        Margin="0,0,0,8">
+            <Rectangle Grid.Row="1" Fill="{DynamicResource Brush.Border2}" Height=".6" HorizontalAlignment="Stretch" Margin="0,8" />
+
+            <!-- Build Targets -->
+            <Border Grid.Row="2"
+                    Background="{DynamicResource Brush.Contents}"
+                    CornerRadius="6"
+                    Padding="12"
+                    Margin="0,0,0,8">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Build Targets (steps the Build button will run)"
+                               FontWeight="SemiBold" FontSize="12"
+                               Foreground="{DynamicResource Brush.Accent}" />
                     <ItemsControl ItemsSource="{Binding BuildTargets}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
@@ -125,29 +118,33 @@
                                                Width="200"
                                                Foreground="{DynamicResource Brush.FG1}" />
                                     <TextBlock Text="{Binding Platform}"
-                                               Foreground="{DynamicResource Brush.FG3}" />
+                                               Foreground="{DynamicResource Brush.FG2}" />
                                     <TextBlock Text="{Binding Configuration}"
-                                               Foreground="{DynamicResource Brush.FG3}" />
+                                               Foreground="{DynamicResource Brush.FG2}" />
                                 </StackPanel>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                </Border>
+                </StackPanel>
+            </Border>
 
-                <!-- Output Log -->
-                <Border Grid.Row="1"
-                        Background="{DynamicResource Brush.ContentBG}"
-                        CornerRadius="6"
-                        Padding="12">
-                    <ScrollViewer>
-                        <TextBlock Text="{Binding LogOutput}"
-                                   FontFamily="Cascadia Code, Consolas, monospace"
-                                   FontSize="12"
-                                   Foreground="{DynamicResource Brush.FG2}"
-                                   TextWrapping="Wrap" />
-                    </ScrollViewer>
-                </Border>
-            </Grid>
+            <Rectangle Grid.Row="3" Fill="{DynamicResource Brush.Border2}" Height=".6" HorizontalAlignment="Stretch" Margin="0,8" />
+
+            <!-- Output Log -->
+            <Border Grid.Row="4"
+                    Background="{DynamicResource Brush.Contents}"
+                    BorderBrush="{DynamicResource Brush.Border2}"
+                    BorderThickness="1"
+                    CornerRadius="6"
+                    Padding="8">
+                <ScrollViewer>
+                    <TextBlock Text="{Binding LogOutput}"
+                               FontFamily="{DynamicResource Fonts.Monospace}"
+                               FontSize="12"
+                               Foreground="{DynamicResource Brush.FG1}"
+                               TextWrapping="Wrap" />
+                </ScrollViewer>
+            </Border>
         </Grid>
 
         <!-- Bottom bar (Phase 1b: publish status) -->
@@ -157,9 +154,6 @@
                 Padding="8"
                 Margin="0,8,0,0">
             <StackPanel Orientation="Horizontal" Spacing="16">
-                <TextBlock Text="UnrealSync — Phase 1b"
-                           FontSize="11"
-                           Foreground="{DynamicResource Brush.FG4}" />
                 <TextBlock Text="{Binding PublishStatusText}"
                            FontSize="11"
                            Foreground="{DynamicResource Brush.FG3}"

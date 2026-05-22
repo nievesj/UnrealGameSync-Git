@@ -3,7 +3,7 @@
 namespace UGSGit.PluginAbstractions;
 
 /// <summary>
-/// Build step definition that aligns with the buildTargets config in .unrealsync.json.
+/// Build step definition that aligns with the buildTargets config in .unrealsync-settings.json.
 /// Maps 1:1 to config fields per RC-5 fix.
 ///
 /// <para>BuildMode determines which UE build tool is invoked:</para>

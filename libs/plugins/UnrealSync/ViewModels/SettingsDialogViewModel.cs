@@ -17,8 +17,8 @@ namespace UGSGit.Plugins.UnrealSync.ViewModels;
 
 /// <summary>
 /// ViewModel for the UnrealSync Settings dialog.
-/// Engine path override is saved to user-local config (.unrealsync/local.json).
-/// All other settings are saved to team-shared config (.unrealsync.json).
+/// Engine path override is saved to user-local config (.unrealsync/local-ue-path.json).
+/// All other settings are saved to team-shared config (.unrealsync-settings.json).
 /// Fixes D-1: engine path is user-local, not team-shared.
 /// </summary>
 public partial class SettingsDialogViewModel : ObservableObject
@@ -495,12 +495,12 @@ public partial class SettingsDialogViewModel : ObservableObject
     [RelayCommand]
     private void SetGameColor(string color) => GameBadgeColor = color;
 
-    /// <summary>Discards changes and closes dialog.</summary>
+    /// <summary>Fired when the dialog should close (Cancel button pressed).</summary>
+    public event Action? RequestClose;
+
+    /// <summary>Discards changes and requests dialog close.</summary>
     [RelayCommand]
-    private void Cancel()
-    {
-        // Dialog close handled by view
-    }
+    private void Cancel() => RequestClose?.Invoke();
 
     /// <summary>Adds a new build target with default values.</summary>
     [RelayCommand]
