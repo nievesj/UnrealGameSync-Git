@@ -83,6 +83,10 @@ Located at `libs/UGSGit.PluginAbstractions/`. Zero external dependencies (not ev
 `BuildResult`/`BuildStatus`), `BuildVersion`, `EngineInfo`, `PublishManifest`, `StageResult`, `UatCommandPreset`,
 `BuildModes`, `UgsPackageProfile`, `PublishProgress`/`PublishResult`/`PublishStatus`, `SyncResult`/`SyncStatus`
 
+**Config versioning note:** When adding/removing/renaming fields in `UgsConfig`, always bump the `Version` default and
+add a migration in `ConfigService.LoadConfig()`. This ensures old config files are properly upgraded instead of silently
+losing data.
+
 ## Native AOT & Build Modes
 
 - **Release builds** default to Native AOT (`PublishAot=true`, `PublishTrimmed=true`, `TrimMode=link`)

@@ -63,6 +63,15 @@ namespace UGSGit.ViewModels
             // Stateless services registered as singletons
             context.RegisterService<IPublishService>(new PublishService());
 
+            // Deploy service for binary sync from network shares
+            context.RegisterService<IDeployService>(new DeployService());
+
+            // Commit annotation provider — allows plugins to register commit graph annotators
+            context.RegisterService<ICommitAnnotationProvider>(Services.HostServices.AnnotationProvider);
+
+            // Commit menu contributor provider — allows plugins to register context menu items
+            context.RegisterService<ICommitMenuContributorProvider>(Services.HostServices.MenuContributors);
+
             // Validate that all required services were registered
             context.ValidateRequiredServices();
 

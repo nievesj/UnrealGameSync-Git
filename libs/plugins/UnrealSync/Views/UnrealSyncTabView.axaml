@@ -4,17 +4,35 @@
              xmlns:v="clr-namespace:UGSGit.Plugins.UnrealSync.Views;assembly=UGSGit.Plugins.UnrealSync"
              x:Class="UGSGit.Plugins.UnrealSync.Views.UnrealSyncTabView"
              x:DataType="vm:UnrealSyncTabViewModel">
-    <ContentControl Content="{Binding CurrentBody}">
-        <ContentControl.DataTemplates>
-            <DataTemplate DataType="vm:SelectUProjectViewModel">
-                <v:SelectUProjectView />
-            </DataTemplate>
-            <DataTemplate DataType="vm:EngineNotFoundViewModel">
-                <v:EngineNotFoundView />
-            </DataTemplate>
-            <DataTemplate DataType="vm:FullWorkspaceViewModel">
-                <v:FullWorkspaceView />
-            </DataTemplate>
-        </ContentControl.DataTemplates>
-    </ContentControl>
+    <Grid>
+        <ContentControl Content="{Binding CurrentBody}">
+            <ContentControl.DataTemplates>
+                <DataTemplate DataType="vm:SelectUProjectViewModel">
+                    <v:SelectUProjectView />
+                </DataTemplate>
+                <DataTemplate DataType="vm:EngineNotFoundViewModel">
+                    <v:EngineNotFoundView />
+                </DataTemplate>
+                <DataTemplate DataType="vm:FullWorkspaceViewModel">
+                    <v:FullWorkspaceView />
+                </DataTemplate>
+            </ContentControl.DataTemplates>
+        </ContentControl>
+
+        <!-- Detecting overlay -->
+        <Border Background="{DynamicResource Brush.Bg}"
+                IsVisible="{Binding IsDetecting}"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch">
+            <StackPanel HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="8">
+                <TextBlock Text="Please wait while searching for a .uproject file..."
+                           FontSize="14"
+                           Foreground="{DynamicResource Brush.FG2}"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center" />
+            </StackPanel>
+        </Border>
+    </Grid>
 </UserControl>

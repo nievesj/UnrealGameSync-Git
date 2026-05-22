@@ -10,14 +10,14 @@ using UGSGit.PluginAbstractions;
 namespace UGSGit.Services;
 
 /// <summary>
-/// Reads and writes .unrealsync.json config files with environment variable expansion,
+/// Reads and writes .unrealsync-settings.json config files with environment variable expansion,
 /// version migration, and user-local state persistence.
 /// </summary>
 public static class ConfigService
 {
-    private const string ConfigFileName = ".unrealsync.json";
+    private const string ConfigFileName = ".unrealsync-settings.json";
     private const string LocalConfigDir = ".unrealsync";
-    private const string LocalConfigFile = "local.json";
+    private const string LocalConfigFile = "local-ue-path.json";
 
     private static readonly Regex EnvVarRegex = new(@"\$\{(\w+)\}", RegexOptions.Compiled);
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -39,15 +39,25 @@ public static class ConfigService
     {
         var configPath = GetConfigPath(repoPath);
         if (!File.Exists(configPath))
-            return new UgsConfig();
+        {
+            // Try legacy filename (.unrealsync.json)
+            var legacyPath = Path.Combine(repoPath, ".unrealsync.json");
+            if (File.Exists(legacyPath))
+                configPath = legacyPath;
+            else
+                return new UgsConfig();
+        }
 
         var json = File.ReadAllText(configPath);
         var config = JsonSerializer.Deserialize(json, UnrealSyncJsonContext.Default.UgsConfig)
             ?? new UgsConfig();
 
-        // Validate version — silently fall back to default for unknown versions (fixes M-7)
+        // Validate version — for unknown future versions, preserve what we can and log a warning
         if (config.Version > 2)
-            return new UgsConfig { Version = -1 };
+        {
+            Native.OS.LogException(new InvalidOperationException(
+                $"UgsConfig version {config.Version} is newer than supported (max 2). Attempting to preserve known fields."));
+        }
 
         // Expand environment variables in all string fields (returns new config for immutability)
         config = ExpandEnvVarsInConfig(config);
@@ -68,13 +78,20 @@ public static class ConfigService
     }
 
     /// <summary>
-    /// Load user-local state from .unrealsync/local.json (gitignored).
+    /// Load user-local state from .unrealsync/local-ue-path.json (gitignored).
     /// </summary>
     public static UgsWorkspaceState LoadLocalState(string repoPath)
     {
         var localPath = GetLocalConfigPath(repoPath);
         if (!File.Exists(localPath))
-            return new UgsWorkspaceState();
+        {
+            // Try legacy filename (local.json)
+            var legacyLocalPath = Path.Combine(repoPath, LocalConfigDir, "local.json");
+            if (File.Exists(legacyLocalPath))
+                localPath = legacyLocalPath;
+            else
+                return new UgsWorkspaceState();
+        }
 
         var json = File.ReadAllText(localPath);
         return JsonSerializer.Deserialize(json, UnrealSyncJsonContext.Default.UgsWorkspaceState)
@@ -82,7 +99,7 @@ public static class ConfigService
     }
 
     /// <summary>
-    /// Save user-local state to .unrealsync/local.json.
+    /// Save user-local state to .unrealsync/local-ue-path.json.
     /// </summary>
     public static void SaveLocalState(string repoPath, UgsWorkspaceState state)
     {
@@ -96,7 +113,7 @@ public static class ConfigService
     }
 
     /// <summary>
-    /// Save the team-shared config to .unrealsync.json in the repo root.
+    /// Save the team-shared config to .unrealsync-settings.json in the repo root.
     /// </summary>
     public static void SaveConfig(string repoPath, UgsConfig config)
     {
@@ -123,20 +140,27 @@ public static class ConfigService
 
     private static UgsConfig ExpandEnvVarsInConfig(UgsConfig config)
     {
-        // Expand env vars in CI config (uses with expressions since config is now an immutable record)
-        if (config.Ci?.TeamCity is { } tc && !string.IsNullOrEmpty(tc.AccessToken))
+        return config with
         {
-            var resolved = ResolveEnvVars(tc.AccessToken);
-            config = config with
+            NetworkBase = ResolveEnvVars(config.NetworkBase),
+            BinaryName = ResolveEnvVars(config.BinaryName),
+            EditorBadgeColor = ResolveEnvVars(config.EditorBadgeColor),
+            GameBadgeColor = ResolveEnvVars(config.GameBadgeColor),
+            Engine = config.Engine with
             {
-                Ci = config.Ci with
-                {
-                    TeamCity = tc with { AccessToken = resolved }
-                }
-            };
-        }
-
-        return config;
+                Path = ResolveEnvVars(config.Engine.Path),
+                ProjectFile = ResolveEnvVars(config.Engine.ProjectFile),
+                EditorArguments = ResolveEnvVars(config.Engine.EditorArguments),
+            },
+            Archive = config.Archive with
+            {
+                ZipNaming = ResolveEnvVars(config.Archive.ZipNaming),
+            },
+            BuildDefaults = config.BuildDefaults with
+            {
+                OutputDirectory = ResolveEnvVars(config.BuildDefaults.OutputDirectory),
+            },
+        };
     }
 
     /// <summary>

@@ -26,10 +26,10 @@ public partial class StatusPanelViewModel : ObservableObject
     private string _statusText = "Ready";
 
     /// <summary>
-    /// Current branch name, or "unknown" if not yet fetched.
+    /// Static header label for the toolbar status panel.
     /// </summary>
     [ObservableProperty]
-    private string _branchText = "unknown";
+    private string _branchText = "Unreal Game Sync for Git";
 
     /// <summary>
     /// Current commit short hash, or "---" if not yet fetched.
@@ -63,7 +63,6 @@ public partial class StatusPanelViewModel : ObservableObject
     {
         try
         {
-            BranchText = await _syncService.GetCurrentBranchAsync(ct);
             CommitText = await _syncService.GetCurrentCommitAsync(ct);
             StatusText = "Ready";
         }

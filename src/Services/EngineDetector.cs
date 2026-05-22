@@ -35,7 +35,7 @@ public static class EngineDetector
         var configPath = ConfigService.GetConfigPath(repoPath);
         var configWrite = File.Exists(configPath) ? File.GetLastWriteTimeUtc(configPath) : DateTime.MinValue;
 
-        // Also check local.json write time (fixes H-2: cache must invalidate on local.json changes)
+        // Also check local-ue-path.json write time (fixes H-2: cache must invalidate on local-ue-path.json changes)
         var localPath = ConfigService.GetLocalConfigPath(repoPath);
         var localWrite = File.Exists(localPath) ? File.GetLastWriteTimeUtc(localPath) : DateTime.MinValue;
 
@@ -60,7 +60,7 @@ public static class EngineDetector
                 return overridePath;
         }
 
-        // 2. Team-shared config override (.unrealsync.json engine.path)
+        // 2. Team-shared config override (.unrealsync-settings.json engine.path)
         var config = ConfigService.LoadConfig(repoPath);
         if (!string.IsNullOrEmpty(config.Engine?.Path))
         {

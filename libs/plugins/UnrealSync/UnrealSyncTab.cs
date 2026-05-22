@@ -1,7 +1,5 @@
-using System;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 using Avalonia;
 
@@ -20,6 +18,9 @@ public class UnrealSyncTab : IRepositoryTab
     private readonly UnrealSyncTabViewModel _viewModel;
     private readonly UnrealSyncTabView _bodyView;
     private readonly StatusPanelView _toolbarView;
+    private readonly UnrealSyncBuildAnnotator? _annotator;
+    private readonly SyncEditorContributor? _menuContributor;
+    private readonly LaunchEditorContributor? _launchContributor;
 
     /// <summary>
     /// Tab title shown in the tab bar.
@@ -29,7 +30,9 @@ public class UnrealSyncTab : IRepositoryTab
     /// <summary>
     /// Tab icon resource key.
     /// </summary>
-    public object Icon => Application.Current?.Resources["Icons.UnrealSync"]!;
+    public object Icon => Application.Current?.Resources.TryGetValue("Icons.UnrealSync", out var icon) == true
+        ? icon!
+        : "🔧";
 
     /// <summary>
     /// Whether the tab can be closed by the user (always true).
@@ -75,10 +78,49 @@ public class UnrealSyncTab : IRepositoryTab
 
         _bodyView = new UnrealSyncTabView();
         _bodyView.DataContext = _viewModel;
+
+        // Register commit annotator for build availability badges
+        var deployService = context.GetService<IDeployService>();
+        var configService = context.GetService<IConfigService>();
+        var annotationProvider = context.GetService<ICommitAnnotationProvider>();
+        if (deployService != null && configService != null)
+        {
+            var logger = context.GetService<IPluginLogger>();
+            _annotator = new UnrealSyncBuildAnnotator(deployService, configService, logger, context.RepositoryPath, context.RepositoryName);
+        }
+
+        // Register annotator with the host-level provider so badges appear in the commit graph
+        if (_annotator != null && annotationProvider != null)
+            annotationProvider.Register(_annotator);
+
+        // Register Sync Editor context menu contributor for commit graph right-click
+        if (deployService != null && configService != null)
+        {
+            var logger = context.GetService<IPluginLogger>();
+            _menuContributor = new SyncEditorContributor(deployService, configService, logger, context.RepositoryPath, context.RepositoryName);
+        }
+
+        var menuContributorProvider = context.GetService<ICommitMenuContributorProvider>();
+        if (_menuContributor != null && menuContributorProvider != null)
+            menuContributorProvider.Register(_menuContributor);
+
+        // Register Launch Editor context menu contributor for commit graph right-click
+        var launcherFactory = context.GetService<IEditorLauncherFactory>();
+        if (launcherFactory != null && configService != null)
+        {
+            var logger = context.GetService<IPluginLogger>();
+            _launchContributor = new LaunchEditorContributor(launcherFactory, configService, logger, context.RepositoryPath);
+        }
+
+        if (_launchContributor != null && menuContributorProvider != null)
+            menuContributorProvider.Register(_launchContributor);
     }
 
     /// <summary>
     /// Triggers async refresh of repository state.
+    /// Annotators and menu contributors remain registered across tab switches
+    /// because they contribute to the Repository tab's commit graph and context menu,
+    /// which are visible regardless of which tab is active.
     /// </summary>
     public void OnActivated()
     {
@@ -96,12 +138,26 @@ public class UnrealSyncTab : IRepositoryTab
     }
 
     /// <summary>
-    /// No-op (tab does not require cleanup on deactivation).
+    /// No-op: annotators and menu contributors remain registered while the repo is open
+    /// so they continue appearing in the Repository tab's commit graph and context menu.
+    /// Unregistration only happens in <see cref="Dispose"/> when the repo is closed.
     /// </summary>
     public void OnDeactivated() { }
 
     /// <summary>
-    /// Disposes the viewModel and cancels any pending operations.
+    /// Disposes the viewModel, unregisters the annotator and menu contributor.
     /// </summary>
-    public void Dispose() => _viewModel.Dispose();
+    public void Dispose()
+    {
+        if (_annotator != null)
+            _context.GetService<ICommitAnnotationProvider>()?.Unregister(_annotator);
+
+        if (_menuContributor != null)
+            _context.GetService<ICommitMenuContributorProvider>()?.Unregister(_menuContributor);
+
+        if (_launchContributor != null)
+            _context.GetService<ICommitMenuContributorProvider>()?.Unregister(_launchContributor);
+
+        _viewModel.Dispose();
+    }
 }

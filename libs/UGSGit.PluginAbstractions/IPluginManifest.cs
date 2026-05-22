@@ -34,5 +34,16 @@ namespace UGSGit.PluginAbstractions
         /// <returns>A read-only list of <see cref="IRepositoryTab"/> instances contributed by this plugin.</returns>
         /// <remarks>Called on the UI thread. Exceptions are caught and result in an ErrorTab.</remarks>
         IReadOnlyList<IRepositoryTab> CreateTabs(PluginContext context);
+
+        /// <summary>
+        /// Commit annotators contributed by this plugin. Return null or empty if the plugin
+        /// does not annotate the commit graph.
+        /// </summary>
+        /// <remarks>
+        /// Annotators are registered per-repo-activation in CreateTabs() or during tab initialization.
+        /// The host's CommitAnnotationProvider collects annotators from active tabs and merges their
+        /// results when the commit graph is rendered.
+        /// </remarks>
+        IReadOnlyList<ICommitAnnotator>? CommitAnnotators { get; }
     }
 }

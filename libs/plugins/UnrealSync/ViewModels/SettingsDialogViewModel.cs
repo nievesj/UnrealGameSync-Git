@@ -17,8 +17,8 @@ namespace UGSGit.Plugins.UnrealSync.ViewModels;
 
 /// <summary>
 /// ViewModel for the UnrealSync Settings dialog.
-/// Engine path override is saved to user-local config (.unrealsync/local.json).
-/// All other settings are saved to team-shared config (.unrealsync.json).
+/// Engine path override is saved to user-local config (.unrealsync/local-ue-path.json).
+/// All other settings are saved to team-shared config (.unrealsync-settings.json).
 /// Fixes D-1: engine path is user-local, not team-shared.
 /// </summary>
 public partial class SettingsDialogViewModel : ObservableObject
@@ -51,20 +51,31 @@ public partial class SettingsDialogViewModel : ObservableObject
     // Network — saved to SHARED config
     /// <summary>Base URL or UNC path for network publish destination.</summary>
     [ObservableProperty] private string _networkBaseUrl = string.Empty;
-    /// <summary>Archive channel name used for packaging (defaults to Editor).</summary>
-    [ObservableProperty] private string _archiveChannel = "Editor";
-    /// <summary>Publish channel name used for distribution (defaults to Editor).</summary>
-    [ObservableProperty] private string _publishChannel = "Editor";
-    /// <summary>Custom archive channel name when not using a preset channel.</summary>
-    [ObservableProperty] private string _customArchiveChannel = string.Empty;
-    /// <summary>Custom publish channel name when not using a preset channel.</summary>
-    [ObservableProperty] private string _customPublishChannel = string.Empty;
+    /// <summary>Channel name for editor builds (subdirectory under network base).</summary>
+    [ObservableProperty] private string _editorChannel = "Editor";
+    /// <summary>Channel name for game builds (subdirectory under network base).</summary>
+    [ObservableProperty] private string _gameChannel = "Game";
+    /// <summary>Base name for published/downloaded zip files. Empty = use .uproject name.</summary>
+    [ObservableProperty] private string _binaryName = string.Empty;
+    /// <summary>Hex color for editor build badges. Empty = default green.</summary>
+    [ObservableProperty] private string _editorBadgeColor = string.Empty;
+    /// <summary>Hex color for game build badges. Empty = default orange.</summary>
+    [ObservableProperty] private string _gameBadgeColor = string.Empty;
+
+    /// <summary>Preset hex colors for the color picker flyout.</summary>
+    public List<string> PresetColors { get; } = new()
+    {
+        "#00FF00", "#32CD32", "#228B22", "#006400",  // Greens
+        "#FFA500", "#FF8C00", "#FF4500", "#FF6347",  // Oranges/Reds
+        "#1E90FF", "#00BFFF", "#4169E1", "#0000FF",  // Blues
+        "#FFD700", "#FFFF00", "#F0E68C", "#B8860B",  // Yellows
+        "#FF69B4", "#FF1493", "#C71585", "#800080",  // Pinks/Purples
+        "#00CED1", "#20B2AA", "#008B8B", "#5F9EA0",  // Teals
+        "#A9A9A9", "#808080", "#696969", "#000000",  // Grays/Black
+        "#FFFFFF", "#F5F5F5", "#D3D3D3", "#C0C0C0",  // Whites
+    };
 
     // Build defaults — saved to SHARED config
-    /// <summary>Default build configuration (e.g. Development, Shipping, DebugGame).</summary>
-    [ObservableProperty] private string _defaultBuildConfig = "Development";
-    /// <summary>Whether to build content when packaging the project.</summary>
-    [ObservableProperty] private bool _buildContentWhenPackaging;
     /// <summary>Output directory for staged builds relative to the repository root.</summary>
     [ObservableProperty] private string _outputDirectory = "Saved/StagedBuilds";
 
@@ -400,14 +411,13 @@ public partial class SettingsDialogViewModel : ObservableObject
 
         // Network (shared)
         NetworkBaseUrl = config.NetworkBase;
-        ArchiveChannel = config.Archive?.Channel ?? "Editor";
-        PublishChannel = config.Publish?.Channel ?? "Editor";
-        CustomArchiveChannel = config.Archive?.CustomChannel ?? string.Empty;
-        CustomPublishChannel = config.Publish?.CustomChannel ?? string.Empty;
+        EditorChannel = config.EditorChannel;
+        GameChannel = config.GameChannel;
+        BinaryName = config.BinaryName;
+        EditorBadgeColor = config.EditorBadgeColor;
+        GameBadgeColor = config.GameBadgeColor;
 
         // Build defaults (shared)
-        DefaultBuildConfig = config.BuildDefaults?.DefaultConfig ?? "Development";
-        BuildContentWhenPackaging = config.BuildDefaults?.BuildContentWhenPackaging ?? false;
         OutputDirectory = config.BuildDefaults?.OutputDirectory ?? "Saved/StagedBuilds";
 
         // Publish (shared)
@@ -436,24 +446,17 @@ public partial class SettingsDialogViewModel : ObservableObject
         {
             Version = 2,
             NetworkBase = NetworkBaseUrl,
-            Engine = sharedConfig.Engine with
+            Engine = (sharedConfig.Engine ?? new UgsEngineConfig()) with
             {
                 BuildTargets = new List<UgsBuildStep>(BuildTargets.Select(x => x.ToStep())),
                 AutoDetect = AutoDetectEngine
-            }
+            },
+            EditorChannel = EditorChannel,
+            GameChannel = GameChannel,
+            BinaryName = BinaryName,
+            EditorBadgeColor = EditorBadgeColor,
+            GameBadgeColor = GameBadgeColor,
         };
-
-        if (sharedConfig.Archive != null)
-        {
-            sharedConfig = sharedConfig with
-            {
-                Archive = sharedConfig.Archive with
-                {
-                    Channel = ArchiveChannel,
-                    CustomChannel = CustomArchiveChannel,
-                }
-            };
-        }
 
         if (sharedConfig.BuildDefaults != null)
         {
@@ -461,8 +464,6 @@ public partial class SettingsDialogViewModel : ObservableObject
             {
                 BuildDefaults = sharedConfig.BuildDefaults with
                 {
-                    DefaultConfig = DefaultBuildConfig,
-                    BuildContentWhenPackaging = BuildContentWhenPackaging,
                     OutputDirectory = OutputDirectory,
                 }
             };
@@ -474,8 +475,6 @@ public partial class SettingsDialogViewModel : ObservableObject
             {
                 Publish = sharedConfig.Publish with
                 {
-                    Channel = PublishChannel,
-                    CustomChannel = CustomPublishChannel,
                     Atomic = AtomicPublish,
                 }
             };
@@ -488,12 +487,20 @@ public partial class SettingsDialogViewModel : ObservableObject
         _configService.SaveLocalState(_repoPath, localState);
     }
 
-    /// <summary>Discards changes and closes dialog.</summary>
+    /// <summary>Sets the editor badge color from a preset swatch.</summary>
     [RelayCommand]
-    private void Cancel()
-    {
-        // Dialog close handled by view
-    }
+    private void SetEditorColor(string color) => EditorBadgeColor = color;
+
+    /// <summary>Sets the game badge color from a preset swatch.</summary>
+    [RelayCommand]
+    private void SetGameColor(string color) => GameBadgeColor = color;
+
+    /// <summary>Fired when the dialog should close (Cancel button pressed).</summary>
+    public event Action? RequestClose;
+
+    /// <summary>Discards changes and requests dialog close.</summary>
+    [RelayCommand]
+    private void Cancel() => RequestClose?.Invoke();
 
     /// <summary>Adds a new build target with default values.</summary>
     [RelayCommand]

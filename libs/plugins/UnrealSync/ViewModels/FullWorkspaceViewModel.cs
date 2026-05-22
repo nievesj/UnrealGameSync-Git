@@ -40,10 +40,14 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     private CancellationTokenSource? _buildCts;
     private Process? _editorProcess;
     private readonly System.Text.StringBuilder _logBuilder = new();
+    private int _isBusyFlag;
 
-    /// <summary>Current branch name displayed in the status panel.</summary>
+    /// <summary>Static header label displayed in the status panel.</summary>
     [ObservableProperty]
-    private string _branchText = "";
+    private string _branchText = "Unreal Game Sync for Git";
+
+    /// <summary>The actual Git branch name used for sync operations (e.g. "origin/main").</summary>
+    private string _currentBranch = "origin/main";
 
     /// <summary>SHA of the commit the workspace is currently synced to.</summary>
     [ObservableProperty]
@@ -58,8 +62,25 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     private string _logOutput = "";
 
     /// <summary>Indicates whether a sync, build, or package operation is in progress.</summary>
-    [ObservableProperty]
-    private bool _isBusy;
+    public bool IsBusy => _isBusyFlag != 0;
+
+    /// <summary>Atomically acquires the busy flag and notifies binding. Returns true if acquired, false if already busy.</summary>
+    private bool TrySetBusy()
+    {
+        if (Interlocked.CompareExchange(ref _isBusyFlag, 1, 0) == 0)
+        {
+            OnPropertyChanged(nameof(IsBusy));
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>Clears the busy flag and notifies binding.</summary>
+    private void ClearBusy()
+    {
+        Interlocked.Exchange(ref _isBusyFlag, 0);
+        OnPropertyChanged(nameof(IsBusy));
+    }
 
     /// <summary>Display name of the project derived from the .uproject filename.</summary>
     [ObservableProperty]
@@ -102,6 +123,10 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string _lastZipPath = string.Empty;
 
+    /// <summary>Channel name the last zip should be published to (Editor or Game).</summary>
+    [ObservableProperty]
+    private string _lastZipChannel = "Editor";
+
     /// <summary>Package progress as a value between 0.0 and 1.0.</summary>
     [ObservableProperty]
     private double _packageProgress;
@@ -113,6 +138,18 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     /// <summary>Status text displayed during or after a publish operation.</summary>
     [ObservableProperty]
     private string _publishStatusText = "";
+
+    /// <summary>Status text for the editor binary build deployment.</summary>
+    [ObservableProperty]
+    private string _editorBuildStatusText = "";
+
+    /// <summary>Whether the deployed editor binary matches the current commit.</summary>
+    [ObservableProperty]
+    private bool _editorBuildIsCurrent;
+
+    /// <summary>Whether a newer editor binary build is available on the network.</summary>
+    [ObservableProperty]
+    private bool _editorBuildAvailable;
 
     /// <summary>Observable collection of configured build target steps.</summary>
     public ObservableCollection<UgsBuildStep> BuildTargets { get; } = new();
@@ -212,32 +249,46 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
 
     private void ResetCancellationToken()
     {
-        var old = Interlocked.Exchange(ref _buildCts!, null);
+        var replacement = new CancellationTokenSource();
+        var old = Interlocked.Exchange(ref _buildCts, replacement);
         if (old != null)
         {
             try { if (!old.IsCancellationRequested) old.Cancel(); } catch { }
             old.Dispose();
         }
-        _buildCts = new CancellationTokenSource();
     }
 
     /// <summary>Syncs working tree to latest commit on current branch.</summary>
     [RelayCommand]
     private async Task SyncAsync()
     {
-        if (IsBusy) return;
-        IsBusy = true;
+        if (!TrySetBusy()) return;
 
         try
         {
             var progress = new Progress<string>(AppendLog);
             var result = await _syncService.SyncToLatestAsync(
-                BranchText, progress, CancellationToken.None).ConfigureAwait(true);
+                _currentBranch, progress, CancellationToken.None).ConfigureAwait(true);
 
             AppendLog($"\n{result.Message}");
 
             if (result.Status == SyncStatus.Success && !string.IsNullOrEmpty(result.CommitSha))
+            {
                 CommitText = result.CommitSha;
+
+                // Non-blocking binary deploy if network is configured
+                if (!string.IsNullOrEmpty(_config.NetworkBase))
+                {
+                    try
+                    {
+                        await DeployEditorCoreAsync();
+                    }
+                    catch (System.Exception ex)
+                    {
+                        AppendLog($"\nPost-sync deploy error: {ex.Message}");
+                    }
+                }
+            }
         }
         catch (System.Exception ex)
         {
@@ -245,7 +296,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         }
         finally
         {
-            IsBusy = false;
+            ClearBusy();
         }
     }
 
@@ -253,8 +304,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task BuildAsync()
     {
-        if (IsBusy) return;
-        IsBusy = true;
+        if (!TrySetBusy()) return;
 
         try
         {
@@ -283,7 +333,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         finally
         {
             _buildCts = null;
-            IsBusy = false;
+            ClearBusy();
         }
     }
 
@@ -311,8 +361,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task PackageAsync(UgsPackageProfile profile)
     {
-        if (IsBusy) return;
-        IsBusy = true;
+        if (!TrySetBusy()) return;
         CanPublish = false;
 
         try
@@ -349,6 +398,9 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
 
             AppendLog($"\nZip created: {zipResult}");
             LastZipPath = zipResult;
+            LastZipChannel = profile.EditorTarget.EndsWith("Editor", StringComparison.OrdinalIgnoreCase)
+                ? _config.EditorChannel
+                : _config.GameChannel;
             CanPublish = true;
         }
         catch (OperationCanceledException)
@@ -362,7 +414,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         finally
         {
             _buildCts = null;
-            IsBusy = false;
+            ClearBusy();
         }
     }
 
@@ -380,7 +432,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
                 return;
             }
 
-            var publishChannel = _config.Publish?.Channel ?? "Editor";
+            var publishChannel = LastZipChannel;
             var atomic = _config.Publish?.Atomic ?? true;
 
             var progress = new Progress<PublishProgress>(p =>
@@ -408,6 +460,114 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         }
     }
 
+    /// <summary>Deploys the precompiled editor binary for the current commit.</summary>
+    [RelayCommand]
+    private async Task DeployEditorAsync()
+    {
+        if (!TrySetBusy()) return;
+
+        try
+        {
+            await DeployEditorCoreAsync();
+        }
+        catch (System.Exception ex)
+        {
+            AppendLog($"\nDeploy error: {ex.Message}");
+        }
+        finally
+        {
+            ClearBusy();
+        }
+    }
+
+    /// <summary>
+    /// Core deploy logic extracted from DeployEditorAsync so SyncAsync can call it
+    /// without re-acquiring the busy flag.
+    /// </summary>
+    private async Task DeployEditorCoreAsync()
+    {
+        var deployService = _context.GetService<IDeployService>()!;
+        var shortSha = CommitText?.Length >= 9 ? CommitText[..9] : CommitText;
+        var progress = new Progress<string>(AppendLog);
+
+        if (string.IsNullOrEmpty(shortSha))
+        {
+            AppendLog("No commit to deploy.");
+            return;
+        }
+
+        // Check if this SHA is already deployed
+        var localState = _configService.LoadLocalState(_repoPath);
+        if (string.Equals(localState.LastDeployedArchiveSha, shortSha, StringComparison.OrdinalIgnoreCase))
+        {
+            AppendLog($"Editor build {shortSha} is already deployed.");
+            return;
+        }
+
+        var binaryName = !string.IsNullOrEmpty(_config.BinaryName)
+            ? _config.BinaryName
+            : ProjectName;
+
+        var result = await deployService.DeployAsync(
+            _repoPath, _config.NetworkBase, _config.EditorChannel,
+            binaryName, shortSha, progress, CancellationToken.None).ConfigureAwait(true);
+
+        AppendLog(result.Message);
+
+        if (result.Status == DeployStatus.Success)
+        {
+            await RefreshEditorBuildStatusAsync();
+        }
+    }
+
+    /// <summary>Refreshes the editor build status fields from local state and network.</summary>
+    private async Task RefreshEditorBuildStatusAsync()
+    {
+        try
+        {
+            var localState = _configService.LoadLocalState(_repoPath);
+            var shortSha = CommitText?.Length >= 9 ? CommitText[..9] : CommitText;
+            var deployedSha = localState.LastDeployedArchiveSha;
+
+            if (string.IsNullOrEmpty(deployedSha))
+            {
+                EditorBuildStatusText = "none";
+                EditorBuildIsCurrent = false;
+            }
+            else if (string.Equals(deployedSha, shortSha, StringComparison.OrdinalIgnoreCase))
+            {
+                EditorBuildStatusText = $"Editor build: {deployedSha} (current)";
+                EditorBuildIsCurrent = true;
+            }
+            else
+            {
+                EditorBuildStatusText = $"Editor build: {deployedSha} (behind)";
+                EditorBuildIsCurrent = false;
+            }
+
+            // Check if a newer build is available on the network
+            EditorBuildAvailable = false;
+            if (!string.IsNullOrEmpty(_config.NetworkBase) && !string.IsNullOrEmpty(shortSha))
+            {
+                var deployService = _context.GetService<IDeployService>(); // returns null if not registered
+                if (deployService != null)
+                {
+                    var binaryName = !string.IsNullOrEmpty(_config.BinaryName)
+                        ? _config.BinaryName
+                        : ProjectName;
+                    var found = await deployService.FindBuildForCommitAsync(
+                        _config.NetworkBase, _config.EditorChannel, binaryName,
+                        shortSha, CancellationToken.None).ConfigureAwait(true);
+                    EditorBuildAvailable = found != null;
+                }
+            }
+        }
+        catch
+        {
+            // Status display is best-effort; silently ignore errors
+        }
+    }
+
     /// <summary>Opens the settings dialog for configuring engine paths, build targets, and publish options.</summary>
     [RelayCommand]
     private async Task OpenSettings()
@@ -418,6 +578,10 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
             DataContext = dialogVm
         };
 
+        // Wire Cancel → close dialog (fixes CANCEL button)
+        void OnRequestClose() => dialog.Close();
+        dialogVm.RequestClose += OnRequestClose;
+
         var owner = Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime
             ? lifetime.MainWindow
             : null;
@@ -427,6 +591,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
             await dialog.ShowDialog(owner);
         }
 
+        dialogVm.RequestClose -= OnRequestClose;
         ReloadConfig();
     }
 
@@ -449,6 +614,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
 
     /// <summary>
     /// Fetches the current branch name and commit SHA from the Git repository.
+    /// Also refreshes the editor build deployment status.
     /// </summary>
     /// <param name="ct">Cancellation token to cancel the fetch operations.</param>
     /// <returns>A task that completes when both branch and commit have been retrieved.</returns>
@@ -456,8 +622,9 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     {
         try
         {
-            BranchText = await _syncService.GetCurrentBranchAsync(ct).ConfigureAwait(true);
+            _currentBranch = await _syncService.GetCurrentBranchAsync(ct).ConfigureAwait(true) ?? "origin/main";
             CommitText = await _syncService.GetCurrentCommitAsync(ct).ConfigureAwait(true);
+            await RefreshEditorBuildStatusAsync();
         }
         catch { /* ignore */ }
     }
@@ -473,7 +640,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     {
         var shortSha = CommitText?.Length >= 7 ? CommitText[..7] : "unknown";
         return (template ?? "{target}-{platform}-{config}-{shortSha}.zip")
-            .Replace("{branch}", BranchText ?? "unknown")
+            .Replace("{branch}", _currentBranch ?? "unknown")
             .Replace("{target}", profile.EditorTarget)
             .Replace("{platform}", profile.Platform)
             .Replace("{config}", profile.Configuration)

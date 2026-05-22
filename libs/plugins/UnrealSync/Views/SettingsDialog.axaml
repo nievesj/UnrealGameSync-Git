@@ -23,12 +23,17 @@
                                FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
                     <TextBox Text="{Binding EnginePathOverride}"
                              IsEnabled="{Binding !AutoDetectEngine}"
-                             Watermark="C:\Program Files\Epic Games\UE_5.4" />
+                             Watermark="{Binding EnginePath}" />
+                    <TextBlock Text="{Binding EnginePath, StringFormat='Auto-detected: {0}'}"
+                               FontSize="11" Foreground="{DynamicResource Brush.FG3}"
+                               IsVisible="{Binding AutoDetectEngine}" />
                     <TextBlock Text="{Binding EnginePathError}"
                                Foreground="Red" FontSize="11"
                                IsVisible="{Binding EnginePathError, Converter={x:Static c:StringConverters.IsNotNullOrEmpty}}" />
                 </StackPanel>
             </Border>
+
+            <Rectangle Fill="{DynamicResource Brush.Border2}" Height=".6" HorizontalAlignment="Stretch" Margin="0,8" />
 
             <!-- Network Location section -->
             <Border Background="{DynamicResource Brush.Card}" CornerRadius="6" Padding="12">
@@ -43,50 +48,110 @@
                                Foreground="Red" FontSize="11"
                                IsVisible="{Binding NetworkUrlError, Converter={x:Static c:StringConverters.IsNotNullOrEmpty}}" />
 
+                    <TextBlock Text="Channels (subdirectories under network base):"
+                               FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
                     <Grid ColumnDefinitions="*,*">
                         <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,8,0">
-                            <TextBlock Text="Archive channel:" FontSize="11"
+                            <TextBlock Text="Editor builds:" FontSize="11"
                                        Foreground="{DynamicResource Brush.FG3}" />
-                            <TextBox Text="{Binding ArchiveChannel}" />
+                            <TextBox Text="{Binding EditorChannel}"
+                                     Watermark="Editor" />
                         </StackPanel>
                         <StackPanel Grid.Column="1" Spacing="4">
-                            <TextBlock Text="Publish channel:" FontSize="11"
+                            <TextBlock Text="Game builds:" FontSize="11"
                                        Foreground="{DynamicResource Brush.FG3}" />
-                            <TextBox Text="{Binding PublishChannel}" />
+                            <TextBox Text="{Binding GameChannel}"
+                                     Watermark="Game" />
                         </StackPanel>
                     </Grid>
 
+                    <TextBlock Text="Binary name (zip prefix, defaults to .uproject name):"
+                               FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
+                    <TextBox Text="{Binding BinaryName}"
+                             Watermark="{Binding ProjectName}" />
+
+                    <TextBlock Text="Badge colors (click swatch to pick):"
+                               FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
                     <Grid ColumnDefinitions="*,*">
                         <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,8,0">
-                            <TextBlock Text="Custom archive channel:" FontSize="11"
+                            <TextBlock Text="Editor:" FontSize="11"
                                        Foreground="{DynamicResource Brush.FG3}" />
-                            <TextBox Text="{Binding CustomArchiveChannel}" />
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Button Grid.Column="0" Width="28" Height="28" Margin="0,0,8,0"
+                                        CornerRadius="4"
+                                        Background="{Binding EditorBadgeColor, Converter={x:Static c:HexToBrushConverter.Instance}, ConverterParameter=#00FF00}">
+                                    <Button.Flyout>
+                                        <Flyout>
+                                            <ItemsControl ItemsSource="{Binding $parent[Window].((vm:SettingsDialogViewModel)DataContext).PresetColors}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel MaxWidth="180" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Button Width="24" Height="24" Margin="2"
+                                                                Background="{Binding ., Converter={x:Static c:HexToBrushConverter.Instance}}"
+                                                                Command="{Binding $parent[ItemsControl].((vm:SettingsDialogViewModel)DataContext).SetEditorColorCommand}"
+                                                                CommandParameter="{Binding .}" />
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </Flyout>
+                                    </Button.Flyout>
+                                </Button>
+                                <TextBox Grid.Column="1" Text="{Binding EditorBadgeColor}"
+                                         Watermark="#00FF00" />
+                            </Grid>
                         </StackPanel>
                         <StackPanel Grid.Column="1" Spacing="4">
-                            <TextBlock Text="Custom publish channel:" FontSize="11"
+                            <TextBlock Text="Game:" FontSize="11"
                                        Foreground="{DynamicResource Brush.FG3}" />
-                            <TextBox Text="{Binding CustomPublishChannel}" />
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Button Grid.Column="0" Width="28" Height="28" Margin="0,0,8,0"
+                                        CornerRadius="4"
+                                        Background="{Binding GameBadgeColor, Converter={x:Static c:HexToBrushConverter.Instance}, ConverterParameter=#FFA500}">
+                                    <Button.Flyout>
+                                        <Flyout>
+                                            <ItemsControl ItemsSource="{Binding $parent[Window].((vm:SettingsDialogViewModel)DataContext).PresetColors}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel MaxWidth="180" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Button Width="24" Height="24" Margin="2"
+                                                                Background="{Binding ., Converter={x:Static c:HexToBrushConverter.Instance}}"
+                                                                Command="{Binding $parent[ItemsControl].((vm:SettingsDialogViewModel)DataContext).SetGameColorCommand}"
+                                                                CommandParameter="{Binding .}" />
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </Flyout>
+                                    </Button.Flyout>
+                                </Button>
+                                <TextBox Grid.Column="1" Text="{Binding GameBadgeColor}"
+                                         Watermark="#FFA500" />
+                            </Grid>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
             </Border>
+
+            <Rectangle Fill="{DynamicResource Brush.Border2}" Height=".6" HorizontalAlignment="Stretch" Margin="0,8" />
 
             <!-- Build Defaults section -->
             <Border Background="{DynamicResource Brush.Card}" CornerRadius="6" Padding="12">
                 <StackPanel Spacing="8">
                     <TextBlock Text="Build Defaults" FontWeight="SemiBold" FontSize="14" />
 
-                    <TextBlock Text="Default config:" FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
-                    <ComboBox SelectedItem="{Binding DefaultBuildConfig}" />
-                    <!-- Items: Development, DebugGame, Shipping, Test — bound in code-behind -->
-
-                    <CheckBox Content="Build content when packaging"
-                              IsChecked="{Binding BuildContentWhenPackaging}" />
-
                     <TextBlock Text="Output directory:" FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
                     <TextBox Text="{Binding OutputDirectory}" Watermark="Saved/StagedBuilds" />
                 </StackPanel>
             </Border>
+
+            <Rectangle Fill="{DynamicResource Brush.Border2}" Height=".6" HorizontalAlignment="Stretch" Margin="0,8" />
 
             <!-- Publish Options section -->
             <Border Background="{DynamicResource Brush.Card}" CornerRadius="6" Padding="12">
@@ -96,6 +161,8 @@
                               IsChecked="{Binding AtomicPublish}" />
                 </StackPanel>
             </Border>
+
+            <Rectangle Fill="{DynamicResource Brush.Border2}" Height=".6" HorizontalAlignment="Stretch" Margin="0,8" />
 
             <!-- Build Targets section -->
             <Border Background="{DynamicResource Brush.Card}" CornerRadius="6" Padding="12">
@@ -182,7 +249,7 @@
                                         <StackPanel Orientation="Horizontal" Spacing="4">
                                             <TextBlock Text="{Binding Name}" FontFamily="Cascadia Code, Consolas, monospace" FontSize="11" Foreground="{DynamicResource Brush.Accent}" />
                                             <TextBlock Text="—" FontSize="11" Foreground="{DynamicResource Brush.FG4}" />
-                                            <TextBlock Text="{Binding Description}" FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
+                                            <TextBlock Text="{Binding Description}" FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
                                         </StackPanel>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>

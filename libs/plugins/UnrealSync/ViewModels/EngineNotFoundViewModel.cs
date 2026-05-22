@@ -39,7 +39,7 @@ public class EngineNotFoundViewModel : ObservableObject
         "No matching registry entry for this engine GUID",
         "Not a relative path to '../UE5' or '../UnrealEngine'",
         "UNREAL_ENGINE_PATH environment variable not set",
-        "No .unrealsync.json with engine.path configured"
+        "No .unrealsync-settings.json with engine.path configured"
     };
 
     /// <summary>

@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Avalonia;
@@ -13,6 +15,8 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
+
+using UGSGit.PluginAbstractions;
 
 namespace UGSGit.Views
 {
@@ -811,6 +815,77 @@ namespace UGSGit.Views
             {
                 foreach (var tag in tags)
                     FillTagMenu(menu, repo, tag, current, commit.IsMerged);
+                menu.Items.Add(new MenuItem() { Header = "-" });
+            }
+
+            // Plugin-contributed commit menu items (e.g. "Sync Editor" from UnrealSync)
+            var menuContributors = Services.HostServices.MenuContributors.GetContributorsForRepo(repo.FullPath);
+            if (menuContributors.Count > 0)
+            {
+                foreach (var contributor in menuContributors)
+                {
+                    if (!contributor.IsVisible(new CommitRef(commit.SHA.Substring(0, 9))))
+                        continue;
+
+                    var pluginItem = new MenuItem();
+                    pluginItem.Header = contributor.Header;
+                    pluginItem.Icon = this.CreateMenuIcon(contributor.IconResourceKey ?? "Icons.Fetch");
+
+                    // Determine enabled state: some contributors require a build-available annotation
+                    // (Sync Editor), while others (Launch Editor) work on any commit.
+                    var isEnabled = contributor.IsEnabled(new CommitRef(commit.SHA.Substring(0, 9)));
+                    if (contributor.RequiresBuildAnnotation)
+                    {
+                        var hasBuildAnnotation = commit.Annotations != null &&
+                            commit.Annotations.Any(a => a.AnnotationType == CommitAnnotationTypes.BuildAvailable);
+                        isEnabled &= hasBuildAnnotation;
+                    }
+                    pluginItem.IsEnabled = isEnabled;
+
+                    pluginItem.Click += async (_, e) =>
+                    {
+                        pluginItem.IsEnabled = false;
+
+                        var shortSha = commit.SHA.Substring(0, 9);
+                        var actionName = contributor.Header;
+                        var commitRef = new CommitRef(shortSha);
+
+                        if (contributor.IsLongRunning)
+                        {
+                            // Long-running action: show modal progress popup
+                            var progress = new ViewModels.CommitActionProgress(actionName, shortSha);
+                            var window = new Views.CommitActionProgress { DataContext = progress };
+                            window.SetContributorIcon(contributor.IconResourceKey);
+                            window.SetAction(contributor.ExecuteAsync, commitRef);
+
+                            var owner = TopLevel.GetTopLevel(this) as Window;
+                            await window.ShowDialog(owner);
+
+                            if (progress.IsError)
+                                repo.SendNotification($"{actionName} failed: {progress.ErrorMessage}", true);
+                            else if (progress.IsComplete)
+                                repo.SendNotification($"{actionName}: completed for {shortSha}");
+                        }
+                        else
+                        {
+                            // Fast action: no progress popup, just execute and show toast
+                            try
+                            {
+                                await contributor.ExecuteAsync(commitRef, null, CancellationToken.None);
+                                repo.SendNotification($"{actionName}: completed");
+                            }
+                            catch (Exception ex)
+                            {
+                                repo.SendNotification($"{actionName} failed: {ex.Message}", true);
+                            }
+                        }
+
+                        pluginItem.IsEnabled = true;
+                        e.Handled = true;
+                    };
+                    menu.Items.Add(pluginItem);
+                }
+
                 menu.Items.Add(new MenuItem() { Header = "-" });
             }
 

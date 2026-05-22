@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Avalonia.Collections;
@@ -193,6 +195,41 @@ namespace UGSGit.ViewModels
             }
 
             Graph = Models.CommitGraph.Generate(commits, firstParentOnly, highlighting, extraHeads);
+
+            // Fetch annotations asynchronously and apply when ready
+            _graphGeneration++;
+            _ = FetchAnnotationsAsync(commits, _graphGeneration);
+        }
+
+        private async Task FetchAnnotationsAsync(List<Models.Commit> commits, int generation)
+        {
+            try
+            {
+                var provider = Services.HostServices.AnnotationProvider;
+                var shas = commits.Select(c => c.SHA.Length >= 9 ? c.SHA[..9] : c.SHA).Distinct().ToList();
+                var annotations = await provider.GetAnnotationsAsync(shas, CancellationToken.None).ConfigureAwait(true);
+
+                // Abort if graph has been regenerated since we started
+                if (generation != _graphGeneration)
+                    return;
+
+                // Apply annotations to commits
+                foreach (var commit in commits)
+                {
+                    var shortSha = commit.SHA.Length >= 9 ? commit.SHA[..9] : commit.SHA;
+                    if (annotations.TryGetValue(shortSha, out var list))
+                        commit.Annotations = new List<PluginAbstractions.CommitAnnotation>(list);
+                    else
+                        commit.Annotations = null;
+                }
+
+                // Trigger visual refresh of annotation presenters
+                OnPropertyChanged(nameof(Commits));
+            }
+            catch
+            {
+                // Silently ignore — annotation failures must not break the graph
+            }
         }
 
         public Models.BisectState UpdateBisectInfo()
@@ -494,6 +531,7 @@ namespace UGSGit.ViewModels
         private Models.Bisect _bisect = null;
         private object _detailContext = new Models.Null();
         private bool _ignoreSelectionChange = false;
+        private int _graphGeneration;
 
         private GridLength _leftArea = new(1, GridUnitType.Star);
         private GridLength _rightArea = new(1, GridUnitType.Star);

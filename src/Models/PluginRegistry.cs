@@ -61,6 +61,14 @@ namespace UGSGit.Models
                 }
                 _builtInManifests.Add(manifest);
             }
+
+            // Register commit annotators with the host-level provider
+            if (manifest.CommitAnnotators != null)
+            {
+                foreach (var annotator in manifest.CommitAnnotators)
+                    Services.HostServices.AnnotationProvider.Register(annotator);
+            }
+
             return true;
         }
 

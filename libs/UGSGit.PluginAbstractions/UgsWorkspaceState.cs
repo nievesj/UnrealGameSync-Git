@@ -28,13 +28,13 @@ public class UgsWorkspaceState
     [JsonPropertyName("afterSyncActions")]
     public UgsAfterSyncActions AfterSyncActions { get; init; } = new();
 
-    /// <summary>Active archive channel name for this workspace.</summary>
-    [JsonPropertyName("archiveChannel")]
-    public string ArchiveChannel { get; init; } = string.Empty;
-
     /// <summary>Override path to the Unreal Engine root, overrides auto-detected path.</summary>
     [JsonPropertyName("enginePathOverride")]
     public string EnginePathOverride { get; set; } = string.Empty;
+
+    /// <summary>SHA of the last deployed editor binary archive (9-char short SHA).</summary>
+    [JsonPropertyName("lastDeployedArchiveSha")]
+    public string LastDeployedArchiveSha { get; set; } = string.Empty;
 }
 
 /// <summary>

@@ -45,6 +45,13 @@ public class UnrealSyncManifest : IPluginManifest
     public int DefaultSortOrder => 100;
 
     /// <summary>
+    /// Commit annotators are registered per-repo when the UnrealSync tab is activated,
+    /// since they require repo-specific context (repo path, project name, services).
+    /// Returns null at manifest level.
+    /// </summary>
+    public IReadOnlyList<ICommitAnnotator>? CommitAnnotators => null;
+
+    /// <summary>
     /// Creates the repository tab instances for this plugin.
     /// </summary>
     /// <param name="context">Plugin context providing repository path and service resolution.</param>
