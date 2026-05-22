@@ -829,7 +829,7 @@ namespace UGSGit.Views
 
                     var pluginItem = new MenuItem();
                     pluginItem.Header = contributor.Header;
-                    pluginItem.Icon = this.CreateMenuIcon(contributor.IconResourceKey ?? "Icons.Download");
+                    pluginItem.Icon = this.CreateMenuIcon(contributor.IconResourceKey ?? "Icons.Fetch");
 
                     // Check commit annotations for build availability to set enabled state
                     var hasBuildAnnotation = commit.Annotations != null &&
@@ -838,21 +838,24 @@ namespace UGSGit.Views
                     pluginItem.Click += async (_, e) =>
                     {
                         pluginItem.IsEnabled = false;
-                        try
-                        {
-                            await contributor.ExecuteAsync(
-                                new CommitRef(commit.SHA.Substring(0, 9)),
-                                CancellationToken.None);
-                            repo.SendNotification($"Sync Editor: successfully deployed build for {commit.SHA.Substring(0, 9)}");
-                        }
-                        catch (Exception ex)
-                        {
-                            repo.SendNotification($"Sync Editor failed: {ex.Message}", true);
-                        }
-                        finally
-                        {
-                            pluginItem.IsEnabled = true;
-                        }
+
+                        var shortSha = commit.SHA.Substring(0, 9);
+                        var actionName = contributor.Header;
+                        var progress = new ViewModels.CommitActionProgress(actionName, shortSha);
+                        var window = new Views.CommitActionProgress { DataContext = progress };
+                        window.SetContributorIcon(contributor.IconResourceKey);
+                        window.SetAction(contributor.ExecuteAsync, new CommitRef(shortSha));
+
+                        var owner = TopLevel.GetTopLevel(this) as Window;
+
+                        await window.ShowDialog(owner);
+
+                        if (progress.IsError)
+                            repo.SendNotification($"{actionName} failed: {progress.ErrorMessage}", true);
+                        else if (progress.IsComplete)
+                            repo.SendNotification($"{actionName}: completed for {shortSha}");
+
+                        pluginItem.IsEnabled = true;
                         e.Handled = true;
                     };
                     menu.Items.Add(pluginItem);

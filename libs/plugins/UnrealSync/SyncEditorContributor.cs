@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,7 +29,7 @@ public class SyncEditorContributor : ICommitMenuContributor
     public string Header => "Sync Editor";
 
     /// <inheritdoc/>
-    public string? IconResourceKey => "Icons.Download";
+    public string? IconResourceKey => "Icons.Fetch";
 
     /// <inheritdoc/>
     public string RepoPath => _repoPath;
@@ -71,13 +72,18 @@ public class SyncEditorContributor : ICommitMenuContributor
     }
 
     /// <inheritdoc/>
-    public async Task ExecuteAsync(CommitRef commit, CancellationToken ct)
+    public async Task ExecuteAsync(CommitRef commit, IProgress<string>? log, CancellationToken ct)
     {
         EnsureCached();
 
         var shortSha = commit.ShortSha;
+
+        // Tee progress: forward to host-provided log (progress popup) AND plugin logger
         var progress = new Progress<string>(msg =>
-            _logger?.Log($"[Sync Editor] {msg}"));
+        {
+            log?.Report(msg);
+            _logger?.Log($"[Sync Editor] {msg}");
+        });
 
         var result = await _deployService.DeployAsync(
             _repoPath,
@@ -88,7 +94,17 @@ public class SyncEditorContributor : ICommitMenuContributor
             progress,
             ct);
 
-        _logger?.Log($"[Sync Editor] {result.Status}: {result.Message}");
+        // Report final status through both channels
+        var statusMsg = $"{result.Status}: {result.Message}";
+        log?.Report(statusMsg);
+        _logger?.Log($"[Sync Editor] {statusMsg}");
+
+        // DeployService may return non-success statuses — throw to signal error to the popup
+        if (result.Status != DeployStatus.Success)
+        {
+            throw new InvalidOperationException(
+                result.Message ?? $"Deploy returned status: {result.Status}");
+        }
     }
 
     /// <summary>

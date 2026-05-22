@@ -15,7 +15,7 @@ public interface ICommitMenuContributor
     string Header { get; }
 
     /// <summary>
-    /// Icon resource key from the host's icon dictionary (e.g. "Icons.Download").
+    /// Icon resource key from the host's icon dictionary (e.g. "Icons.Fetch").
     /// Return null for a text-only item.
     /// </summary>
     string? IconResourceKey { get; }
@@ -39,10 +39,25 @@ public interface ICommitMenuContributor
     bool IsEnabled(CommitRef commit);
 
     /// <summary>
-    /// Executes the action. May be long-running (network download, extraction).
-    /// The caller provides a cancellation token from the UI context.
+    /// Executes the action with optional progress reporting and cancellation support.
+    /// May be long-running (network download, extraction).
     /// </summary>
-    Task ExecuteAsync(CommitRef commit, CancellationToken ct);
+    /// <param name="commit">The target commit.</param>
+    /// <param name="log">
+    /// Optional progress reporter. Passes messages from the action so the host
+    /// can display them in a progress popup. May be null — contributors must
+    /// null-check before calling Report() and should still log to their own
+    /// IPluginLogger for diagnostics.
+    /// </param>
+    /// <param name="ct">Cancellation token.</param>
+    Task ExecuteAsync(CommitRef commit, IProgress<string>? log, CancellationToken ct);
+
+    /// <summary>
+    /// Executes the action with cancellation support only (no progress reporting).
+    /// Default implementation bridges to the three-parameter overload with a null log.
+    /// </summary>
+    Task ExecuteAsync(CommitRef commit, CancellationToken ct)
+        => ExecuteAsync(commit, null, ct);
 }
 
 /// <summary>
