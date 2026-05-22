@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Avalonia;
@@ -13,6 +15,8 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
+
+using UGSGit.PluginAbstractions;
 
 namespace UGSGit.Views
 {
@@ -811,6 +815,49 @@ namespace UGSGit.Views
             {
                 foreach (var tag in tags)
                     FillTagMenu(menu, repo, tag, current, commit.IsMerged);
+                menu.Items.Add(new MenuItem() { Header = "-" });
+            }
+
+            // Plugin-contributed commit menu items (e.g. "Sync Editor" from UnrealSync)
+            var menuContributors = Services.HostServices.MenuContributors.GetContributorsForRepo(repo.FullPath);
+            if (menuContributors.Count > 0)
+            {
+                foreach (var contributor in menuContributors)
+                {
+                    if (!contributor.IsVisible(new CommitRef(commit.SHA.Substring(0, 9))))
+                        continue;
+
+                    var pluginItem = new MenuItem();
+                    pluginItem.Header = contributor.Header;
+                    pluginItem.Icon = this.CreateMenuIcon(contributor.IconResourceKey ?? "Icons.Download");
+
+                    // Check commit annotations for build availability to set enabled state
+                    var hasBuildAnnotation = commit.Annotations != null &&
+                        commit.Annotations.Any(a => a.AnnotationType == "build-available");
+                    pluginItem.IsEnabled = hasBuildAnnotation && contributor.IsEnabled(new CommitRef(commit.SHA.Substring(0, 9)));
+                    pluginItem.Click += async (_, e) =>
+                    {
+                        pluginItem.IsEnabled = false;
+                        try
+                        {
+                            await contributor.ExecuteAsync(
+                                new CommitRef(commit.SHA.Substring(0, 9)),
+                                CancellationToken.None);
+                            repo.SendNotification($"Sync Editor: successfully deployed build for {commit.SHA.Substring(0, 9)}");
+                        }
+                        catch (Exception ex)
+                        {
+                            repo.SendNotification($"Sync Editor failed: {ex.Message}", true);
+                        }
+                        finally
+                        {
+                            pluginItem.IsEnabled = true;
+                        }
+                        e.Handled = true;
+                    };
+                    menu.Items.Add(pluginItem);
+                }
+
                 menu.Items.Add(new MenuItem() { Header = "-" });
             }
 

@@ -21,6 +21,7 @@ public class UnrealSyncTab : IRepositoryTab
     private readonly UnrealSyncTabView _bodyView;
     private readonly StatusPanelView _toolbarView;
     private readonly UnrealSyncBuildAnnotator? _annotator;
+    private readonly SyncEditorContributor? _menuContributor;
 
     /// <summary>
     /// Tab title shown in the tab bar.
@@ -93,6 +94,18 @@ public class UnrealSyncTab : IRepositoryTab
         // Register annotator with the host-level provider so badges appear in the commit graph
         if (_annotator != null && annotationProvider != null)
             annotationProvider.Register(_annotator);
+
+        // Register Sync Editor context menu contributor for commit graph right-click
+        if (deployService != null && configService != null)
+        {
+            var projectName = Path.GetFileNameWithoutExtension(context.RepositoryPath);
+            var logger = context.GetService<IPluginLogger>();
+            _menuContributor = new SyncEditorContributor(deployService, configService, logger, context.RepositoryPath, projectName);
+        }
+
+        var menuContributorProvider = context.GetService<ICommitMenuContributorProvider>();
+        if (_menuContributor != null && menuContributorProvider != null)
+            menuContributorProvider.Register(_menuContributor);
     }
 
     /// <summary>
@@ -115,21 +128,28 @@ public class UnrealSyncTab : IRepositoryTab
     }
 
     /// <summary>
-    /// Unregisters the commit annotator when the tab is deactivated.
+    /// Unregisters the commit annotator and menu contributor when the tab is deactivated.
     /// </summary>
     public void OnDeactivated()
     {
         if (_annotator != null)
             _context.GetService<ICommitAnnotationProvider>()?.Unregister(_annotator);
+
+        if (_menuContributor != null)
+            _context.GetService<ICommitMenuContributorProvider>()?.Unregister(_menuContributor);
     }
 
     /// <summary>
-    /// Disposes the viewModel and unregisters the annotator.
+    /// Disposes the viewModel, unregisters the annotator and menu contributor.
     /// </summary>
     public void Dispose()
     {
         if (_annotator != null)
             _context.GetService<ICommitAnnotationProvider>()?.Unregister(_annotator);
+
+        if (_menuContributor != null)
+            _context.GetService<ICommitMenuContributorProvider>()?.Unregister(_menuContributor);
+
         _viewModel.Dispose();
     }
 }

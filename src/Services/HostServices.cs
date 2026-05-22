@@ -13,4 +13,10 @@ public static class HostServices
     /// Populated by PluginRegistry when manifests are registered.
     /// </summary>
     public static ICommitAnnotationProvider AnnotationProvider { get; } = new CommitAnnotationProvider();
+
+    /// <summary>
+    /// Collects commit context menu contributors from all active plugins.
+    /// Populated by tabs when they are activated; depopulated when deactivated.
+    /// </summary>
+    public static ICommitMenuContributorProvider MenuContributors { get; } = new CommitMenuContributorProvider();
 }
