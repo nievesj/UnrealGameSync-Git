@@ -837,7 +837,7 @@ namespace UGSGit.Views
                     if (contributor.RequiresBuildAnnotation)
                     {
                         var hasBuildAnnotation = commit.Annotations != null &&
-                            commit.Annotations.Any(a => a.AnnotationType == "build-available");
+                            commit.Annotations.Any(a => a.AnnotationType == CommitAnnotationTypes.BuildAvailable);
                         isEnabled &= hasBuildAnnotation;
                     }
                     pluginItem.IsEnabled = isEnabled;

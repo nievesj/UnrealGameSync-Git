@@ -46,6 +46,9 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     private string _branchText = "Unreal Game Sync for Git";
 
+    /// <summary>The actual Git branch name used for sync operations (e.g. "origin/main").</summary>
+    private string _currentBranch = "origin/main";
+
     /// <summary>SHA of the commit the workspace is currently synced to.</summary>
     [ObservableProperty]
     private string _commitText = "";
@@ -265,7 +268,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         {
             var progress = new Progress<string>(AppendLog);
             var result = await _syncService.SyncToLatestAsync(
-                BranchText, progress, CancellationToken.None).ConfigureAwait(true);
+                _currentBranch, progress, CancellationToken.None).ConfigureAwait(true);
 
             AppendLog($"\n{result.Message}");
 
@@ -278,7 +281,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
                 {
                     try
                     {
-                        await DeployEditorAsync();
+                        await DeployEditorCoreAsync();
                     }
                     catch (System.Exception ex)
                     {
@@ -465,38 +468,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
 
         try
         {
-            var deployService = _context.GetService<IDeployService>()!;
-            var shortSha = CommitText?.Length >= 9 ? CommitText[..9] : CommitText;
-            var progress = new Progress<string>(AppendLog);
-
-            if (string.IsNullOrEmpty(shortSha))
-            {
-                AppendLog("No commit to deploy.");
-                return;
-            }
-
-            // Check if this SHA is already deployed
-            var localState = _configService.LoadLocalState(_repoPath);
-            if (string.Equals(localState.LastDeployedArchiveSha, shortSha, StringComparison.OrdinalIgnoreCase))
-            {
-                AppendLog($"Editor build {shortSha} is already deployed.");
-                return;
-            }
-
-            var binaryName = !string.IsNullOrEmpty(_config.BinaryName)
-                ? _config.BinaryName
-                : ProjectName;
-
-            var result = await deployService.DeployAsync(
-                _repoPath, _config.NetworkBase, _config.EditorChannel,
-                binaryName, shortSha, progress, CancellationToken.None).ConfigureAwait(true);
-
-            AppendLog(result.Message);
-
-            if (result.Status == DeployStatus.Success)
-            {
-                await RefreshEditorBuildStatusAsync();
-            }
+            await DeployEditorCoreAsync();
         }
         catch (System.Exception ex)
         {
@@ -505,6 +477,46 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         finally
         {
             ClearBusy();
+        }
+    }
+
+    /// <summary>
+    /// Core deploy logic extracted from DeployEditorAsync so SyncAsync can call it
+    /// without re-acquiring the busy flag.
+    /// </summary>
+    private async Task DeployEditorCoreAsync()
+    {
+        var deployService = _context.GetService<IDeployService>()!;
+        var shortSha = CommitText?.Length >= 9 ? CommitText[..9] : CommitText;
+        var progress = new Progress<string>(AppendLog);
+
+        if (string.IsNullOrEmpty(shortSha))
+        {
+            AppendLog("No commit to deploy.");
+            return;
+        }
+
+        // Check if this SHA is already deployed
+        var localState = _configService.LoadLocalState(_repoPath);
+        if (string.Equals(localState.LastDeployedArchiveSha, shortSha, StringComparison.OrdinalIgnoreCase))
+        {
+            AppendLog($"Editor build {shortSha} is already deployed.");
+            return;
+        }
+
+        var binaryName = !string.IsNullOrEmpty(_config.BinaryName)
+            ? _config.BinaryName
+            : ProjectName;
+
+        var result = await deployService.DeployAsync(
+            _repoPath, _config.NetworkBase, _config.EditorChannel,
+            binaryName, shortSha, progress, CancellationToken.None).ConfigureAwait(true);
+
+        AppendLog(result.Message);
+
+        if (result.Status == DeployStatus.Success)
+        {
+            await RefreshEditorBuildStatusAsync();
         }
     }
 
@@ -610,6 +622,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     {
         try
         {
+            _currentBranch = await _syncService.GetCurrentBranchAsync(ct).ConfigureAwait(true) ?? "origin/main";
             CommitText = await _syncService.GetCurrentCommitAsync(ct).ConfigureAwait(true);
             await RefreshEditorBuildStatusAsync();
         }
@@ -627,7 +640,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     {
         var shortSha = CommitText?.Length >= 7 ? CommitText[..7] : "unknown";
         return (template ?? "{target}-{platform}-{config}-{shortSha}.zip")
-            .Replace("{branch}", BranchText ?? "unknown")
+            .Replace("{branch}", _currentBranch ?? "unknown")
             .Replace("{target}", profile.EditorTarget)
             .Replace("{platform}", profile.Platform)
             .Replace("{config}", profile.Configuration)

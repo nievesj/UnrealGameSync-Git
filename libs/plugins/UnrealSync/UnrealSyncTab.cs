@@ -85,9 +85,8 @@ public class UnrealSyncTab : IRepositoryTab
         var annotationProvider = context.GetService<ICommitAnnotationProvider>();
         if (deployService != null && configService != null)
         {
-            var projectName = Path.GetFileNameWithoutExtension(context.RepositoryPath);
             var logger = context.GetService<IPluginLogger>();
-            _annotator = new UnrealSyncBuildAnnotator(deployService, configService, logger, context.RepositoryPath, projectName);
+            _annotator = new UnrealSyncBuildAnnotator(deployService, configService, logger, context.RepositoryPath, context.RepositoryName);
         }
 
         // Register annotator with the host-level provider so badges appear in the commit graph
@@ -97,9 +96,8 @@ public class UnrealSyncTab : IRepositoryTab
         // Register Sync Editor context menu contributor for commit graph right-click
         if (deployService != null && configService != null)
         {
-            var projectName = Path.GetFileNameWithoutExtension(context.RepositoryPath);
             var logger = context.GetService<IPluginLogger>();
-            _menuContributor = new SyncEditorContributor(deployService, configService, logger, context.RepositoryPath, projectName);
+            _menuContributor = new SyncEditorContributor(deployService, configService, logger, context.RepositoryPath, context.RepositoryName);
         }
 
         var menuContributorProvider = context.GetService<ICommitMenuContributorProvider>();

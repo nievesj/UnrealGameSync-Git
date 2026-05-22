@@ -331,6 +331,13 @@ public class DeployService : IDeployService
                     continue;
 
                 var stagingPath = Path.Combine(stagingDir, entry.FullName);
+
+                // Zip slip protection: reject entries that escape the staging directory
+                var fullStagingPath = Path.GetFullPath(stagingPath);
+                if (!fullStagingPath.StartsWith(Path.GetFullPath(stagingDir) + Path.DirectorySeparatorChar)
+                    && !string.Equals(fullStagingPath, Path.GetFullPath(stagingDir), StringComparison.OrdinalIgnoreCase))
+                    throw new InvalidOperationException($"Entry '{entry.FullName}' attempts to escape the staging directory.");
+
                 var stagingDirForEntry = Path.GetDirectoryName(stagingPath);
                 if (!string.IsNullOrEmpty(stagingDirForEntry))
                     Directory.CreateDirectory(stagingDirForEntry);
@@ -343,10 +350,18 @@ public class DeployService : IDeployService
             log.Report($"Extracted {extractedCount} files to staging.");
 
             // Atomic move: copy files from staging to project root
+            var fullProjectRoot = Path.GetFullPath(projectRoot);
             foreach (var file in Directory.GetFiles(stagingDir, "*", SearchOption.AllDirectories))
             {
                 var relativePath = file.Substring(stagingDir.Length + 1);
                 var targetPath = Path.Combine(projectRoot, relativePath);
+
+                // Zip slip protection: reject entries that escape the project root
+                var fullTargetPath = Path.GetFullPath(targetPath);
+                if (!fullTargetPath.StartsWith(fullProjectRoot + Path.DirectorySeparatorChar)
+                    && !string.Equals(fullTargetPath, fullProjectRoot, StringComparison.OrdinalIgnoreCase))
+                    throw new InvalidOperationException($"Entry '{relativePath}' attempts to escape the project directory.");
+
                 var targetDir = Path.GetDirectoryName(targetPath);
                 if (!string.IsNullOrEmpty(targetDir))
                     Directory.CreateDirectory(targetDir);

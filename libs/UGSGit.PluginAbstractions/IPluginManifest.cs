@@ -40,9 +40,9 @@ namespace UGSGit.PluginAbstractions
         /// does not annotate the commit graph.
         /// </summary>
         /// <remarks>
-        /// Unlike CreateTabs() which is called per-repo activation, annotators are collected
-        /// at plugin registration time and registered with a host-level singleton. This ensures
-        /// annotators are available to all open repositories.
+        /// Annotators are registered per-repo-activation in CreateTabs() or during tab initialization.
+        /// The host's CommitAnnotationProvider collects annotators from active tabs and merges their
+        /// results when the commit graph is rendered.
         /// </remarks>
         IReadOnlyList<ICommitAnnotator>? CommitAnnotators { get; }
     }

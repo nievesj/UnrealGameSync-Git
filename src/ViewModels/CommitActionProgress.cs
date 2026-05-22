@@ -75,8 +75,10 @@ public class CommitActionProgress : ObservableObject
         if (!_cts.IsCancellationRequested)
         {
             _cts.Cancel();
-            AppendLog("Action cancelled by user.");
-            IsRunning = false;
+            AppendLog("Cancellation requested. The action will stop shortly...");
+            // Note: IsRunning is set to false by MarkComplete() or MarkError() when the
+            // task observes the cancellation. Setting it here would mislead the user into
+            // thinking the operation has fully stopped while it may still be cleaning up.
         }
     }
 
@@ -106,8 +108,7 @@ public class CommitActionProgress : ObservableObject
         if (_cts is { IsCancellationRequested: false })
         {
             _cts.Cancel();
-            AppendLog("Action cancelled by user.");
-            IsRunning = false;
+            AppendLog("Cancellation requested. The action will stop shortly...");
         }
     }
 
