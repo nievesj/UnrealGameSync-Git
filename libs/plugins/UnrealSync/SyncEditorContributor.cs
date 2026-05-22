@@ -34,6 +34,9 @@ public class SyncEditorContributor : ICommitMenuContributor
     /// <inheritdoc/>
     public string RepoPath => _repoPath;
 
+    /// <inheritdoc/>
+    public bool RequiresBuildAnnotation => true;
+
     /// <summary>
     /// Creates a new SyncEditorContributor for the specified repository.
     /// </summary>

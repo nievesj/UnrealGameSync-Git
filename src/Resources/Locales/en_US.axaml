@@ -171,6 +171,7 @@
   <x:String x:Key="Text.CommitCM.Revert" xml:space="preserve">Revert Commit</x:String>
   <x:String x:Key="Text.CommitCM.SaveAsPatch" xml:space="preserve">Save as Patch...</x:String>
   <x:String x:Key="Text.CommitCM.SyncEditor" xml:space="preserve">Sync Editor</x:String>
+  <x:String x:Key="Text.CommitCM.LaunchEditor" xml:space="preserve">Launch Editor</x:String>
   <x:String x:Key="Text.CommitAction.Cancel" xml:space="preserve">Cancel</x:String>
   <x:String x:Key="Text.CommitAction.Done" xml:space="preserve">Done</x:String>
   <x:String x:Key="Text.CommitDetail.Changes" xml:space="preserve">CHANGES</x:String>

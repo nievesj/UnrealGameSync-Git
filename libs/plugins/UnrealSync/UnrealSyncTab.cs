@@ -1,7 +1,5 @@
-using System;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 using Avalonia;
 
@@ -22,6 +20,7 @@ public class UnrealSyncTab : IRepositoryTab
     private readonly StatusPanelView _toolbarView;
     private readonly UnrealSyncBuildAnnotator? _annotator;
     private readonly SyncEditorContributor? _menuContributor;
+    private readonly LaunchEditorContributor? _launchContributor;
 
     /// <summary>
     /// Tab title shown in the tab bar.
@@ -106,11 +105,24 @@ public class UnrealSyncTab : IRepositoryTab
         var menuContributorProvider = context.GetService<ICommitMenuContributorProvider>();
         if (_menuContributor != null && menuContributorProvider != null)
             menuContributorProvider.Register(_menuContributor);
+
+        // Register Launch Editor context menu contributor for commit graph right-click
+        var launcherFactory = context.GetService<IEditorLauncherFactory>();
+        if (launcherFactory != null && configService != null)
+        {
+            var logger = context.GetService<IPluginLogger>();
+            _launchContributor = new LaunchEditorContributor(launcherFactory, configService, logger, context.RepositoryPath);
+        }
+
+        if (_launchContributor != null && menuContributorProvider != null)
+            menuContributorProvider.Register(_launchContributor);
     }
 
     /// <summary>
     /// Triggers async refresh of repository state.
-    /// Annotator is registered in constructor via PluginContext.
+    /// Annotators and menu contributors remain registered across tab switches
+    /// because they contribute to the Repository tab's commit graph and context menu,
+    /// which are visible regardless of which tab is active.
     /// </summary>
     public void OnActivated()
     {
@@ -128,16 +140,11 @@ public class UnrealSyncTab : IRepositoryTab
     }
 
     /// <summary>
-    /// Unregisters the commit annotator and menu contributor when the tab is deactivated.
+    /// No-op: annotators and menu contributors remain registered while the repo is open
+    /// so they continue appearing in the Repository tab's commit graph and context menu.
+    /// Unregistration only happens in <see cref="Dispose"/> when the repo is closed.
     /// </summary>
-    public void OnDeactivated()
-    {
-        if (_annotator != null)
-            _context.GetService<ICommitAnnotationProvider>()?.Unregister(_annotator);
-
-        if (_menuContributor != null)
-            _context.GetService<ICommitMenuContributorProvider>()?.Unregister(_menuContributor);
-    }
+    public void OnDeactivated() { }
 
     /// <summary>
     /// Disposes the viewModel, unregisters the annotator and menu contributor.
@@ -149,6 +156,9 @@ public class UnrealSyncTab : IRepositoryTab
 
         if (_menuContributor != null)
             _context.GetService<ICommitMenuContributorProvider>()?.Unregister(_menuContributor);
+
+        if (_launchContributor != null)
+            _context.GetService<ICommitMenuContributorProvider>()?.Unregister(_launchContributor);
 
         _viewModel.Dispose();
     }

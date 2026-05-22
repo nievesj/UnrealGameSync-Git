@@ -39,6 +39,23 @@ public interface ICommitMenuContributor
     bool IsEnabled(CommitRef commit);
 
     /// <summary>
+    /// True if the action is long-running (network download, build, etc.) and
+    /// should display a modal progress popup. False for fast actions
+    /// (Process.Start, local file ops) that complete in &lt; 1 second.
+    /// Default is true.
+    /// </summary>
+    bool IsLongRunning => true;
+
+    /// <summary>
+    /// True if the host should gate this item on the presence of a
+    /// "build-available" annotation for the right-clicked commit.
+    /// Set to false for actions that do not depend on prebuilt binaries
+    /// (e.g. Launch Editor, which uses the local workspace).
+    /// Default is true.
+    /// </summary>
+    bool RequiresBuildAnnotation => true;
+
+    /// <summary>
     /// Executes the action with optional progress reporting and cancellation support.
     /// May be long-running (network download, extraction).
     /// </summary>

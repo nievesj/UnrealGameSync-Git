@@ -831,29 +831,54 @@ namespace UGSGit.Views
                     pluginItem.Header = contributor.Header;
                     pluginItem.Icon = this.CreateMenuIcon(contributor.IconResourceKey ?? "Icons.Fetch");
 
-                    // Check commit annotations for build availability to set enabled state
-                    var hasBuildAnnotation = commit.Annotations != null &&
-                        commit.Annotations.Any(a => a.AnnotationType == "build-available");
-                    pluginItem.IsEnabled = hasBuildAnnotation && contributor.IsEnabled(new CommitRef(commit.SHA.Substring(0, 9)));
+                    // Determine enabled state: some contributors require a build-available annotation
+                    // (Sync Editor), while others (Launch Editor) work on any commit.
+                    var isEnabled = contributor.IsEnabled(new CommitRef(commit.SHA.Substring(0, 9)));
+                    if (contributor.RequiresBuildAnnotation)
+                    {
+                        var hasBuildAnnotation = commit.Annotations != null &&
+                            commit.Annotations.Any(a => a.AnnotationType == "build-available");
+                        isEnabled &= hasBuildAnnotation;
+                    }
+                    pluginItem.IsEnabled = isEnabled;
+
                     pluginItem.Click += async (_, e) =>
                     {
                         pluginItem.IsEnabled = false;
 
                         var shortSha = commit.SHA.Substring(0, 9);
                         var actionName = contributor.Header;
-                        var progress = new ViewModels.CommitActionProgress(actionName, shortSha);
-                        var window = new Views.CommitActionProgress { DataContext = progress };
-                        window.SetContributorIcon(contributor.IconResourceKey);
-                        window.SetAction(contributor.ExecuteAsync, new CommitRef(shortSha));
+                        var commitRef = new CommitRef(shortSha);
 
-                        var owner = TopLevel.GetTopLevel(this) as Window;
+                        if (contributor.IsLongRunning)
+                        {
+                            // Long-running action: show modal progress popup
+                            var progress = new ViewModels.CommitActionProgress(actionName, shortSha);
+                            var window = new Views.CommitActionProgress { DataContext = progress };
+                            window.SetContributorIcon(contributor.IconResourceKey);
+                            window.SetAction(contributor.ExecuteAsync, commitRef);
 
-                        await window.ShowDialog(owner);
+                            var owner = TopLevel.GetTopLevel(this) as Window;
+                            await window.ShowDialog(owner);
 
-                        if (progress.IsError)
-                            repo.SendNotification($"{actionName} failed: {progress.ErrorMessage}", true);
-                        else if (progress.IsComplete)
-                            repo.SendNotification($"{actionName}: completed for {shortSha}");
+                            if (progress.IsError)
+                                repo.SendNotification($"{actionName} failed: {progress.ErrorMessage}", true);
+                            else if (progress.IsComplete)
+                                repo.SendNotification($"{actionName}: completed for {shortSha}");
+                        }
+                        else
+                        {
+                            // Fast action: no progress popup, just execute and show toast
+                            try
+                            {
+                                await contributor.ExecuteAsync(commitRef, null, CancellationToken.None);
+                                repo.SendNotification($"{actionName}: completed");
+                            }
+                            catch (Exception ex)
+                            {
+                                repo.SendNotification($"{actionName} failed: {ex.Message}", true);
+                            }
+                        }
 
                         pluginItem.IsEnabled = true;
                         e.Handled = true;
