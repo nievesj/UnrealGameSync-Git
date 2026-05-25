@@ -19,4 +19,10 @@ public static class CommitAnnotationTypes
 
     /// <summary>Indicates a precompiled game build is available for this commit on the network share.</summary>
     public const string GameAvailable = "game-available";
+
+    /// <summary>Commit contains code changes (source files, scripts, etc.).</summary>
+    public const string CommitCode = "commit-code";
+
+    /// <summary>Commit contains content changes (assets, maps, textures, etc.).</summary>
+    public const string CommitContent = "commit-content";
 }

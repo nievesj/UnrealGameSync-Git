@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -61,6 +62,15 @@ public static class ConfigService
 
         // Expand environment variables in all string fields (returns new config for immutability)
         config = ExpandEnvVarsInConfig(config);
+
+        // Clamp MaxConcurrentGitProcesses to valid range (1–20)
+        if (config.MaxConcurrentGitProcesses < 1 || config.MaxConcurrentGitProcesses > 20)
+        {
+            config = config with
+            {
+                MaxConcurrentGitProcesses = Math.Clamp(config.MaxConcurrentGitProcesses, 1, 20)
+            };
+        }
 
         // Migrate build steps that lack BuildMode/UatCommand (Council F-3)
         if (config.Engine?.BuildTargets is { Count: > 0 })
@@ -140,12 +150,18 @@ public static class ConfigService
 
     private static UgsConfig ExpandEnvVarsInConfig(UgsConfig config)
     {
+        // Validate and normalize UgsChangeTypeConfig
+        var changeType = NormalizeChangeTypeConfig(config.ChangeType);
+
         return config with
         {
             NetworkBase = ResolveEnvVars(config.NetworkBase),
             BinaryName = ResolveEnvVars(config.BinaryName),
             EditorBadgeColor = ResolveEnvVars(config.EditorBadgeColor),
             GameBadgeColor = ResolveEnvVars(config.GameBadgeColor),
+            CommitCodeBadgeColor = ResolveEnvVars(config.CommitCodeBadgeColor),
+            CommitContentBadgeColor = ResolveEnvVars(config.CommitContentBadgeColor),
+            ChangeType = changeType,
             Engine = config.Engine with
             {
                 Path = ResolveEnvVars(config.Engine.Path),
@@ -161,6 +177,42 @@ public static class ConfigService
                 OutputDirectory = ResolveEnvVars(config.BuildDefaults.OutputDirectory),
             },
         };
+    }
+
+    /// <summary>
+    /// Normalizes UgsChangeTypeConfig: ensures extensions start with ".",
+    /// normalizes path separators to forward slashes, and wraps parsing in try/catch.
+    /// </summary>
+    private static UgsChangeTypeConfig? NormalizeChangeTypeConfig(UgsChangeTypeConfig? config)
+    {
+        if (config == null)
+            return null;
+
+        try
+        {
+            var extraCode = config.ExtraCodeExtensions ?? new List<string>();
+            var excludeCode = config.ExcludeCodeExtensions ?? new List<string>();
+            var forceContentPaths = config.ForceContentPaths ?? new List<string>();
+
+            // Ensure extensions start with "."
+            var normalizedExtra = extraCode.Select(e => e.StartsWith(".") ? e : "." + e).ToList();
+            var normalizedExclude = excludeCode.Select(e => e.StartsWith(".") ? e : "." + e).ToList();
+
+            // Normalize path separators to forward slashes
+            var normalizedPaths = forceContentPaths.Select(p => p.Replace('\\', '/')).ToList();
+
+            return new UgsChangeTypeConfig
+            {
+                ExtraCodeExtensions = normalizedExtra,
+                ExcludeCodeExtensions = normalizedExclude,
+                ForceContentPaths = normalizedPaths,
+            };
+        }
+        catch
+        {
+            // Malformed config — fall back to defaults
+            return new UgsChangeTypeConfig();
+        }
     }
 
     /// <summary>

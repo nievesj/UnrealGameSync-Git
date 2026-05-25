@@ -29,6 +29,7 @@ namespace UGSGit.PluginAbstractions;
 [JsonSerializable(typeof(DeployStatus))]
 [JsonSerializable(typeof(CommitAnnotation))]
 [JsonSerializable(typeof(CommitRef))]
+[JsonSerializable(typeof(UgsChangeTypeConfig))]
 public partial class PluginAbstractionsJsonContext : JsonSerializerContext
 {
 }

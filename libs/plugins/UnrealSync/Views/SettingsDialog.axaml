@@ -136,6 +136,70 @@
                             </Grid>
                         </StackPanel>
                     </Grid>
+                    <Grid ColumnDefinitions="*,*">
+                        <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,8,0">
+                            <TextBlock Text="Code:" FontSize="11"
+                                       Foreground="{DynamicResource Brush.FG3}" />
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Button Grid.Column="0" Width="28" Height="28" Margin="0,0,8,0"
+                                        CornerRadius="4"
+                                        Background="{Binding CommitCodeBadgeColor, Converter={x:Static c:HexToBrushConverter.Instance}, ConverterParameter=#74B9FF}">
+                                    <Button.Flyout>
+                                        <Flyout>
+                                            <ItemsControl ItemsSource="{Binding $parent[Window].((vm:SettingsDialogViewModel)DataContext).PresetColors}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel MaxWidth="180" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Button Width="24" Height="24" Margin="2"
+                                                                Background="{Binding ., Converter={x:Static c:HexToBrushConverter.Instance}}"
+                                                                Command="{Binding $parent[ItemsControl].((vm:SettingsDialogViewModel)DataContext).SetCommitCodeColorCommand}"
+                                                                CommandParameter="{Binding .}" />
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </Flyout>
+                                    </Button.Flyout>
+                                </Button>
+                                <TextBox Grid.Column="1" Text="{Binding CommitCodeBadgeColor}"
+                                         Watermark="#74B9FF" />
+                            </Grid>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Spacing="4">
+                            <TextBlock Text="Content:" FontSize="11"
+                                       Foreground="{DynamicResource Brush.FG3}" />
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Button Grid.Column="0" Width="28" Height="28" Margin="0,0,8,0"
+                                        CornerRadius="4"
+                                        Background="{Binding CommitContentBadgeColor, Converter={x:Static c:HexToBrushConverter.Instance}, ConverterParameter=#A29BFF}">
+                                    <Button.Flyout>
+                                        <Flyout>
+                                            <ItemsControl ItemsSource="{Binding $parent[Window].((vm:SettingsDialogViewModel)DataContext).PresetColors}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <WrapPanel MaxWidth="180" />
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Button Width="24" Height="24" Margin="2"
+                                                                Background="{Binding ., Converter={x:Static c:HexToBrushConverter.Instance}}"
+                                                                Command="{Binding $parent[ItemsControl].((vm:SettingsDialogViewModel)DataContext).SetCommitContentColorCommand}"
+                                                                CommandParameter="{Binding .}" />
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </Flyout>
+                                    </Button.Flyout>
+                                </Button>
+                                <TextBox Grid.Column="1" Text="{Binding CommitContentBadgeColor}"
+                                         Watermark="#A29BFF" />
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
                 </StackPanel>
             </Border>
 
@@ -148,6 +212,24 @@
 
                     <TextBlock Text="Output directory:" FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
                     <TextBox Text="{Binding OutputDirectory}" Watermark="Saved/StagedBuilds" />
+                </StackPanel>
+            </Border>
+
+            <Rectangle Fill="{DynamicResource Brush.Border2}" Height=".6" HorizontalAlignment="Stretch" Margin="0,8" />
+
+            <!-- Performance section -->
+            <Border Background="{DynamicResource Brush.Card}" CornerRadius="6" Padding="12">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="Performance" FontWeight="SemiBold" FontSize="14" />
+
+                    <TextBlock Text="Max concurrent git processes for commit type badges:"
+                               FontSize="11" Foreground="{DynamicResource Brush.FG3}" TextWrapping="Wrap" />
+                    <TextBox Text="{Binding MaxConcurrentGitProcesses}" Watermark="5" />
+                    <TextBlock Text="{Binding MaxConcurrentGitProcessesError}"
+                               Foreground="Red" FontSize="11"
+                               IsVisible="{Binding MaxConcurrentGitProcessesError, Converter={x:Static c:StringConverters.IsNotNullOrEmpty}}" />
+                    <TextBlock Text="Limits how many git.exe processes run in parallel when fetching file lists for commit type badges. Lower values reduce resource usage; higher values speed up annotation. Requires repo tab reopen to take effect."
+                               FontSize="11" Foreground="{DynamicResource Brush.FG3}" TextWrapping="Wrap" />
                 </StackPanel>
             </Border>
 

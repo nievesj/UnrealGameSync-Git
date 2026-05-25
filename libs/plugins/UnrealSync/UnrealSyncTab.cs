@@ -19,6 +19,7 @@ public class UnrealSyncTab : IRepositoryTab
     private readonly UnrealSyncTabView _bodyView;
     private readonly StatusPanelView _toolbarView;
     private readonly UnrealSyncBuildAnnotator? _annotator;
+    private readonly UnrealSyncCommitTypeAnnotator? _typeAnnotator;
     private readonly SyncEditorContributor? _menuContributor;
     private readonly LaunchEditorContributor? _launchContributor;
 
@@ -93,6 +94,16 @@ public class UnrealSyncTab : IRepositoryTab
         if (_annotator != null && annotationProvider != null)
             annotationProvider.Register(_annotator);
 
+        // Register commit type annotator for code/content badges
+        var gitFileQueryService = context.GetService<IGitFileQueryService>();
+        if (gitFileQueryService != null && configService != null)
+        {
+            _typeAnnotator = new UnrealSyncCommitTypeAnnotator(gitFileQueryService, configService, context.GetService<IPluginLogger>(), context.RepositoryPath);
+        }
+
+        if (_typeAnnotator != null && annotationProvider != null)
+            annotationProvider.Register(_typeAnnotator);
+
         // Register Sync Editor context menu contributor for commit graph right-click
         if (deployService != null && configService != null)
         {
@@ -151,6 +162,9 @@ public class UnrealSyncTab : IRepositoryTab
     {
         if (_annotator != null)
             _context.GetService<ICommitAnnotationProvider>()?.Unregister(_annotator);
+
+        if (_typeAnnotator != null)
+            _context.GetService<ICommitAnnotationProvider>()?.Unregister(_typeAnnotator);
 
         if (_menuContributor != null)
             _context.GetService<ICommitMenuContributorProvider>()?.Unregister(_menuContributor);

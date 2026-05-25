@@ -61,6 +61,14 @@ public partial class SettingsDialogViewModel : ObservableObject
     [ObservableProperty] private string _editorBadgeColor = string.Empty;
     /// <summary>Hex color for game build badges. Empty = default orange.</summary>
     [ObservableProperty] private string _gameBadgeColor = string.Empty;
+    /// <summary>Hex color for commit-code badges. Empty = theme default.</summary>
+    [ObservableProperty] private string _commitCodeBadgeColor = string.Empty;
+    /// <summary>Hex color for commit-content badges. Empty = theme default.</summary>
+    [ObservableProperty] private string _commitContentBadgeColor = string.Empty;
+
+    // Performance — saved to SHARED config
+    /// <summary>Maximum number of concurrent git.exe processes for commit type annotation (1–20).</summary>
+    [ObservableProperty] private int _maxConcurrentGitProcesses = 5;
 
     /// <summary>Preset hex colors for the color picker flyout.</summary>
     public List<string> PresetColors { get; } = new()
@@ -98,6 +106,8 @@ public partial class SettingsDialogViewModel : ObservableObject
     [ObservableProperty] private string _enginePathError = string.Empty;
     /// <summary>Validation error message for the network URL field.</summary>
     [ObservableProperty] private string _networkUrlError = string.Empty;
+    /// <summary>Validation error message for the max concurrent git processes field.</summary>
+    [ObservableProperty] private string _maxConcurrentGitProcessesError = string.Empty;
 
     /// <summary>
     /// Available template variables that can be used in build target fields.
@@ -416,6 +426,11 @@ public partial class SettingsDialogViewModel : ObservableObject
         BinaryName = config.BinaryName;
         EditorBadgeColor = config.EditorBadgeColor;
         GameBadgeColor = config.GameBadgeColor;
+        CommitCodeBadgeColor = config.CommitCodeBadgeColor;
+        CommitContentBadgeColor = config.CommitContentBadgeColor;
+        MaxConcurrentGitProcesses = config.MaxConcurrentGitProcesses > 0
+            ? config.MaxConcurrentGitProcesses
+            : 5;
 
         // Build defaults (shared)
         OutputDirectory = config.BuildDefaults?.OutputDirectory ?? "Saved/StagedBuilds";
@@ -456,6 +471,9 @@ public partial class SettingsDialogViewModel : ObservableObject
             BinaryName = BinaryName,
             EditorBadgeColor = EditorBadgeColor,
             GameBadgeColor = GameBadgeColor,
+            CommitCodeBadgeColor = CommitCodeBadgeColor,
+            CommitContentBadgeColor = CommitContentBadgeColor,
+            MaxConcurrentGitProcesses = MaxConcurrentGitProcesses,
         };
 
         if (sharedConfig.BuildDefaults != null)
@@ -495,6 +513,14 @@ public partial class SettingsDialogViewModel : ObservableObject
     [RelayCommand]
     private void SetGameColor(string color) => GameBadgeColor = color;
 
+    /// <summary>Sets the commit-code badge color from a preset swatch.</summary>
+    [RelayCommand]
+    private void SetCommitCodeColor(string color) => CommitCodeBadgeColor = color;
+
+    /// <summary>Sets the commit-content badge color from a preset swatch.</summary>
+    [RelayCommand]
+    private void SetCommitContentColor(string color) => CommitContentBadgeColor = color;
+
     /// <summary>Fired when the dialog should close (Cancel button pressed).</summary>
     public event Action? RequestClose;
 
@@ -529,6 +555,7 @@ public partial class SettingsDialogViewModel : ObservableObject
         var valid = true;
         EnginePathError = string.Empty;
         NetworkUrlError = string.Empty;
+        MaxConcurrentGitProcessesError = string.Empty;
 
         if (!AutoDetectEngine && string.IsNullOrWhiteSpace(EnginePathOverride))
         {
@@ -546,6 +573,12 @@ public partial class SettingsDialogViewModel : ObservableObject
             !Regex.IsMatch(NetworkBaseUrl, @"^(\\\\|https?://)"))
         {
             NetworkUrlError = "Base URL must be a valid UNC path or HTTP URL";
+            valid = false;
+        }
+
+        if (MaxConcurrentGitProcesses < 1 || MaxConcurrentGitProcesses > 20)
+        {
+            MaxConcurrentGitProcessesError = "Must be between 1 and 20";
             valid = false;
         }
 

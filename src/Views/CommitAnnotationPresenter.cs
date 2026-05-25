@@ -7,6 +7,7 @@ using System.Globalization;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
+using Avalonia.Styling;
 using Avalonia.VisualTree;
 
 using UGSGit.PluginAbstractions;
@@ -19,6 +20,18 @@ namespace UGSGit.Views
     /// </summary>
     public class CommitAnnotationPresenter : Control
     {
+        /// <summary>
+        /// Badge display order — lower values appear first (leftmost).
+        /// Unknown types sort last, then alphabetically.
+        /// </summary>
+        private static readonly Dictionary<string, int> s_badgeOrder = new()
+        {
+            ["build-available"] = 0,
+            ["game-available"] = 1,
+            ["commit-code"] = 2,
+            ["commit-content"] = 3,
+        };
+
         public class RenderItem
         {
             public FormattedText Label { get; set; } = null!;
@@ -145,7 +158,6 @@ namespace UGSGit.Views
             var typeface = new Typeface(FontFamily);
             var fg = Foreground;
             var labelSize = FontSize;
-            var x = 0.0;
 
             foreach (var annotation in commit.Annotations)
             {
@@ -168,8 +180,20 @@ namespace UGSGit.Views
                 };
 
                 _items.Add(item);
-                x += item.Width + 4;
             }
+
+            // Sort badges by defined order (build-available, game-available, commit-code, commit-content)
+            _items.Sort((a, b) =>
+            {
+                var orderA = s_badgeOrder.TryGetValue(a.AnnotationType, out var oa) ? oa : int.MaxValue;
+                var orderB = s_badgeOrder.TryGetValue(b.AnnotationType, out var ob) ? ob : int.MaxValue;
+                if (orderA != orderB) return orderA.CompareTo(orderB);
+                return string.Compare(a.AnnotationType, b.AnnotationType, StringComparison.Ordinal);
+            });
+
+            var x = 0.0;
+            foreach (var item in _items)
+                x += item.Width + 4;
 
             InvalidateVisual();
             return new Size(x + 2, 16);
@@ -190,10 +214,18 @@ namespace UGSGit.Views
                 }
             }
 
+            var isDarkTheme = Application.Current?.RequestedThemeVariant == ThemeVariant.Dark;
+
             return annotation.AnnotationType switch
             {
                 "build-available" => Brushes.Green,
                 "game-available" => Brushes.Orange,
+                "commit-code" => isDarkTheme
+                    ? new SolidColorBrush(Color.FromRgb(0x00, 0x45, 0x8A))   // Dark navy
+                    : new SolidColorBrush(Color.FromRgb(0x74, 0xB9, 0xFF)),  // Light blue
+                "commit-content" => isDarkTheme
+                    ? new SolidColorBrush(Color.FromRgb(0x53, 0x36, 0x96))   // Dark purple
+                    : new SolidColorBrush(Color.FromRgb(0xA2, 0x9B, 0xFF)),  // Light purple
                 _ => Brushes.Gray // Default style for unknown types
             };
         }

@@ -198,16 +198,19 @@ namespace UGSGit.ViewModels
 
             // Fetch annotations asynchronously and apply when ready
             _graphGeneration++;
-            _ = FetchAnnotationsAsync(commits, _graphGeneration);
+            _annotationCts?.Cancel();
+            _annotationCts?.Dispose();
+            _annotationCts = new CancellationTokenSource();
+            _ = FetchAnnotationsAsync(commits, _graphGeneration, _annotationCts.Token);
         }
 
-        private async Task FetchAnnotationsAsync(List<Models.Commit> commits, int generation)
+        private async Task FetchAnnotationsAsync(List<Models.Commit> commits, int generation, CancellationToken ct)
         {
             try
             {
                 var provider = Services.HostServices.AnnotationProvider;
                 var shas = commits.Select(c => c.SHA.Length >= 9 ? c.SHA[..9] : c.SHA).Distinct().ToList();
-                var annotations = await provider.GetAnnotationsAsync(shas, CancellationToken.None).ConfigureAwait(true);
+                var annotations = await provider.GetAnnotationsAsync(shas, ct).ConfigureAwait(true);
 
                 // Abort if graph has been regenerated since we started
                 if (generation != _graphGeneration)
@@ -532,6 +535,7 @@ namespace UGSGit.ViewModels
         private object _detailContext = new Models.Null();
         private bool _ignoreSelectionChange = false;
         private int _graphGeneration;
+        private CancellationTokenSource _annotationCts;
 
         private GridLength _leftArea = new(1, GridUnitType.Star);
         private GridLength _rightArea = new(1, GridUnitType.Star);

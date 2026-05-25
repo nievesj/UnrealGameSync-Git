@@ -46,6 +46,26 @@ public record class UgsConfig
     [JsonPropertyName("gameBadgeColor")]
     public string GameBadgeColor { get; init; } = string.Empty;
 
+    /// <summary>Hex color for commit-code badges (e.g. "#74B9FF"). Empty = theme default.</summary>
+    [JsonPropertyName("commitCodeBadgeColor")]
+    public string CommitCodeBadgeColor { get; init; } = string.Empty;
+
+    /// <summary>Hex color for commit-content badges (e.g. "#A29BFF"). Empty = theme default.</summary>
+    [JsonPropertyName("commitContentBadgeColor")]
+    public string CommitContentBadgeColor { get; init; } = string.Empty;
+
+    /// <summary>Code/content classification rules for commit type badges.</summary>
+    [JsonPropertyName("changeType")]
+    public UgsChangeTypeConfig? ChangeType { get; init; }
+
+    /// <summary>
+    /// Maximum number of concurrent git.exe processes for commit type annotation.
+    /// Limits resource usage when fetching file lists for many commits.
+    /// Default: 5.
+    /// </summary>
+    [JsonPropertyName("maxConcurrentGitProcesses")]
+    public int MaxConcurrentGitProcesses { get; init; } = 5;
+
     /// <summary>Archive/packaging configuration (zip format, profiles, GitHub Actions).</summary>
     [JsonPropertyName("archive")]
     public UgsArchiveConfig Archive { get; init; } = new();
@@ -134,4 +154,23 @@ public record class UgsPublishConfig
 {
     /// <summary>Whether to use atomic (all-or-nothing) publish updates.</summary>
     [JsonPropertyName("atomic")] public bool Atomic { get; init; } = true;
+}
+
+/// <summary>
+/// Code/content classification rules for commit type badges.
+/// Team-shared config (saved to .unrealsync-settings.json, committed to the repo).
+/// </summary>
+public record class UgsChangeTypeConfig
+{
+    /// <summary>File extensions to classify as code (in addition to built-in list).</summary>
+    [JsonPropertyName("extraCodeExtensions")]
+    public List<string> ExtraCodeExtensions { get; init; } = new();
+
+    /// <summary>File extensions to remove from code classification (override built-in).</summary>
+    [JsonPropertyName("excludeCodeExtensions")]
+    public List<string> ExcludeCodeExtensions { get; init; } = new();
+
+    /// <summary>Glob patterns for paths that should always be classified as content.</summary>
+    [JsonPropertyName("forceContentPaths")]
+    public List<string> ForceContentPaths { get; init; } = new();
 }
