@@ -209,9 +209,10 @@ public class GitSyncService : IGitSyncService
     private async Task<(int ExitCode, string StdOut, string StdErr)> RunGitCommandAsync(
         string arguments, IProgress<string> log, CancellationToken ct)
     {
+        using var _ = await GitProcessLimiter.AcquireAsync(ct).ConfigureAwait(false);
         var psi = new ProcessStartInfo
         {
-            FileName = "git",
+            FileName = Native.OS.GitExecutable,
             Arguments = arguments,
             WorkingDirectory = _repoPath,
             UseShellExecute = false,

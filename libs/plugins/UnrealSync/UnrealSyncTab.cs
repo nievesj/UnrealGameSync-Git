@@ -1,3 +1,4 @@
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -81,10 +82,14 @@ public class UnrealSyncTab : IRepositoryTab
         _bodyView.DataContext = _viewModel;
 
         // Register commit annotator for build availability badges
+        // Only register if the repository contains a .uproject file —
+        // build availability is an Unreal Engine concept and should not
+        // appear in non-UE repositories.
+        var hasUProject = HasUProjectFile(repoPath);
         var deployService = context.GetService<IDeployService>();
         var configService = context.GetService<IConfigService>();
         var annotationProvider = context.GetService<ICommitAnnotationProvider>();
-        if (deployService != null && configService != null)
+        if (deployService != null && configService != null && hasUProject)
         {
             var logger = context.GetService<IPluginLogger>();
             _annotator = new UnrealSyncBuildAnnotator(deployService, configService, logger, context.RepositoryPath, context.RepositoryName);
@@ -95,8 +100,11 @@ public class UnrealSyncTab : IRepositoryTab
             annotationProvider.Register(_annotator);
 
         // Register commit type annotator for code/content badges
+        // Only register if the repository contains a .uproject file —
+        // Code/Content badges are an Unreal Engine concept and should not
+        // appear in non-UE repositories.
         var gitFileQueryService = context.GetService<IGitFileQueryService>();
-        if (gitFileQueryService != null && configService != null)
+        if (gitFileQueryService != null && configService != null && hasUProject)
         {
             _typeAnnotator = new UnrealSyncCommitTypeAnnotator(gitFileQueryService, configService, context.GetService<IPluginLogger>(), context.RepositoryPath);
         }
@@ -105,7 +113,8 @@ public class UnrealSyncTab : IRepositoryTab
             annotationProvider.Register(_typeAnnotator);
 
         // Register Sync Editor context menu contributor for commit graph right-click
-        if (deployService != null && configService != null)
+        // Only register for UE projects — Sync Editor is an Unreal workflow feature.
+        if (deployService != null && configService != null && hasUProject)
         {
             var logger = context.GetService<IPluginLogger>();
             _menuContributor = new SyncEditorContributor(deployService, configService, logger, context.RepositoryPath, context.RepositoryName);
@@ -116,8 +125,9 @@ public class UnrealSyncTab : IRepositoryTab
             menuContributorProvider.Register(_menuContributor);
 
         // Register Launch Editor context menu contributor for commit graph right-click
+        // Only register for UE projects — Launch Editor is an Unreal workflow feature.
         var launcherFactory = context.GetService<IEditorLauncherFactory>();
-        if (launcherFactory != null && configService != null)
+        if (launcherFactory != null && configService != null && hasUProject)
         {
             var logger = context.GetService<IPluginLogger>();
             _launchContributor = new LaunchEditorContributor(launcherFactory, configService, logger, context.RepositoryPath);
@@ -156,6 +166,38 @@ public class UnrealSyncTab : IRepositoryTab
     public void OnDeactivated() { }
 
     /// <summary>
+    /// Checks whether the repository contains a .uproject file,
+    /// indicating it is an Unreal Engine project.
+    /// Only scans top-level and first-level subdirectories to avoid
+    /// expensive deep scans on large repos.
+    /// </summary>
+    private static bool HasUProjectFile(string repoPath)
+    {
+        try
+        {
+            // Check top-level first (most common layout)
+            if (Directory.GetFiles(repoPath, "*.uproject", SearchOption.TopDirectoryOnly).Length > 0)
+                return true;
+
+            // Check one level deep (e.g. Projects/MyGame/MyGame.uproject)
+            foreach (var dir in Directory.GetDirectories(repoPath))
+            {
+                try
+                {
+                    if (Directory.GetFiles(dir, "*.uproject", SearchOption.TopDirectoryOnly).Length > 0)
+                        return true;
+                }
+                catch (UnauthorizedAccessException) { }
+                catch (DirectoryNotFoundException) { }
+            }
+
+            return false;
+        }
+        catch (UnauthorizedAccessException) { return false; }
+        catch (DirectoryNotFoundException) { return false; }
+    }
+
+    /// <summary>
     /// Disposes the viewModel, unregisters the annotator and menu contributor,
     /// and disposes the GitFileQueryService.
     /// </summary>
@@ -173,9 +215,8 @@ public class UnrealSyncTab : IRepositoryTab
         if (_launchContributor != null)
             _context.GetService<ICommitMenuContributorProvider>()?.Unregister(_launchContributor);
 
-        // Dispose the GitFileQueryService (H5/M1: prevent SemaphoreSlim leak)
-        if (_context.GetService<IGitFileQueryService>() is IDisposable disposable)
-            disposable.Dispose();
+        // GitFileQueryService no longer implements IDisposable (throttling moved to process-wide GitProcessLimiter)
+        // No disposal needed — the service has no unmanaged resources.
 
         _viewModel.Dispose();
     }

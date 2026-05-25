@@ -58,7 +58,8 @@ namespace UGSGit.ViewModels
             var maxConcurrency = ugsConfig.MaxConcurrentGitProcesses > 0
                 ? ugsConfig.MaxConcurrentGitProcesses
                 : UgsConfig.DefaultMaxConcurrentGitProcesses;
-            context.RegisterService<IGitFileQueryService>(new GitFileQueryService(repoPath, maxConcurrency));
+            GitProcessLimiter.UpdateMaxConcurrency(maxConcurrency);
+            context.RegisterService<IGitFileQueryService>(new GitFileQueryService(repoPath));
 
             context.RegisterService<IEngineDetector>(new EngineDetectorAdapter());
             context.RegisterService<IEngineInfoService>(new EngineInfoServiceAdapter());

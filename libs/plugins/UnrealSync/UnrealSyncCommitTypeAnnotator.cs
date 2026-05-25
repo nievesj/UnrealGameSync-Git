@@ -104,11 +104,6 @@ public class UnrealSyncCommitTypeAnnotator : ICommitAnnotator
             _cache.Clear();
         }
 
-        // Sync concurrency limit with current config (H5)
-        _gitQuery.UpdateConcurrency(config.MaxConcurrentGitProcesses > 0
-            ? config.MaxConcurrentGitProcesses
-            : UgsConfig.DefaultMaxConcurrentGitProcesses);
-
         // Separate cached vs uncached SHAs
         var uncachedShas = new List<string>();
         foreach (var sha in shas)

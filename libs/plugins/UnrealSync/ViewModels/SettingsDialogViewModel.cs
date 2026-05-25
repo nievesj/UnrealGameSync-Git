@@ -500,6 +500,12 @@ public partial class SettingsDialogViewModel : ObservableObject
 
         _configService.SaveConfig(_repoPath, sharedConfig);
 
+        // Propagate new concurrency limit to process-wide throttle
+        var effectiveMax = sharedConfig.MaxConcurrentGitProcesses > 0
+            ? sharedConfig.MaxConcurrentGitProcesses
+            : UgsConfig.DefaultMaxConcurrentGitProcesses;
+        GitProcessLimiter.UpdateMaxConcurrency(effectiveMax);
+
         // Update local config (fixes D-1: engine path is user-local)
         localState.EnginePathOverride = EnginePathOverride;
         _configService.SaveLocalState(_repoPath, localState);
