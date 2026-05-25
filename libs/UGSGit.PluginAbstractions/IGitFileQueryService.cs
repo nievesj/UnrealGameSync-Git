@@ -19,4 +19,12 @@ public interface IGitFileQueryService
     /// <returns>Map of commit SHA → list of changed file paths (relative to repo root, forward slashes).</returns>
     Task<IReadOnlyDictionary<string, IReadOnlyList<string>>> GetChangedFilesAsync(
         IReadOnlyList<string> commitShas, CancellationToken ct = default);
+
+    /// <summary>
+    /// Updates the maximum concurrency limit for git process spawning.
+    /// Implementations should allow this to be called at runtime without
+    /// disrupting in-flight requests.
+    /// </summary>
+    /// <param name="newMax">New maximum concurrency (clamped to 1–20).</param>
+    void UpdateConcurrency(int newMax);
 }

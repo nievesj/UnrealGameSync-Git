@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -19,14 +18,16 @@ namespace UGSGit.Plugins.UnrealSync;
 /// Content = UE assets (.uasset, .umap) and all other non-code files.
 /// A commit can carry both Code and Content badges simultaneously.
 /// <para>
-/// Results are cached by (ShortSha, ConfigHash) — since file classification is
+/// Results are cached by (ShortSha, ConfigString) — since file classification is
 /// deterministic for a given commit SHA and config, repeated graph refreshes
 /// become dictionary lookups. Only new or uncached commits spawn git.exe processes.
-/// The cache is invalidated when the config changes (different ConfigHash).
+/// The cache is invalidated when the config changes (different ConfigString).
 /// </para>
 /// <para>
-/// Uses <see cref="ConcurrentDictionary{TKey,TValue}"/> with a capacity limit
-/// (default 4096 entries, matching original UGS). When the limit is exceeded,
+/// Uses <see cref="ConcurrentDictionary{TKey,TValue}"/> with a soft capacity limit
+/// (default 4096 entries, matching original UGS). The capacity parameter is an initial
+/// bucket count hint, not a hard maximum — the dictionary can grow beyond it.
+/// When <see cref="ConcurrentDictionary{TKey,TValue}.Count"/> exceeds the capacity,
 /// the entire cache is cleared rather than evicting individual entries — this
 /// is safe because the next refresh will repopulate only the visible commits.
 /// </para>
@@ -44,10 +45,17 @@ public class UnrealSyncCommitTypeAnnotator : ICommitAnnotator
     /// <summary>
     /// Thread-safe cache keyed by ShortSha. Since classification is deterministic
     /// for a given commit + config, cached entries never need TTL-based invalidation.
-    /// Invalidated only when the config hash changes or capacity is exceeded.
+    /// Invalidated only when the config string changes or capacity is exceeded.
     /// </summary>
     private readonly ConcurrentDictionary<string, IReadOnlyList<CommitAnnotation>> _cache;
-    private string _cachedConfigHash = string.Empty;
+    private string _cachedConfigString = string.Empty;
+    private readonly object _cacheLock = new();
+
+    /// <summary>
+    /// Cache of compiled glob regex patterns to avoid recompiling on every call (M2).
+    /// Cleared alongside the main cache on config string change.
+    /// </summary>
+    private readonly ConcurrentDictionary<string, Regex> _globRegexCache = new();
 
     public UnrealSyncCommitTypeAnnotator(
         IGitFileQueryService gitQuery,
@@ -77,20 +85,29 @@ public class UnrealSyncCommitTypeAnnotator : ICommitAnnotator
             return result;
 
         var config = _configService.LoadConfig(_repoPath);
-        var configHash = ComputeConfigHash(config);
+        var configString = BuildConfigString(config);
 
-        // Check if config changed — if so, invalidate entire cache
-        if (configHash != _cachedConfigHash)
+        // Check if config changed — if so, invalidate entire cache (H4: lock for atomicity)
+        lock (_cacheLock)
         {
-            _cache.Clear();
-            _cachedConfigHash = configHash;
+            if (configString != _cachedConfigString)
+            {
+                _cache.Clear();
+                _globRegexCache.Clear();
+                _cachedConfigString = configString;
+            }
         }
 
-        // If cache exceeded capacity, clear and rebuild (rare — only on very large repos)
+        // If cache exceeded soft capacity, clear and rebuild (rare — only on very large repos)
         if (_cache.Count > _cacheCapacity)
         {
             _cache.Clear();
         }
+
+        // Sync concurrency limit with current config (H5)
+        _gitQuery.UpdateConcurrency(config.MaxConcurrentGitProcesses > 0
+            ? config.MaxConcurrentGitProcesses
+            : UgsConfig.DefaultMaxConcurrentGitProcesses);
 
         // Separate cached vs uncached SHAs
         var uncachedShas = new List<string>();
@@ -127,8 +144,16 @@ public class UnrealSyncCommitTypeAnnotator : ICommitAnnotator
                 if (!fileLists.TryGetValue(sha, out var files) || files.Count == 0)
                     continue;
 
-                var containsCode = files.Any(f => IsCodeFile(f, codeExtensions, config.ChangeType));
-                var containsContent = files.Any(f => !IsCodeFile(f, codeExtensions, config.ChangeType));
+                // Single-pass classification with early exit (M3)
+                bool containsCode = false, containsContent = false;
+                foreach (var f in files)
+                {
+                    if (IsCodeFile(f, codeExtensions, config.ChangeType))
+                        containsCode = true;
+                    else
+                        containsContent = true;
+                    if (containsCode && containsContent) break;
+                }
 
                 var annotations = new List<CommitAnnotation>();
                 if (containsCode)
@@ -151,13 +176,13 @@ public class UnrealSyncCommitTypeAnnotator : ICommitAnnotator
     }
 
     /// <summary>
-    /// Computes a hash of the config fields that affect classification.
-    /// When this hash changes, the cache is invalidated.
+    /// Builds a string representation of the config fields that affect classification.
+    /// When this string changes, the cache is invalidated.
+    /// Uses direct string comparison instead of SHA256 (L2) — the config is small
+    /// and string equality is cheaper than cryptographic hashing.
     /// </summary>
-    private static string ComputeConfigHash(UgsConfig config)
+    private static string BuildConfigString(UgsConfig config)
     {
-        // Hash the fields that affect classification: ChangeType config + badge colors
-        using var sha = SHA256.Create();
         var sb = new StringBuilder();
 
         // Badge colors affect annotation output
@@ -178,9 +203,7 @@ public class UnrealSyncCommitTypeAnnotator : ICommitAnnotator
             sb.Append('\0');
         }
 
-        var bytes = Encoding.UTF8.GetBytes(sb.ToString());
-        var hash = sha.ComputeHash(bytes);
-        return Convert.ToHexString(hash)[..16].ToLowerInvariant();
+        return sb.ToString();
     }
 
     /// <summary>
@@ -225,18 +248,22 @@ public class UnrealSyncCommitTypeAnnotator : ICommitAnnotator
     }
 
     /// <summary>
-    /// Simple glob matcher supporting * (any non-slash chars) and ** (any path).
+    /// Glob matcher supporting * (any non-slash chars) and ** (any path).
     /// Patterns and paths are normalized to forward slashes.
+    /// Uses compiled regex cache to avoid recompilation on every call (M2).
     /// </summary>
-    private static bool GlobMatches(string pattern, string path)
+    private bool GlobMatches(string pattern, string path)
     {
-        var normalizedPattern = pattern.Replace('\\', '/');
-        // Convert glob pattern to regex: ** → .*, * → [^/]*
-        var regexPattern = "^" + Regex.Escape(normalizedPattern)
-            .Replace(@"\*\*", ".*")     // ** matches any path (including /)
-            .Replace(@"\*", "[^/]*")     // * matches any segment chars (no /)
-            + "$";
-        return Regex.IsMatch(path, regexPattern, RegexOptions.IgnoreCase);
+        var regex = _globRegexCache.GetOrAdd(pattern, p =>
+        {
+            var normalized = p.Replace('\\', '/');
+            var regexPattern = "^" + Regex.Escape(normalized)
+                .Replace(@"\*\*", ".*")
+                .Replace(@"\*", "[^/]*")
+                + "$";
+            return new Regex(regexPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        });
+        return regex.IsMatch(path);
     }
 
     /// <summary>

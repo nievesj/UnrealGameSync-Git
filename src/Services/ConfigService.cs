@@ -54,10 +54,23 @@ public static class ConfigService
             ?? new UgsConfig();
 
         // Validate version — for unknown future versions, preserve what we can and log a warning
-        if (config.Version > 2)
+        if (config.Version > 3)
         {
             Native.OS.LogException(new InvalidOperationException(
-                $"UgsConfig version {config.Version} is newer than supported (max 2). Attempting to preserve known fields."));
+                $"UgsConfig version {config.Version} is newer than supported (max 3). Attempting to preserve known fields."));
+        }
+
+        // Migrate v2 → v3: commit type annotation fields added
+        if (config.Version < 3)
+        {
+            config = config with
+            {
+                Version = 3,
+                CommitCodeBadgeColor = config.CommitCodeBadgeColor ?? string.Empty,
+                CommitContentBadgeColor = config.CommitContentBadgeColor ?? string.Empty,
+                MaxConcurrentGitProcesses = config.MaxConcurrentGitProcesses > 0
+                    ? config.MaxConcurrentGitProcesses : UgsConfig.DefaultMaxConcurrentGitProcesses
+            };
         }
 
         // Expand environment variables in all string fields (returns new config for immutability)
@@ -208,9 +221,11 @@ public static class ConfigService
                 ForceContentPaths = normalizedPaths,
             };
         }
-        catch
+        catch (Exception ex)
         {
             // Malformed config — fall back to defaults
+            System.Diagnostics.Debug.WriteLine(
+                $"Failed to normalize UgsChangeTypeConfig, falling back to defaults: {ex.Message}");
             return new UgsChangeTypeConfig();
         }
     }

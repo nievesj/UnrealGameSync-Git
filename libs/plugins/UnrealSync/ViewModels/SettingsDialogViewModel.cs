@@ -68,7 +68,7 @@ public partial class SettingsDialogViewModel : ObservableObject
 
     // Performance — saved to SHARED config
     /// <summary>Maximum number of concurrent git.exe processes for commit type annotation (1–20).</summary>
-    [ObservableProperty] private int _maxConcurrentGitProcesses = 5;
+    [ObservableProperty] private int _maxConcurrentGitProcesses = UgsConfig.DefaultMaxConcurrentGitProcesses;
 
     /// <summary>Preset hex colors for the color picker flyout.</summary>
     public List<string> PresetColors { get; } = new()
@@ -430,7 +430,7 @@ public partial class SettingsDialogViewModel : ObservableObject
         CommitContentBadgeColor = config.CommitContentBadgeColor;
         MaxConcurrentGitProcesses = config.MaxConcurrentGitProcesses > 0
             ? config.MaxConcurrentGitProcesses
-            : 5;
+            : UgsConfig.DefaultMaxConcurrentGitProcesses;
 
         // Build defaults (shared)
         OutputDirectory = config.BuildDefaults?.OutputDirectory ?? "Saved/StagedBuilds";
@@ -456,10 +456,10 @@ public partial class SettingsDialogViewModel : ObservableObject
         var localState = _configService.LoadLocalState(_repoPath);
 
         // Update shared config — use with expressions since config types are now immutable records (fixes M-2)
-        // Bump version to 2 since we now persist BuildMode/UatCommand (Council F-13)
+        // Bump version to 3 since we now persist commit type annotation fields (C2)
         sharedConfig = sharedConfig with
         {
-            Version = 2,
+            Version = 3,
             NetworkBase = NetworkBaseUrl,
             Engine = (sharedConfig.Engine ?? new UgsEngineConfig()) with
             {

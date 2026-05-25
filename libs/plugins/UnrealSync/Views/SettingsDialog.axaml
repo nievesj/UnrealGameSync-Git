@@ -224,7 +224,7 @@
 
                     <TextBlock Text="Max concurrent git processes for commit type badges:"
                                FontSize="11" Foreground="{DynamicResource Brush.FG3}" TextWrapping="Wrap" />
-                    <TextBox Text="{Binding MaxConcurrentGitProcesses}" Watermark="5" />
+                    <NumericUpDown Minimum="1" Maximum="20" Value="{Binding MaxConcurrentGitProcesses}" />
                     <TextBlock Text="{Binding MaxConcurrentGitProcessesError}"
                                Foreground="Red" FontSize="11"
                                IsVisible="{Binding MaxConcurrentGitProcessesError, Converter={x:Static c:StringConverters.IsNotNullOrEmpty}}" />

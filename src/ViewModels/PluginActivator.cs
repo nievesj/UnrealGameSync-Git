@@ -53,11 +53,11 @@ namespace UGSGit.ViewModels
             context.RegisterService<IGitSyncService>(new GitSyncService(repoPath));
             context.RegisterService<IConfigService>(new ConfigServiceAdapter());
 
-            // Read max concurrent git processes from team-shared config (default 5)
+            // Read max concurrent git processes from team-shared config
             var ugsConfig = Services.ConfigService.LoadConfig(repoPath);
             var maxConcurrency = ugsConfig.MaxConcurrentGitProcesses > 0
                 ? ugsConfig.MaxConcurrentGitProcesses
-                : 5;
+                : UgsConfig.DefaultMaxConcurrentGitProcesses;
             context.RegisterService<IGitFileQueryService>(new GitFileQueryService(repoPath, maxConcurrency));
 
             context.RegisterService<IEngineDetector>(new EngineDetectorAdapter());

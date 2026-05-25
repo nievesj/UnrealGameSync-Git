@@ -229,9 +229,14 @@ namespace UGSGit.ViewModels
                 // Trigger visual refresh of annotation presenters
                 OnPropertyChanged(nameof(Commits));
             }
-            catch
+            catch (OperationCanceledException)
             {
-                // Silently ignore — annotation failures must not break the graph
+                // Expected on cancellation, swallow
+            }
+            catch (Exception ex)
+            {
+                // Log but don't crash the graph
+                Native.OS.LogException(ex);
             }
         }
 

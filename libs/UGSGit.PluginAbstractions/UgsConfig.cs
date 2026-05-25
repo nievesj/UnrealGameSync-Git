@@ -10,9 +10,12 @@ namespace UGSGit.PluginAbstractions;
 /// </summary>
 public record class UgsConfig
 {
+    /// <summary>Default maximum concurrent git processes for commit type annotation.</summary>
+    public const int DefaultMaxConcurrentGitProcesses = 5;
+
     /// <summary>Config schema version number. Increment on breaking format changes.</summary>
     [JsonPropertyName("version")]
-    public int Version { get; init; } = 2;
+    public int Version { get; init; } = 3;
 
     /// <summary>Engine path, targets, and project file configuration.</summary>
     [JsonPropertyName("engine")]
@@ -64,7 +67,7 @@ public record class UgsConfig
     /// Default: 5.
     /// </summary>
     [JsonPropertyName("maxConcurrentGitProcesses")]
-    public int MaxConcurrentGitProcesses { get; init; } = 5;
+    public int MaxConcurrentGitProcesses { get; init; } = DefaultMaxConcurrentGitProcesses;
 
     /// <summary>Archive/packaging configuration (zip format, profiles, GitHub Actions).</summary>
     [JsonPropertyName("archive")]

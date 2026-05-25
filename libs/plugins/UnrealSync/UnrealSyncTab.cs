@@ -156,7 +156,8 @@ public class UnrealSyncTab : IRepositoryTab
     public void OnDeactivated() { }
 
     /// <summary>
-    /// Disposes the viewModel, unregisters the annotator and menu contributor.
+    /// Disposes the viewModel, unregisters the annotator and menu contributor,
+    /// and disposes the GitFileQueryService.
     /// </summary>
     public void Dispose()
     {
@@ -171,6 +172,10 @@ public class UnrealSyncTab : IRepositoryTab
 
         if (_launchContributor != null)
             _context.GetService<ICommitMenuContributorProvider>()?.Unregister(_launchContributor);
+
+        // Dispose the GitFileQueryService (H5/M1: prevent SemaphoreSlim leak)
+        if (_context.GetService<IGitFileQueryService>() is IDisposable disposable)
+            disposable.Dispose();
 
         _viewModel.Dispose();
     }

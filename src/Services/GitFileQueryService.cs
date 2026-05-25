@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,28 +15,33 @@ namespace UGSGit.Services;
 /// Handles root commits (via --root flag) and merge commits correctly.
 /// Limits concurrent git.exe processes via a <see cref="SemaphoreSlim"/>.
 /// </summary>
-public class GitFileQueryService : IGitFileQueryService
+public class GitFileQueryService : IGitFileQueryService, IDisposable
 {
+    private static readonly Regex SShaPattern = new(@"^[0-9a-fA-F]{4,40}$", RegexOptions.Compiled);
+
     private readonly string _repoPath;
-    private readonly SemaphoreSlim _concurrencyLimiter;
+    private int _maxConcurrency;
+    private SemaphoreSlim _concurrencyLimiter;
+    private bool _disposed;
 
     /// <summary>
     /// Creates a new instance with the specified maximum concurrency.
     /// </summary>
     /// <param name="repoPath">Absolute path to the Git repository root.</param>
-    /// <param name="maxConcurrency">Maximum number of concurrent git.exe processes (default 5).</param>
-    public GitFileQueryService(string repoPath, int maxConcurrency = 5)
+    /// <param name="maxConcurrency">Maximum number of concurrent git.exe processes (default <see cref="UgsConfig.DefaultMaxConcurrentGitProcesses"/>).</param>
+    public GitFileQueryService(string repoPath, int maxConcurrency = UgsConfig.DefaultMaxConcurrentGitProcesses)
     {
         _repoPath = repoPath;
-        _concurrencyLimiter = new SemaphoreSlim(
-            Math.Max(1, maxConcurrency),
-            Math.Max(1, maxConcurrency));
+        _maxConcurrency = Math.Max(1, maxConcurrency);
+        _concurrencyLimiter = new SemaphoreSlim(_maxConcurrency, _maxConcurrency);
     }
 
     /// <inheritdoc/>
     public async Task<IReadOnlyDictionary<string, IReadOnlyList<string>>> GetChangedFilesAsync(
         IReadOnlyList<string> commitShas, CancellationToken ct = default)
     {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+
         var result = new Dictionary<string, IReadOnlyList<string>>(commitShas.Count);
 
         // Run per-commit git diff-tree calls with bounded concurrency
@@ -57,6 +63,24 @@ public class GitFileQueryService : IGitFileQueryService
     }
 
     /// <summary>
+    /// Updates the concurrency limit. In-flight requests continue on the old semaphore;
+    /// new requests use the new limit. The old semaphore is eligible for GC once
+    /// in-flight requests release it.
+    /// </summary>
+    /// <param name="newMax">New maximum concurrency (clamped to 1–20).</param>
+    public void UpdateConcurrency(int newMax)
+    {
+        newMax = Math.Clamp(newMax, 1, 20);
+        if (newMax == _maxConcurrency) return;
+
+        var oldLimiter = Interlocked.Exchange(ref _concurrencyLimiter,
+            new SemaphoreSlim(newMax, newMax));
+        _maxConcurrency = newMax;
+
+        // Old semaphore will be collected once in-flight requests release it
+    }
+
+    /// <summary>
     /// Runs <c>git diff-tree --no-commit-id -r --name-only --root &lt;sha&gt;</c>
     /// to get the list of files changed in a single commit.
     /// The --root flag handles root commits (which have no parent).
@@ -65,11 +89,22 @@ public class GitFileQueryService : IGitFileQueryService
     private async Task<(string Sha, IReadOnlyList<string> Files)> QueryCommitFilesAsync(
         string sha, CancellationToken ct)
     {
-        await _concurrencyLimiter.WaitAsync(ct).ConfigureAwait(false);
+        // Validate SHA format to prevent argument injection (C1)
+        if (!SShaPattern.IsMatch(sha))
+            return (sha, Array.Empty<string>());
+
+        var limiter = _concurrencyLimiter; // Capture current reference for thread safety
+        await limiter.WaitAsync(ct).ConfigureAwait(false);
         try
         {
             using var proc = new Process();
             proc.StartInfo = CreateGitStartInfo(sha);
+
+            // Kill process on cancellation (H2)
+            using var registration = ct.Register(() =>
+            {
+                try { proc.Kill(); } catch { }
+            });
 
             try
             {
@@ -99,7 +134,7 @@ public class GitFileQueryService : IGitFileQueryService
         }
         finally
         {
-            _concurrencyLimiter.Release();
+            limiter.Release();
         }
     }
 
@@ -107,7 +142,16 @@ public class GitFileQueryService : IGitFileQueryService
     {
         var start = new ProcessStartInfo();
         start.FileName = Native.OS.GitExecutable;
-        start.Arguments = $"--no-pager -c core.quotepath=off diff-tree --no-commit-id -r --name-only --root {sha}";
+        // Use ArgumentList to prevent argument injection (C1)
+        start.ArgumentList.Add("--no-pager");
+        start.ArgumentList.Add("-c");
+        start.ArgumentList.Add("core.quotepath=off");
+        start.ArgumentList.Add("diff-tree");
+        start.ArgumentList.Add("--no-commit-id");
+        start.ArgumentList.Add("-r");
+        start.ArgumentList.Add("--name-only");
+        start.ArgumentList.Add("--root");
+        start.ArgumentList.Add(sha);
         start.WorkingDirectory = _repoPath;
         start.UseShellExecute = false;
         start.CreateNoWindow = true;
@@ -124,5 +168,12 @@ public class GitFileQueryService : IGitFileQueryService
         }
 
         return start;
+    }
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _disposed = true;
+        _concurrencyLimiter.Dispose();
     }
 }

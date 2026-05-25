@@ -32,6 +32,12 @@ namespace UGSGit.Views
             ["commit-content"] = 3,
         };
 
+        // Cached brushes to avoid allocation on every render (M6)
+        private static readonly IBrush s_codeDark = new SolidColorBrush(Color.FromRgb(0x00, 0x45, 0x8A));
+        private static readonly IBrush s_codeLight = new SolidColorBrush(Color.FromRgb(0x74, 0xB9, 0xFF));
+        private static readonly IBrush s_contentDark = new SolidColorBrush(Color.FromRgb(0x53, 0x36, 0x96));
+        private static readonly IBrush s_contentLight = new SolidColorBrush(Color.FromRgb(0xA2, 0x9B, 0xFF));
+
         public class RenderItem
         {
             public FormattedText Label { get; set; } = null!;
@@ -220,12 +226,8 @@ namespace UGSGit.Views
             {
                 "build-available" => Brushes.Green,
                 "game-available" => Brushes.Orange,
-                "commit-code" => isDarkTheme
-                    ? new SolidColorBrush(Color.FromRgb(0x00, 0x45, 0x8A))   // Dark navy
-                    : new SolidColorBrush(Color.FromRgb(0x74, 0xB9, 0xFF)),  // Light blue
-                "commit-content" => isDarkTheme
-                    ? new SolidColorBrush(Color.FromRgb(0x53, 0x36, 0x96))   // Dark purple
-                    : new SolidColorBrush(Color.FromRgb(0xA2, 0x9B, 0xFF)),  // Light purple
+                "commit-code" => isDarkTheme ? s_codeDark : s_codeLight,
+                "commit-content" => isDarkTheme ? s_contentDark : s_contentLight,
                 _ => Brushes.Gray // Default style for unknown types
             };
         }
