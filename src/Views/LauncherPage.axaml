@@ -13,13 +13,15 @@
     <!-- Project-Level Tab Bar (only visible when more than 1 tab) -->
     <Border Grid.Row="0"
             IsVisible="{Binding IsTabBarVisible}"
-            BorderBrush="{DynamicResource Brush.Border0}"
-            BorderThickness="0,0,0,1">
+            Background="{DynamicResource Brush.ToolBar}">
       <ListBox Classes="plugin_tabbar"
                Background="Transparent"
                ItemsSource="{Binding Tabs}"
                SelectedItem="{Binding SelectedTab, Mode=TwoWay}"
-               SelectionMode="AlwaysSelected">
+               SelectionMode="AlwaysSelected"
+               ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+               ScrollViewer.VerticalScrollBarVisibility="Disabled"
+               PointerWheelChanged="OnPluginTabScroll">
         <ListBox.ItemsPanel>
           <ItemsPanelTemplate>
             <StackPanel Orientation="Horizontal"/>
@@ -28,28 +30,44 @@
 
         <ListBox.ItemTemplate>
           <DataTemplate DataType="vm:RepositoryTabDescriptor">
-            <Grid ColumnDefinitions="Auto,Auto,Auto" Height="28">
-              <Path Grid.Column="0"
-                    Width="12" Height="12" Margin="12,0,6,0"
-                    Fill="{DynamicResource Brush.FG2}"
-                    Data="{Binding Icon}"
-                    IsHitTestVisible="False"/>
+            <Border Classes="plugin_tab" MinWidth="80">
+              <Grid RowDefinitions="*,2">
+                <!-- Content row -->
+                <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,Auto" VerticalAlignment="Center">
+                  <Path Grid.Column="0"
+                        Width="12" Height="12" Margin="0,0,6,0"
+                        Fill="{DynamicResource Brush.FG2}"
+                        Data="{Binding Icon}"
+                        IsHitTestVisible="False"/>
 
-              <TextBlock Grid.Column="1"
-                         VerticalAlignment="Center"
-                         FontSize="12"
-                         Foreground="{DynamicResource Brush.FG2}"
-                         Text="{Binding Title}"
-                         IsHitTestVisible="False"/>
+                  <TextBlock Grid.Column="1"
+                             VerticalAlignment="Center"
+                             FontSize="12"
+                             TextTrimming="CharacterEllipsis"
+                             Foreground="{DynamicResource Brush.FG2}"
+                             Text="{Binding Title}"
+                             IsHitTestVisible="False"/>
 
-              <Button Grid.Column="2"
-                      Classes="icon_button"
-                      Width="14" Height="12" Margin="8,0,4,0"
-                      IsVisible="{Binding IsClosable}"
-                      Command="{Binding CloseTabCommand}">
-                <Path Width="9" Height="9" Data="{StaticResource Icons.Close}"/>
-              </Button>
-            </Grid>
+                  <Button Grid.Column="2"
+                          Classes="icon_button close_tab_btn"
+                          Width="14" Height="12" Margin="8,0,4,0"
+                          IsVisible="{Binding IsClosable}"
+                          Command="{Binding CloseTabCommand}">
+                    <ToolTip.Tip>
+                      <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="{DynamicResource Text.PageTabBar.Tab.Close}" VerticalAlignment="Center"/>
+                      </StackPanel>
+                    </ToolTip.Tip>
+                    <Path Width="9" Height="9" Data="{StaticResource Icons.Close}"/>
+                  </Button>
+                </Grid>
+
+                <!-- Active indicator (accent underline) -->
+                <Border Grid.Row="1"
+                        Height="2"
+                        Background="{DynamicResource Brush.Accent}"/>
+              </Grid>
+            </Border>
           </DataTemplate>
         </ListBox.ItemTemplate>
       </ListBox>

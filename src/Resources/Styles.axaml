@@ -734,19 +734,60 @@
   <Style Selector="ListBox.plugin_tabbar ListBoxItem">
     <Setter Property="Padding" Value="0"/>
     <Setter Property="Margin" Value="0"/>
-    <Setter Property="Height" Value="28"/>
+    <Setter Property="Height" Value="30"/>
   </Style>
   <Style Selector="ListBox.plugin_tabbar ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
     <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="Opacity" Value=".5"/>
   </Style>
-  <Style Selector="ListBox.plugin_tabbar ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="Opacity" Value=".85"/>
+
+  <!-- Plugin tab wrapper -->
+  <Style Selector="Border.plugin_tab">
+    <Setter Property="Height" Value="30"/>
+    <Setter Property="Padding" Value="12,0"/>
   </Style>
-  <Style Selector="ListBox.plugin_tabbar ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+
+  <!-- Unselected: transparent bg, FG2 text, FG2 icon -->
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem Border.plugin_tab">
     <Setter Property="Background" Value="Transparent"/>
+  </Style>
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource Brush.FG2}"/>
+  </Style>
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem Path">
+    <Setter Property="Fill" Value="{DynamicResource Brush.FG2}"/>
+  </Style>
+
+  <!-- Hover: AccentHovered bg -->
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem:pointerover Border.plugin_tab">
+    <Setter Property="Background" Value="{DynamicResource Brush.AccentHovered}"/>
+  </Style>
+
+  <!-- Selected: ToolBar bg, FG1 text, FG1 icon -->
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem:selected Border.plugin_tab">
+    <Setter Property="Background" Value="{DynamicResource Brush.ToolBar}"/>
+  </Style>
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem:selected TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource Brush.FG1}"/>
+  </Style>
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem:selected Path">
+    <Setter Property="Fill" Value="{DynamicResource Brush.FG1}"/>
+  </Style>
+
+  <!-- Close button: hidden by default, visible on hover/selected -->
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem Button.close_tab_btn">
+    <Setter Property="Opacity" Value="0"/>
+  </Style>
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem:pointerover Button.close_tab_btn,
+                 ListBox.plugin_tabbar ListBoxItem:selected Button.close_tab_btn">
     <Setter Property="Opacity" Value="1"/>
+  </Style>
+
+  <!-- Accent underline: visible only on selected tab -->
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem:selected Border.plugin_tab Border">
+    <Setter Property="IsVisible" Value="True"/>
+  </Style>
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem:not(:selected) Border.plugin_tab Border">
+    <Setter Property="IsVisible" Value="False"/>
   </Style>
 
   <Style Selector="ListBox.repo_left_content_list">

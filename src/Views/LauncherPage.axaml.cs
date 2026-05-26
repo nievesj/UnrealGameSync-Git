@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -84,6 +85,24 @@ namespace UGSGit.Views
         private void OnToolBarPointerPressed(object sender, PointerPressedEventArgs e)
         {
             this.FindAncestorOfType<ChromelessWindow>()?.BeginMoveWindow(sender, e);
+        }
+
+        private void OnPluginTabScroll(object sender, PointerWheelEventArgs e)
+        {
+            if (sender is not ListBox listBox)
+                return;
+
+            var scrollViewer = listBox.FindDescendantOfType<ScrollViewer>();
+            if (scrollViewer == null)
+                return;
+
+            // Translate vertical wheel delta to horizontal scroll
+            var offset = scrollViewer.Offset;
+            scrollViewer.Offset = new Vector(
+                offset.X - e.Delta.Y * 48,
+                offset.Y);
+
+            e.Handled = true;
         }
     }
 }
