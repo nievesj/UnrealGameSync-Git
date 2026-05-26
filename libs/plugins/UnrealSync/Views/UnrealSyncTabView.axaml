@@ -20,7 +20,7 @@
         </ContentControl>
 
         <!-- Detecting overlay -->
-        <Border Background="{DynamicResource Brush.Bg}"
+        <Border Background="{DynamicResource Brush.Contents}"
                 IsVisible="{Binding IsDetecting}"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch">
