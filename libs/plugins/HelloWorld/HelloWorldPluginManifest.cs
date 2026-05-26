@@ -14,7 +14,7 @@ namespace UGSGit.Plugins.HelloWorld
         public string Description => "Reference plugin demonstrating the tab system";
         public string Version => "1.0.0";
         public string Author => "UGSGit";
-        public bool IsGlobalByDefault => true;
+        public bool IsGlobalByDefault => false;
         public int DefaultSortOrder => 500;
 
         public IReadOnlyList<IRepositoryTab> CreateTabs(PluginContext context)

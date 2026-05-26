@@ -5,7 +5,7 @@
              x:Class="UGSGit.Plugins.UnrealSync.Views.SelectUProjectView"
              x:DataType="vm:SelectUProjectViewModel">
 
-    <Border Background="{DynamicResource Brush.Background}"
+    <Border Background="{DynamicResource Brush.Contents}"
             CornerRadius="8"
             Margin="16"
             Padding="32">
@@ -20,23 +20,25 @@
                      SelectedItem="{Binding SelectedProject}"
                      IsVisible="{Binding HasDiscoveredProjects}"
                      MaxHeight="200"
-                     BorderBrush="{DynamicResource Brush.Border}"
+                     BorderBrush="{DynamicResource Brush.Border2}"
                      BorderThickness="1"
                      CornerRadius="3">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding}" FontSize="12" FontFamily="Consolas, monospace" Margin="4,2" />
+                        <TextBlock Text="{Binding}" FontSize="12" FontFamily="{DynamicResource Fonts.Monospace}" Margin="4,2" />
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
 
             <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
                 <Button Content="Use Selected"
+                        Classes="flat primary"
                         IsVisible="{Binding HasDiscoveredProjects}"
                         Command="{Binding UseSelectedCommand}"
                         IsEnabled="{Binding SelectedProject, Converter={x:Static c:ObjectConverters.IsNotNull}}"
                         Width="120" Height="32" />
                 <Button Content="Browse..."
+                        Classes="flat"
                         Command="{Binding BrowseCommand}"
                         Width="120" Height="32" />
             </StackPanel>

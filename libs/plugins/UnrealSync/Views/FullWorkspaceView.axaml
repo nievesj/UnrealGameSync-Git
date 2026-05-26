@@ -7,7 +7,7 @@
     <Grid RowDefinitions="Auto,*,Auto" Margin="8">
         <!-- Status / Action Bar -->
         <Border Grid.Row="0"
-                Background="{DynamicResource Brush.ContentBG}"
+                Background="{DynamicResource Brush.Popup}"
                 CornerRadius="6"
                 Padding="12"
                 Margin="0,0,0,8">
@@ -15,17 +15,19 @@
                 <!-- Header row removed: redundant label -->
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <Button Content="Build"
+                            Classes="flat primary"
                             Command="{Binding BuildCommand}"
                             IsEnabled="{Binding !IsBusy}" />
                     <Button Content="Launch Editor"
+                            Classes="flat"
                             Command="{Binding LaunchCommand}" />
 
                     <!-- Package button with flyout for profile selection (fixes M-1) -->
-                    <Button Content="Package" IsEnabled="{Binding !IsBusy}">
+                    <Button Content="Package" Classes="flat" IsEnabled="{Binding !IsBusy}">
                         <Button.Flyout>
                             <Flyout>
                                 <StackPanel Spacing="4" MinWidth="180">
-                                    <TextBlock Text="Select profile:" FontWeight="SemiBold" />
+                                    <TextBlock Text="Select profile:" FontWeight="Bold" />
                                     <ItemsControl ItemsSource="{Binding PackageProfiles}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
@@ -43,9 +45,17 @@
                     </Button>
 
                     <Button Content="Publish"
+                            Classes="flat"
                             Command="{Binding PublishCommand}"
                             IsEnabled="{Binding CanPublish}" />
-                    <Button Content="⚙" Command="{Binding OpenSettingsCommand}" />
+                    <Button Command="{Binding OpenSettingsCommand}"
+                            Classes="icon_button"
+                            Width="32" Height="32"
+                            ToolTip.Tip="Settings">
+                        <Path Width="14" Height="14"
+                              Data="{StaticResource Icons.Settings}"
+                              Fill="{DynamicResource Brush.FG1}" />
+                    </Button>
                 </StackPanel>
             </StackPanel>
         </Border>
@@ -54,7 +64,7 @@
         <Grid Grid.Row="1" RowDefinitions="Auto,Auto,Auto,Auto,*">
             <!-- Project Info (Phase 1b: engine version, build type, path) -->
             <Border Grid.Row="0"
-                    Background="{DynamicResource Brush.ContentBG}"
+                    Background="{DynamicResource Brush.Popup}"
                     CornerRadius="6"
                     Padding="12"
                     Margin="0,0,0,8">
@@ -66,29 +76,30 @@
                     <StackPanel Orientation="Horizontal" Spacing="16">
                         <TextBlock Text="{Binding EngineVersionText, StringFormat='Engine: {0}'}"
                                    FontSize="12"
-                                   Foreground="{DynamicResource Brush.FG3}" />
+                                   Foreground="{DynamicResource Brush.FG2}" />
                         <TextBlock Text="{Binding EngineBuildType, StringFormat='({0})'}"
                                    FontSize="12"
-                                   Foreground="{DynamicResource Brush.FG3}" />
+                                   Foreground="{DynamicResource Brush.FG2}" />
                         <TextBlock Text="{Binding EnginePathText, StringFormat='Path: {0}'}"
                                    FontSize="12"
-                                   Foreground="{DynamicResource Brush.FG4}"
+                                   Foreground="{DynamicResource Brush.FG2}"
                                    ToolTip.Tip="{Binding EnginePathText}" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Spacing="16">
                         <TextBlock Text="{Binding ModuleCount, StringFormat='Modules: {0}'}"
                                    FontSize="12"
-                                   Foreground="{DynamicResource Brush.FG3}" />
+                                   Foreground="{DynamicResource Brush.FG2}" />
                         <TextBlock Text="{Binding PluginCount, StringFormat='Plugins: {0}'}"
                                    FontSize="12"
-                                   Foreground="{DynamicResource Brush.FG3}" />
+                                   Foreground="{DynamicResource Brush.FG2}" />
                     </StackPanel>
                     <!-- Editor build status + deploy (Phase 1b+: editor build + deploy) -->
                     <StackPanel Orientation="Horizontal" Spacing="16" Margin="0,4,0,0">
                         <TextBlock Text="{Binding EditorBuildStatusText}"
                                    FontSize="12"
-                                   Foreground="{DynamicResource Brush.FG3}" />
+                                   Foreground="{DynamicResource Brush.FG2}" />
                         <Button Content="Deploy Editor"
+                                Classes="flat"
                                 Command="{Binding DeployEditorCommand}"
                                 IsEnabled="{Binding !IsBusy}"
                                 FontSize="12"
@@ -108,7 +119,7 @@
                     Margin="0,0,0,8">
                 <StackPanel Spacing="4">
                     <TextBlock Text="Build Targets (steps the Build button will run)"
-                               FontWeight="SemiBold" FontSize="12"
+                               FontWeight="Bold" FontSize="12"
                                Foreground="{DynamicResource Brush.Accent}" />
                     <ItemsControl ItemsSource="{Binding BuildTargets}">
                         <ItemsControl.ItemTemplate>
@@ -149,14 +160,14 @@
 
         <!-- Bottom bar (Phase 1b: publish status) -->
         <Border Grid.Row="2"
-                Background="{DynamicResource Brush.ContentBG}"
+                Background="{DynamicResource Brush.Popup}"
                 CornerRadius="6"
                 Padding="8"
                 Margin="0,8,0,0">
             <StackPanel Orientation="Horizontal" Spacing="16">
                 <TextBlock Text="{Binding PublishStatusText}"
                            FontSize="11"
-                           Foreground="{DynamicResource Brush.FG3}"
+                           Foreground="{DynamicResource Brush.FG2}"
                            IsVisible="{Binding PublishStatusText, Converter={x:Static c:StringConverters.IsNotNullOrEmpty}}" />
             </StackPanel>
         </Border>

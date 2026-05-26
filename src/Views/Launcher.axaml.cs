@@ -215,6 +215,13 @@ namespace UGSGit.Views
             {
                 if (e.Key == Key.W)
                 {
+                    // Close innermost closable tab first (plugin tab before page tab)
+                    if (vm.ActivePage?.SelectedTab?.IsClosable == true)
+                    {
+                        vm.ActivePage.SelectedTab.CloseTabCommand.Execute(null);
+                        e.Handled = true;
+                        return;
+                    }
                     vm.CloseTab(null);
                     e.Handled = true;
                     return;

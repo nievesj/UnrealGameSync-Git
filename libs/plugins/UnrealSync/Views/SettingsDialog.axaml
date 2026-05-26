@@ -13,19 +13,19 @@
         <StackPanel Margin="16" Spacing="16">
 
             <!-- Engine section -->
-            <Border Background="{DynamicResource Brush.Card}" CornerRadius="6" Padding="12">
+            <Border Background="{DynamicResource Brush.Popup}" CornerRadius="6" Padding="12">
                 <StackPanel Spacing="8">
-                    <TextBlock Text="Engine" FontWeight="SemiBold" FontSize="14" />
+                    <TextBlock Text="Engine" FontWeight="Bold" FontSize="14" />
 
                     <CheckBox Content="Auto-detect engine" IsChecked="{Binding AutoDetectEngine}" />
 
                     <TextBlock Text="Local engine path (saved to your local config, not shared with team):"
-                               FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
+                               FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
                     <TextBox Text="{Binding EnginePathOverride}"
                              IsEnabled="{Binding !AutoDetectEngine}"
                              Watermark="{Binding EnginePath}" />
                     <TextBlock Text="{Binding EnginePath, StringFormat='Auto-detected: {0}'}"
-                               FontSize="11" Foreground="{DynamicResource Brush.FG3}"
+                               FontSize="11" Foreground="{DynamicResource Brush.FG2}"
                                IsVisible="{Binding AutoDetectEngine}" />
                     <TextBlock Text="{Binding EnginePathError}"
                                Foreground="Red" FontSize="11"
@@ -36,12 +36,12 @@
             <Rectangle Fill="{DynamicResource Brush.Border2}" Height=".6" HorizontalAlignment="Stretch" Margin="0,8" />
 
             <!-- Network Location section -->
-            <Border Background="{DynamicResource Brush.Card}" CornerRadius="6" Padding="12">
+            <Border Background="{DynamicResource Brush.Popup}" CornerRadius="6" Padding="12">
                 <StackPanel Spacing="8">
-                    <TextBlock Text="Network Location" FontWeight="SemiBold" FontSize="14" />
+                    <TextBlock Text="Network Location" FontWeight="Bold" FontSize="14" />
 
                     <TextBlock Text="Base URL (UNC path or HTTP URL for archive &amp; publish):"
-                               FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
+                               FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
                     <TextBox Text="{Binding NetworkBaseUrl}"
                              Watermark="\\build-server\ue-binaries" />
                     <TextBlock Text="{Binding NetworkUrlError}"
@@ -49,33 +49,33 @@
                                IsVisible="{Binding NetworkUrlError, Converter={x:Static c:StringConverters.IsNotNullOrEmpty}}" />
 
                     <TextBlock Text="Channels (subdirectories under network base):"
-                               FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
+                               FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
                     <Grid ColumnDefinitions="*,*">
                         <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,8,0">
                             <TextBlock Text="Editor builds:" FontSize="11"
-                                       Foreground="{DynamicResource Brush.FG3}" />
+                                       Foreground="{DynamicResource Brush.FG2}" />
                             <TextBox Text="{Binding EditorChannel}"
                                      Watermark="Editor" />
                         </StackPanel>
                         <StackPanel Grid.Column="1" Spacing="4">
                             <TextBlock Text="Game builds:" FontSize="11"
-                                       Foreground="{DynamicResource Brush.FG3}" />
+                                       Foreground="{DynamicResource Brush.FG2}" />
                             <TextBox Text="{Binding GameChannel}"
                                      Watermark="Game" />
                         </StackPanel>
                     </Grid>
 
                     <TextBlock Text="Binary name (zip prefix, defaults to .uproject name):"
-                               FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
+                               FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
                     <TextBox Text="{Binding BinaryName}"
                              Watermark="{Binding ProjectName}" />
 
                     <TextBlock Text="Badge colors (click swatch to pick):"
-                               FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
+                               FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
                     <Grid ColumnDefinitions="*,*">
                         <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,8,0">
                             <TextBlock Text="Editor:" FontSize="11"
-                                       Foreground="{DynamicResource Brush.FG3}" />
+                                       Foreground="{DynamicResource Brush.FG2}" />
                             <Grid ColumnDefinitions="Auto,*">
                                 <Button Grid.Column="0" Width="28" Height="28" Margin="0,0,8,0"
                                         CornerRadius="4"
@@ -106,7 +106,7 @@
                         </StackPanel>
                         <StackPanel Grid.Column="1" Spacing="4">
                             <TextBlock Text="Game:" FontSize="11"
-                                       Foreground="{DynamicResource Brush.FG3}" />
+                                       Foreground="{DynamicResource Brush.FG2}" />
                             <Grid ColumnDefinitions="Auto,*">
                                 <Button Grid.Column="0" Width="28" Height="28" Margin="0,0,8,0"
                                         CornerRadius="4"
@@ -139,7 +139,7 @@
                     <Grid ColumnDefinitions="*,*">
                         <StackPanel Grid.Column="0" Spacing="4" Margin="0,0,8,0">
                             <TextBlock Text="Code:" FontSize="11"
-                                       Foreground="{DynamicResource Brush.FG3}" />
+                                       Foreground="{DynamicResource Brush.FG2}" />
                             <Grid ColumnDefinitions="Auto,*">
                                 <Button Grid.Column="0" Width="28" Height="28" Margin="0,0,8,0"
                                         CornerRadius="4"
@@ -170,7 +170,7 @@
                         </StackPanel>
                         <StackPanel Grid.Column="1" Spacing="4">
                             <TextBlock Text="Content:" FontSize="11"
-                                       Foreground="{DynamicResource Brush.FG3}" />
+                                       Foreground="{DynamicResource Brush.FG2}" />
                             <Grid ColumnDefinitions="Auto,*">
                                 <Button Grid.Column="0" Width="28" Height="28" Margin="0,0,8,0"
                                         CornerRadius="4"
@@ -206,11 +206,11 @@
             <Rectangle Fill="{DynamicResource Brush.Border2}" Height=".6" HorizontalAlignment="Stretch" Margin="0,8" />
 
             <!-- Build Defaults section -->
-            <Border Background="{DynamicResource Brush.Card}" CornerRadius="6" Padding="12">
+            <Border Background="{DynamicResource Brush.Popup}" CornerRadius="6" Padding="12">
                 <StackPanel Spacing="8">
-                    <TextBlock Text="Build Defaults" FontWeight="SemiBold" FontSize="14" />
+                    <TextBlock Text="Build Defaults" FontWeight="Bold" FontSize="14" />
 
-                    <TextBlock Text="Output directory:" FontSize="11" Foreground="{DynamicResource Brush.FG3}" />
+                    <TextBlock Text="Output directory:" FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
                     <TextBox Text="{Binding OutputDirectory}" Watermark="Saved/StagedBuilds" />
                 </StackPanel>
             </Border>
@@ -218,27 +218,27 @@
             <Rectangle Fill="{DynamicResource Brush.Border2}" Height=".6" HorizontalAlignment="Stretch" Margin="0,8" />
 
             <!-- Performance section -->
-            <Border Background="{DynamicResource Brush.Card}" CornerRadius="6" Padding="12">
+            <Border Background="{DynamicResource Brush.Popup}" CornerRadius="6" Padding="12">
                 <StackPanel Spacing="8">
-                    <TextBlock Text="Performance" FontWeight="SemiBold" FontSize="14" />
+                    <TextBlock Text="Performance" FontWeight="Bold" FontSize="14" />
 
                     <TextBlock Text="Max concurrent git processes for commit type badges:"
-                               FontSize="11" Foreground="{DynamicResource Brush.FG3}" TextWrapping="Wrap" />
+                               FontSize="11" Foreground="{DynamicResource Brush.FG2}" TextWrapping="Wrap" />
                     <NumericUpDown Minimum="1" Maximum="20" Value="{Binding MaxConcurrentGitProcesses}" />
                     <TextBlock Text="{Binding MaxConcurrentGitProcessesError}"
                                Foreground="Red" FontSize="11"
                                IsVisible="{Binding MaxConcurrentGitProcessesError, Converter={x:Static c:StringConverters.IsNotNullOrEmpty}}" />
                     <TextBlock Text="Limits how many git.exe processes run in parallel when fetching file lists for commit type badges. Lower values reduce resource usage; higher values speed up annotation. Requires repo tab reopen to take effect."
-                               FontSize="11" Foreground="{DynamicResource Brush.FG3}" TextWrapping="Wrap" />
+                               FontSize="11" Foreground="{DynamicResource Brush.FG2}" TextWrapping="Wrap" />
                 </StackPanel>
             </Border>
 
             <Rectangle Fill="{DynamicResource Brush.Border2}" Height=".6" HorizontalAlignment="Stretch" Margin="0,8" />
 
             <!-- Publish Options section -->
-            <Border Background="{DynamicResource Brush.Card}" CornerRadius="6" Padding="12">
+            <Border Background="{DynamicResource Brush.Popup}" CornerRadius="6" Padding="12">
                 <StackPanel Spacing="8">
-                    <TextBlock Text="Publish Options" FontWeight="SemiBold" FontSize="14" />
+                    <TextBlock Text="Publish Options" FontWeight="Bold" FontSize="14" />
                     <CheckBox Content="Atomic publish (write to temp, then rename)"
                               IsChecked="{Binding AtomicPublish}" />
                 </StackPanel>
@@ -247,16 +247,16 @@
             <Rectangle Fill="{DynamicResource Brush.Border2}" Height=".6" HorizontalAlignment="Stretch" Margin="0,8" />
 
             <!-- Build Targets section -->
-            <Border Background="{DynamicResource Brush.Card}" CornerRadius="6" Padding="12">
+            <Border Background="{DynamicResource Brush.Popup}" CornerRadius="6" Padding="12">
                 <StackPanel Spacing="8">
-                    <TextBlock Text="Build Targets" FontWeight="SemiBold" FontSize="14" />
+                    <TextBlock Text="Build Targets" FontWeight="Bold" FontSize="14" />
                     <TextBlock Text="Steps the Build button runs. Choose UBT Build for compiling C++, UAT Build for packaging/cooking."
-                               FontSize="11" Foreground="{DynamicResource Brush.FG3}" TextWrapping="Wrap" />
+                               FontSize="11" Foreground="{DynamicResource Brush.FG2}" TextWrapping="Wrap" />
 
                     <ItemsControl ItemsSource="{Binding BuildTargets}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Border Background="{DynamicResource Brush.ContentBG}" CornerRadius="4" Padding="8" Margin="0,2">
+                                <Border Background="{DynamicResource Brush.Popup}" CornerRadius="4" Padding="8" Margin="0,2">
                                     <StackPanel Spacing="4">
                                         <!-- Row 0: Name, Mode, Type, Platform, Config, Delete -->
                                         <Grid ColumnDefinitions="*,*,*,*,*,Auto" Margin="0,0,0,2">
@@ -322,15 +322,15 @@
                     </ItemsControl>
 
                     <!-- Variables reference -->
-                    <Border Background="{DynamicResource Brush.ContentBG}" CornerRadius="4" Padding="8">
+                    <Border Background="{DynamicResource Brush.Popup}" CornerRadius="4" Padding="8">
                         <StackPanel Spacing="2">
-                            <TextBlock Text="Available variables" FontWeight="SemiBold" FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
+                            <TextBlock Text="Available variables" FontWeight="Bold" FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
                             <ItemsControl ItemsSource="{Binding AvailableVariables}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" Spacing="4">
-                                            <TextBlock Text="{Binding Name}" FontFamily="Cascadia Code, Consolas, monospace" FontSize="11" Foreground="{DynamicResource Brush.Accent}" />
-                                            <TextBlock Text="—" FontSize="11" Foreground="{DynamicResource Brush.FG4}" />
+                                            <TextBlock Text="{Binding Name}" FontFamily="{DynamicResource Fonts.Monospace}" FontSize="11" Foreground="{DynamicResource Brush.FG1}" />
+                                            <TextBlock Text="—" FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
                                             <TextBlock Text="{Binding Description}" FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
                                         </StackPanel>
                                     </DataTemplate>
@@ -347,7 +347,7 @@
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
                 <Button Content="Cancel" Command="{Binding CancelCommand}" />
                 <Button Content="Save &amp; Apply" Command="{Binding SaveCommand}"
-                        Classes="accent" />
+                        Classes="flat primary" />
             </StackPanel>
 
         </StackPanel>
