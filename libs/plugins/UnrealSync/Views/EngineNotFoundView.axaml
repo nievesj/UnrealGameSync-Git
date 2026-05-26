@@ -18,7 +18,7 @@
             <TextBlock Text="{Binding Message}"
                        FontSize="14"
                        HorizontalAlignment="Center"
-                       Foreground="{DynamicResource Brush.FG2}" />
+                       Foreground="{DynamicResource Brush.FG1}" />
             <TextBlock Text="{Binding EngineAssociation}"
                        FontSize="12"
                        HorizontalAlignment="Center"

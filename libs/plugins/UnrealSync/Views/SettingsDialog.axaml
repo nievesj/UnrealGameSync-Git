@@ -329,7 +329,7 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" Spacing="4">
-                                            <TextBlock Text="{Binding Name}" FontFamily="{DynamicResource Fonts.Monospace}" FontSize="11" Foreground="{DynamicResource Brush.Accent}" />
+                                            <TextBlock Text="{Binding Name}" FontFamily="{DynamicResource Fonts.Monospace}" FontSize="11" Foreground="{DynamicResource Brush.FG1}" />
                                             <TextBlock Text="—" FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
                                             <TextBlock Text="{Binding Description}" FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
                                         </StackPanel>

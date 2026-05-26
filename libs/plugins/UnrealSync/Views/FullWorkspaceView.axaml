@@ -19,10 +19,11 @@
                             Command="{Binding BuildCommand}"
                             IsEnabled="{Binding !IsBusy}" />
                     <Button Content="Launch Editor"
+                            Classes="flat"
                             Command="{Binding LaunchCommand}" />
 
                     <!-- Package button with flyout for profile selection (fixes M-1) -->
-                    <Button Content="Package" IsEnabled="{Binding !IsBusy}">
+                    <Button Content="Package" Classes="flat" IsEnabled="{Binding !IsBusy}">
                         <Button.Flyout>
                             <Flyout>
                                 <StackPanel Spacing="4" MinWidth="180">
@@ -44,6 +45,7 @@
                     </Button>
 
                     <Button Content="Publish"
+                            Classes="flat"
                             Command="{Binding PublishCommand}"
                             IsEnabled="{Binding CanPublish}" />
                     <Button Command="{Binding OpenSettingsCommand}"
@@ -97,6 +99,7 @@
                                    FontSize="12"
                                    Foreground="{DynamicResource Brush.FG2}" />
                         <Button Content="Deploy Editor"
+                                Classes="flat"
                                 Command="{Binding DeployEditorCommand}"
                                 IsEnabled="{Binding !IsBusy}"
                                 FontSize="12"

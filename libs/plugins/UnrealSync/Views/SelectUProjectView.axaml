@@ -32,11 +32,13 @@
 
             <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
                 <Button Content="Use Selected"
+                        Classes="flat primary"
                         IsVisible="{Binding HasDiscoveredProjects}"
                         Command="{Binding UseSelectedCommand}"
                         IsEnabled="{Binding SelectedProject, Converter={x:Static c:ObjectConverters.IsNotNull}}"
                         Width="120" Height="32" />
                 <Button Content="Browse..."
+                        Classes="flat"
                         Command="{Binding BrowseCommand}"
                         Width="120" Height="32" />
             </StackPanel>
