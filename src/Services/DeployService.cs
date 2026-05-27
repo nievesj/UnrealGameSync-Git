@@ -264,7 +264,7 @@ public class DeployService : IDeployService
         }
 
         var json = File.ReadAllText(manifestPath);
-        var manifest = JsonSerializer.Deserialize(json, UnrealSyncJsonContext.Default.DeployManifest);
+        var manifest = JsonSerializer.Deserialize(json, PluginAbstractionsJsonContext.Default.DeployManifest);
         if (manifest?.Files == null || manifest.Files.Count == 0)
             return;
 
@@ -409,7 +409,7 @@ public class DeployService : IDeployService
         var manifestPath = Path.Combine(manifestDir, "Editor.zipmanifest");
         var tempManifestPath = manifestPath + ".tmp";
 
-        var json = JsonSerializer.Serialize(manifest, UnrealSyncJsonContext.Default.DeployManifest);
+        var json = JsonSerializer.Serialize(manifest, PluginAbstractionsJsonContext.Default.DeployManifest);
         File.WriteAllText(tempManifestPath, json);
 
         // Atomic rename

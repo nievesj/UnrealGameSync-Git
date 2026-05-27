@@ -810,12 +810,13 @@ namespace UGSGit.Views
                         if (string.IsNullOrEmpty(c.GroupKey))
                             continue;
 
-                        if (!grouped.ContainsKey(c.GroupKey))
+                        if (!grouped.TryGetValue(c.GroupKey, out var list))
                         {
-                            grouped[c.GroupKey] = new List<ICommitMenuContributor>();
+                            list = new List<ICommitMenuContributor>();
+                            grouped[c.GroupKey] = list;
                             groupOrder.Add(c.GroupKey);
                         }
-                        grouped[c.GroupKey].Add(c);
+                        list.Add(c);
                     }
 
                     // Demote groups with only 1 visible member to singletons

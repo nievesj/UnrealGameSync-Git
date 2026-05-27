@@ -79,7 +79,7 @@ public class PublishService : IPublishService
                 FileSize = new FileInfo(finalPath).Length
             };
             File.WriteAllText(manifestPath,
-                JsonSerializer.Serialize(manifest, UnrealSyncJsonContext.Default.PublishManifest));
+                JsonSerializer.Serialize(manifest, PluginAbstractionsJsonContext.Default.PublishManifest));
 
             return new PublishResult(PublishStatus.Success, $"Published to {finalPath}");
         }

@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,7 +31,7 @@ public static class ConfigService
 
     static ConfigService()
     {
-        JsonOptions.TypeInfoResolverChain.Add(UnrealSyncJsonContext.Default);
+        JsonOptions.TypeInfoResolverChain.Add(PluginAbstractionsJsonContext.Default);
     }
 
     /// <summary>
@@ -50,7 +51,7 @@ public static class ConfigService
         }
 
         var json = File.ReadAllText(configPath);
-        var config = JsonSerializer.Deserialize(json, UnrealSyncJsonContext.Default.UgsConfig)
+        var config = JsonSerializer.Deserialize(json, PluginAbstractionsJsonContext.Default.UgsConfig)
             ?? new UgsConfig();
 
         // Validate version — for unknown future versions, preserve what we can and log a warning
@@ -141,7 +142,7 @@ public static class ConfigService
         }
 
         var json = File.ReadAllText(localPath);
-        return JsonSerializer.Deserialize(json, UnrealSyncJsonContext.Default.UgsWorkspaceState)
+        return JsonSerializer.Deserialize(json, PluginAbstractionsJsonContext.Default.UgsWorkspaceState)
             ?? new UgsWorkspaceState();
     }
 
@@ -155,7 +156,7 @@ public static class ConfigService
         if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
             Directory.CreateDirectory(dir);
 
-        var json = JsonSerializer.Serialize(state, UnrealSyncJsonContext.Default.UgsWorkspaceState);
+        var json = JsonSerializer.Serialize(state, PluginAbstractionsJsonContext.Default.UgsWorkspaceState);
         File.WriteAllText(localPath, json);
     }
 
@@ -165,7 +166,7 @@ public static class ConfigService
     public static void SaveConfig(string repoPath, UgsConfig config)
     {
         var configPath = GetConfigPath(repoPath);
-        var json = JsonSerializer.Serialize(config, UnrealSyncJsonContext.Default.UgsConfig);
+        var json = JsonSerializer.Serialize(config, PluginAbstractionsJsonContext.Default.UgsConfig);
         File.WriteAllText(configPath, json);
     }
 
