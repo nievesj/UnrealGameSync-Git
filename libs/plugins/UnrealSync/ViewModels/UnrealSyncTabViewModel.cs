@@ -83,6 +83,13 @@ public class UnrealSyncTabViewModel : ObservableObject
     public event Action<FullWorkspaceViewModel>? FullWorkspaceReady;
 
     /// <summary>
+    /// Raised after <see cref="FullWorkspaceViewModel.ReloadConfig"/> refreshes build targets and package profiles.
+    /// Forwarded from the inner FullWorkspaceViewModel so that UnrealSyncTab can re-register
+    /// package contributors with updated profile instances.
+    /// </summary>
+    public event Action? PackageProfilesRefreshed;
+
+    /// <summary>
     /// Initializes a new instance of <see cref="UnrealSyncTabViewModel"/>.
     /// </summary>
     /// <param name="repoPath">Absolute path to the repository root.</param>
@@ -199,6 +206,10 @@ public class UnrealSyncTabViewModel : ObservableObject
                     _repoPath, enginePath, meta, _syncService, uprojectPath,
                     buildService, editorLauncher, configService, engineInfoService, _context);
                 CurrentBody = bodyVm;
+
+                // Forward PackageProfilesRefreshed from the inner VM
+                bodyVm.PackageProfilesRefreshed += () => PackageProfilesRefreshed?.Invoke();
+
                 FullWorkspaceReady?.Invoke(bodyVm);
             }
             else

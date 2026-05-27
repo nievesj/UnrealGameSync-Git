@@ -485,10 +485,9 @@ public partial class SettingsDialogViewModel : ObservableObject
         var localState = _configService.LoadLocalState(_repoPath);
 
         // Update shared config — use with expressions since config types are now immutable records (fixes M-2)
-        // Match current config model version (defaults to 4 with BuildGraph fields)
+        // Preserve the loaded config version so migrations are not re-run on next load
         sharedConfig = sharedConfig with
         {
-            Version = 4,
             NetworkBase = NetworkBaseUrl,
             Engine = (sharedConfig.Engine ?? new UgsEngineConfig()) with
             {

@@ -781,7 +781,7 @@ namespace UGSGit.Views
             var menu = new ContextMenu();
             var tags = new List<Models.Tag>();
             var isHead = commit.IsCurrentHead;
-            var shortSha = commit.SHA.Length >= 9 ? commit.SHA[..9] : commit.SHA;
+            var shortSha = commit.SHA.Length >= 10 ? commit.SHA[..10] : commit.SHA;
             var commitRef = new CommitRef(shortSha, isHead);
 
             // Plugin-contributed commit menu items (e.g. "Sync Editor" from UnrealSync)

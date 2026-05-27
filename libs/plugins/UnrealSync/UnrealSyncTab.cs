@@ -159,6 +159,7 @@ public class UnrealSyncTab : IRepositoryTab
         if (menuContributorProvider != null && hasUProject)
         {
             _viewModel.FullWorkspaceReady += OnFullWorkspaceReady;
+            _viewModel.PackageProfilesRefreshed += OnPackageProfilesRefreshed;
         }
         // Eagerly initialize workspace state so context menu contributors
         // are bound to the VM even before the tab is first activated.
@@ -184,6 +185,11 @@ public class UnrealSyncTab : IRepositoryTab
         _buildContributor?.SetViewModel(vm);
         _publishContributor?.SetViewModel(vm);
 
+        // Unregister stale package contributors before registering new ones
+        foreach (var old in _packageContributors)
+            menuContributorProvider.Unregister(old);
+        _packageContributors.Clear();
+
         // Register one Package contributor per profile (dynamic)
         foreach (var profile in vm.PackageProfiles)
         {
@@ -191,6 +197,13 @@ public class UnrealSyncTab : IRepositoryTab
             _packageContributors.Add(pkg);
             menuContributorProvider.Register(pkg);
         }
+    }
+
+    private void OnPackageProfilesRefreshed()
+    {
+        // Re-register package contributors with updated profiles
+        if (_viewModel.CurrentBody is FullWorkspaceViewModel vm)
+            OnFullWorkspaceReady(vm);
     }
 
     /// <summary>
@@ -260,6 +273,7 @@ public class UnrealSyncTab : IRepositoryTab
     public void Dispose()
     {
         _viewModel.FullWorkspaceReady -= OnFullWorkspaceReady;
+        _viewModel.PackageProfilesRefreshed -= OnPackageProfilesRefreshed;
 
         if (_annotator != null)
             _context.GetService<ICommitAnnotationProvider>()?.Unregister(_annotator);

@@ -15,6 +15,10 @@ public interface IBuildGraphService
     /// <summary>
     /// Stage build outputs by running a BuildGraph node, producing a
     /// staged directory ready for packaging.
+    /// Progress reports are raised from a background thread.
+    /// Callers must provide an <see cref="IProgress{T}"/> that marshals
+    /// callbacks to the appropriate thread (e.g., <see cref="Progress{T}"/>
+    /// created on the UI thread).
     /// </summary>
     /// <param name="editorTarget">The editor target name (e.g., "UnrealEditor", "UE5Editor").</param>
     /// <param name="platform">Target platform for staging (e.g., "Win64", "Android", "IOS").</param>

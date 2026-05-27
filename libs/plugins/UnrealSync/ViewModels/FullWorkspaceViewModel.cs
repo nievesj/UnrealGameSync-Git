@@ -42,6 +42,13 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     private readonly System.Text.StringBuilder _logBuilder = new();
     private int _isBusyFlag;
 
+    /// <summary>
+    /// Raised after <see cref="ReloadConfig"/> refreshes build targets and package profiles.
+    /// Consumers (e.g., UnrealSyncTab) use this to re-register package contributors
+    /// with updated profile instances, since immutable records are replaced on reload.
+    /// </summary>
+    public event Action? PackageProfilesRefreshed;
+
     /// <summary>Static header label displayed in the status panel.</summary>
     [ObservableProperty]
     private string _branchText = "Unreal Game Sync for Git";
@@ -224,6 +231,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
 
         // Load package profiles (Phase 1b)
         LoadPackageProfiles();
+        PackageProfilesRefreshed?.Invoke();
     }
 
     private void LoadPackageProfiles(UgsConfig? config = null)
@@ -516,7 +524,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
             var setArgs = _config.BuildGraph?.SetArgsTemplate;
 
             // Compute shortSha and projectName for BuildGraphService constructor
-            var shortSha = CommitText?.Length >= 7 ? CommitText[..7] : "unknown";
+            var shortSha = CommitText?.Length >= 10 ? CommitText[..10] : "unknown";
             var projectName = ProjectName;
 
             var buildGraph = buildGraphFactory.Create(_enginePath, _config, _uprojectPath, shortSha, projectName);
@@ -678,7 +686,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     private async Task DeployEditorCoreAsync()
     {
         var deployService = _context.GetService<IDeployService>()!;
-        var shortSha = CommitText?.Length >= 9 ? CommitText[..9] : CommitText;
+        var shortSha = CommitText?.Length >= 10 ? CommitText[..10] : CommitText;
         var progress = new Progress<string>(AppendLog);
 
         if (string.IsNullOrEmpty(shortSha))
@@ -717,7 +725,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         try
         {
             var localState = _configService.LoadLocalState(_repoPath);
-            var shortSha = CommitText?.Length >= 9 ? CommitText[..9] : CommitText;
+            var shortSha = CommitText?.Length >= 10 ? CommitText[..10] : CommitText;
             var deployedSha = localState.LastDeployedArchiveSha;
 
             if (string.IsNullOrEmpty(deployedSha))
@@ -801,6 +809,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
 
         // Refresh package profiles
         LoadPackageProfiles();
+        PackageProfilesRefreshed?.Invoke();
     }
 
     /// <summary>
@@ -837,7 +846,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
 
     private string FormatZipName(string? template, UgsPackageProfile profile)
     {
-        var shortSha = CommitText?.Length >= 7 ? CommitText[..7] : "unknown";
+        var shortSha = CommitText?.Length >= 10 ? CommitText[..10] : "unknown";
         return (template ?? "{target}-{platform}-{config}-{shortSha}.zip")
             .Replace("{branch}", _currentBranch ?? "unknown")
             .Replace("{target}", profile.EditorTarget)
