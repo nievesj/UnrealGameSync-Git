@@ -246,6 +246,102 @@
 
             <Rectangle Fill="{DynamicResource Brush.Border2}" Height=".6" HorizontalAlignment="Stretch" Margin="0,8" />
 
+            <!-- BuildGraph Scripts section -->
+            <Border Background="{DynamicResource Brush.Popup}" CornerRadius="6" Padding="12">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="BuildGraph Scripts" FontWeight="Bold" FontSize="14" />
+
+                    <TextBlock Text="Custom BuildGraph script paths relative to engine root. Leave empty to use built-in defaults (BuildEditorAndTools.xml)."
+                               FontSize="11" Foreground="{DynamicResource Brush.FG2}" TextWrapping="Wrap" />
+
+                    <TextBlock Text="Editor Script:" FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
+                    <TextBox Text="{Binding EditorBuildGraphScript}"
+                             Watermark="Engine/Build/Graph/Examples/BuildEditorAndTools.xml"
+                             CornerRadius="0" Padding="4,0" MinHeight="16"
+                             BorderThickness="1"
+                             Background="{DynamicResource Color.Contents}"
+                             Foreground="{DynamicResource Color.FG1}"
+                             BorderBrush="{DynamicResource Color.Border1}" />
+
+                    <TextBlock Text="Editor Target:" FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
+                    <TextBox Text="{Binding EditorBuildGraphTarget}"
+                             Watermark="Copy to Staging Directory"
+                             CornerRadius="0" Padding="4,0" MinHeight="16"
+                             BorderThickness="1"
+                             Background="{DynamicResource Color.Contents}"
+                             Foreground="{DynamicResource Color.FG1}"
+                             BorderBrush="{DynamicResource Color.Border1}" />
+
+                    <TextBlock Text="Game Script:" FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
+                    <TextBox Text="{Binding GameBuildGraphScript}"
+                             Watermark="Wardenship/WardenshipGame.xml"
+                             CornerRadius="0" Padding="4,0" MinHeight="16"
+                             BorderThickness="1"
+                             Background="{DynamicResource Color.Contents}"
+                             Foreground="{DynamicResource Color.FG1}"
+                             BorderBrush="{DynamicResource Color.Border1}" />
+
+                    <TextBlock Text="Game Target:" FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
+                    <TextBox Text="{Binding GameBuildGraphTarget}"
+                             Watermark="Package Wardenship Game"
+                             CornerRadius="0" Padding="4,0" MinHeight="16"
+                             BorderThickness="1"
+                             Background="{DynamicResource Color.Contents}"
+                             Foreground="{DynamicResource Color.FG1}"
+                             BorderBrush="{DynamicResource Color.Border1}" />
+
+                    <TextBlock Text="Server Script:" FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
+                    <TextBox Text="{Binding ServerBuildGraphScript}"
+                             Watermark="Leave empty to skip server packaging"
+                             CornerRadius="0" Padding="4,0" MinHeight="16"
+                             BorderThickness="1"
+                             Background="{DynamicResource Color.Contents}"
+                             Foreground="{DynamicResource Color.FG1}"
+                             BorderBrush="{DynamicResource Color.Border1}" />
+
+                    <TextBlock Text="Server Target:" FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
+                    <TextBox Text="{Binding ServerBuildGraphTarget}"
+                             Watermark="Leave empty to skip server packaging"
+                             CornerRadius="0" Padding="4,0" MinHeight="16"
+                             BorderThickness="1"
+                             Background="{DynamicResource Color.Contents}"
+                             Foreground="{DynamicResource Color.FG1}"
+                             BorderBrush="{DynamicResource Color.Border1}" />
+
+                    <TextBlock Text="-set: Arguments:" FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
+                    <TextBox Text="{Binding BuildGraphSetArgsTemplate}"
+                             Watermark="-set:EditorTarget={UbtTarget} -set:ArchiveStream={UbtTarget}"
+                             CornerRadius="0" Padding="4,0" MinHeight="16"
+                             BorderThickness="1"
+                             Background="{DynamicResource Color.Contents}"
+                             Foreground="{DynamicResource Color.FG1}"
+                             BorderBrush="{DynamicResource Color.Border1}" />
+                    <TextBlock Text="Supports {UbtTarget}, {ProjectPath}, {ShortSha}, {ProjectName} variable expansion."
+                               FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
+
+                    <TextBlock Text="Log Batch Size:" FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
+                    <NumericUpDown Value="{Binding LogBatchSize}"
+                                    Minimum="1" Maximum="500"
+                                    FormatString="0"
+                                    CornerRadius="0" Padding="4,0" MinHeight="16"
+                                    BorderThickness="1"
+                                    Background="{DynamicResource Color.Contents}"
+                                    Foreground="{DynamicResource Color.FG1}"
+                                    BorderBrush="{DynamicResource Color.Border1}" />
+                    <TextBlock Text="Lines to buffer before flushing BuildGraph stdout to the log. Higher = less UI pressure."
+                               FontSize="11" Foreground="{DynamicResource Brush.FG2}" />
+
+                    <!-- Warning when all scripts are empty -->
+                    <TextBlock Text="No BuildGraph scripts configured. Publishing will use built-in defaults (BuildEditorAndTools.xml)."
+                               FontSize="11" Foreground="{DynamicResource Brush.FG2}"
+                               Margin="0,4,0,0"
+                               IsVisible="{Binding HasNoBuildGraphScripts}"
+                               xml:space="preserve" />
+                </StackPanel>
+            </Border>
+
+            <Rectangle Fill="{DynamicResource Brush.Border2}" Height=".6" HorizontalAlignment="Stretch" Margin="0,8" />
+
             <!-- Build Targets section -->
             <Border Background="{DynamicResource Brush.Popup}" CornerRadius="6" Padding="12">
                 <StackPanel Spacing="8">

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -14,7 +16,7 @@ public static class ProcessHelper
     /// Kill a process and all its children. Best-effort, cross-platform.
     /// Uses OS-native tree kill where available with fallback commands.
     /// </summary>
-    public static void KillProcessTree(Process process)
+    public static void KillProcessTree(Process? process)
     {
         if (process == null) return;
         try

@@ -1,4 +1,7 @@
+#nullable enable
+
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -16,19 +19,14 @@ namespace UGSGit.Services;
 /// Accepts UgsConfig in constructor per finding H-2 (no per-call LoadConfig).
 /// Validates RunUAT path existence per finding M-2.
 /// </summary>
-public class BuildGraphService : IBuildGraphService
+public class BuildGraphService(
+    string enginePath,
+    string repoPath,
+    UgsConfig config,
+    string uprojectPath = "",
+    string shortSha = "",
+    string projectName = "") : IBuildGraphService
 {
-    private readonly string _enginePath;
-    private readonly string _repoPath;
-    private readonly UgsConfig _config;
-
-    public BuildGraphService(string enginePath, string repoPath, UgsConfig config)
-    {
-        _enginePath = enginePath;
-        _repoPath = repoPath;
-        _config = config;
-    }
-
     /// <summary>
     /// Run BuildGraph to compile + stage editor/game binaries.
     /// Returns StageResult with StagingDirectory on success (fixes C-1).
@@ -40,8 +38,15 @@ public class BuildGraphService : IBuildGraphService
         bool includePdb,
         IProgress<string> log,
         CancellationToken ct,
-        TimeSpan? timeout = null)
+        TimeSpan? timeout = null,
+        string? buildGraphScript = null,
+        string? buildGraphTarget = null,
+        string? setArgsTemplate = null,
+        int logBatchSize = 50)
     {
+        if (logBatchSize < 1)
+            logBatchSize = 1;
+
         var runUat = GetRunUatPath();
 
         // Validate RunUAT exists (fixes M-2)
@@ -49,18 +54,30 @@ public class BuildGraphService : IBuildGraphService
             return new StageResult(BuildStatus.Failed, "stage", string.Empty,
                 $"RunUAT not found at {runUat}. Is this a source build?");
 
+        // Resolve script, target, and -set: arguments with fallback to built-in defaults
+        var script = !string.IsNullOrWhiteSpace(buildGraphScript)
+            ? buildGraphScript
+            : "Engine/Build/Graph/Examples/BuildEditorAndTools.xml";
+
+        var target = !string.IsNullOrWhiteSpace(buildGraphTarget)
+            ? buildGraphTarget
+            : "Copy to Staging Directory";
+
+        var setArgs = !string.IsNullOrWhiteSpace(setArgsTemplate)
+            ? ExpandBuildGraphVariables(setArgsTemplate, editorTarget)
+            : $"-set:EditorTarget={editorTarget} -set:ArchiveStream={editorTarget}";
+
         var args = $"BuildGraph " +
-                   $"-Script=\"Engine/Build/Graph/Examples/BuildEditorAndTools.xml\" " +
-                   $"-Target=\"Copy to Staging Directory\" " +
-                   $"-set:EditorTarget={editorTarget} " +
-                   $"-set:ArchiveStream={editorTarget} ";
+                   $"-Script=\"{script}\" " +
+                   $"-Target=\"{target}\" " +
+                   $"{setArgs} ";
 
         if (!includePdb)
             args += "-set:ExcludePdb=true ";
 
         var sw = Stopwatch.StartNew();
-        Process process = null!;
-        CancellationTokenSource linkedCts = null!;
+        Process? process = null;
+        CancellationTokenSource? linkedCts = null;
 
         try
         {
@@ -71,7 +88,7 @@ public class BuildGraphService : IBuildGraphService
             {
                 FileName = runUat,
                 Arguments = args,
-                WorkingDirectory = _enginePath,
+                WorkingDirectory = enginePath,
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 RedirectStandardOutput = true,
@@ -79,25 +96,73 @@ public class BuildGraphService : IBuildGraphService
             };
 
             process = new Process { StartInfo = psi };
+
+            // Ensure staging directory exists before BuildGraph runs so it has a valid target.
+            var stagingDir = GetStagingDirectory();
+            if (!Directory.Exists(stagingDir))
+                Directory.CreateDirectory(stagingDir);
+
             process.Start();
 
-            // Read stdout and stderr concurrently to avoid deadlock
-            var stdoutTask = process.StandardOutput.ReadToEndAsync(linkedCts.Token);
-            var stderrTask = process.StandardError.ReadToEndAsync(linkedCts.Token);
+            // Stream stdout line-by-line with batching to avoid flooding the UI dispatcher.
+            // BuildGraph can output thousands of lines per second; reporting each individually
+            // causes the app to show "Not Responding" because the UI thread can't keep up.
+            var stdoutBuilder = new System.Text.StringBuilder();
+            var stderrBuilder = new System.Text.StringBuilder();
+
+            // Extract non-disposable locals before lambdas to silence closure disposal warnings.
+            var stdoutReader = process.StandardOutput;
+            var stderrReader = process.StandardError;
+            var token = linkedCts.Token;
+
+            var stdoutTask = Task.Run(async () =>
+            {
+                var batch = new List<string>(logBatchSize);
+                while (true)
+                {
+                    token.ThrowIfCancellationRequested();
+                    var line = await stdoutReader.ReadLineAsync(token).ConfigureAwait(false);
+                    if (line == null) break;
+                    stdoutBuilder.AppendLine(line);
+                    batch.Add(line);
+                    if (batch.Count >= logBatchSize)
+                    {
+                        log.Report(string.Join(Environment.NewLine, batch));
+                        batch.Clear();
+                    }
+                }
+                if (batch.Count > 0)
+                    log.Report(string.Join(Environment.NewLine, batch));
+            }, token);
+
+            var stderrTask = Task.Run(async () =>
+            {
+                while (true)
+                {
+                    token.ThrowIfCancellationRequested();
+                    var line = await stderrReader.ReadLineAsync(token).ConfigureAwait(false);
+                    if (line == null) break;
+                    stderrBuilder.AppendLine(line);
+                }
+            }, token);
+
+            await Task.WhenAll(stdoutTask, stderrTask).WaitAsync(linkedCts.Token);
             await process.WaitForExitAsync(linkedCts.Token);
 
-            var stdout = await stdoutTask;
-            var stderr = await stderrTask;
-
             sw.Stop();
-            log.Report(stdout);
+            var stderr = stderrBuilder.ToString();
             if (!string.IsNullOrWhiteSpace(stderr)) log.Report(stderr);
 
             if (process.ExitCode != 0)
+            {
+                var errorSummary = !string.IsNullOrWhiteSpace(stderr)
+                    ? ExtractLastErrorLine(stderr)
+                    : $"exit {process.ExitCode}";
                 return new StageResult(BuildStatus.Failed, "stage", string.Empty,
-                    $"BuildGraph failed (exit {process.ExitCode})", sw.Elapsed);
+                    $"BuildGraph failed: {errorSummary}", sw.Elapsed);
+            }
 
-            var stagingDir = GetStagingDirectory();
+            // Verify staging directory was actually produced
             if (!Directory.Exists(stagingDir))
                 return new StageResult(BuildStatus.Failed, "stage", string.Empty,
                     $"Staging directory not found: {stagingDir}");
@@ -177,16 +242,54 @@ public class BuildGraphService : IBuildGraphService
 
     private string GetRunUatPath() =>
         RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-            ? Path.Combine(_enginePath, "Engine", "Build", "BatchFiles", "RunUAT.bat")
-            : Path.Combine(_enginePath, "Engine", "Build", "BatchFiles", "RunUAT.sh");
+            ? Path.Combine(enginePath, "Engine", "Build", "BatchFiles", "RunUAT.bat")
+            : Path.Combine(enginePath, "Engine", "Build", "BatchFiles", "RunUAT.sh");
 
     /// <summary>
-    /// Get staging directory from config (fixes H-2: uses cached _config, not LoadConfig per call).
+    /// Get staging directory from config (fixes H-2: uses cached config, not LoadConfig per call).
     /// </summary>
     private string GetStagingDirectory()
     {
-        var outputDir = _config.BuildDefaults?.OutputDirectory ?? "Saved/StagedBuilds";
-        return Path.GetFullPath(Path.Combine(_repoPath, outputDir));
+        var outputDir = config.BuildDefaults.OutputDirectory ?? "Saved/StagedBuilds";
+        return Path.GetFullPath(Path.Combine(repoPath, outputDir));
     }
 
+    /// <summary>
+    /// Extract the last meaningful error line from stderr for concise failure reporting.
+    /// Skips empty lines, AutomationTool exit summaries, and timing info.
+    /// </summary>
+    private static string ExtractLastErrorLine(string stderr)
+    {
+        var lines = stderr.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+        for (var i = lines.Length - 1; i >= 0; i--)
+        {
+            var line = lines[i].Trim();
+            if (line.Length == 0)
+                continue;
+            if (line.StartsWith("AutomationTool", StringComparison.OrdinalIgnoreCase))
+                continue;
+            if (line.StartsWith("BUILD FAILED", StringComparison.OrdinalIgnoreCase))
+                continue;
+            if (line.StartsWith("Stage Failed:", StringComparison.OrdinalIgnoreCase))
+                continue;
+            if (line.StartsWith("(", StringComparison.OrdinalIgnoreCase) && line.Contains("for full exception trace"))
+                continue;
+            return line;
+        }
+        return "exit error";
+    }
+
+    /// <summary>
+    /// Expand variable placeholders in a BuildGraph -set: argument template.
+    /// Supported variables: {UbtTarget}, {ProjectPath}, {ShortSha}, {ProjectName}.
+    /// Unknown variables are left as-is.
+    /// </summary>
+    private string ExpandBuildGraphVariables(string template, string ubtTarget)
+    {
+        return template
+            .Replace("{UbtTarget}", ubtTarget)
+            .Replace("{ProjectPath}", uprojectPath)
+            .Replace("{ShortSha}", shortSha)
+            .Replace("{ProjectName}", projectName);
+    }
 }

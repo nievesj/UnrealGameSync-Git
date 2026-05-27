@@ -66,6 +66,24 @@ public partial class SettingsDialogViewModel : ObservableObject
     /// <summary>Hex color for commit-content badges. Empty = theme default.</summary>
     [ObservableProperty] private string _commitContentBadgeColor = string.Empty;
 
+    // BuildGraph Scripts — saved to SHARED config
+    /// <summary>Path to the editor BuildGraph XML script, relative to engine root.</summary>
+    [ObservableProperty] private string _editorBuildGraphScript = "";
+    /// <summary>BuildGraph aggregate target name for the editor script.</summary>
+    [ObservableProperty] private string _editorBuildGraphTarget = "";
+    /// <summary>Path to the game BuildGraph XML script, relative to engine root.</summary>
+    [ObservableProperty] private string _gameBuildGraphScript = "";
+    /// <summary>BuildGraph aggregate target name for the game script.</summary>
+    [ObservableProperty] private string _gameBuildGraphTarget = "";
+    /// <summary>Path to the server BuildGraph XML script, relative to engine root.</summary>
+    [ObservableProperty] private string _serverBuildGraphScript = "";
+    /// <summary>BuildGraph aggregate target name for the server script.</summary>
+    [ObservableProperty] private string _serverBuildGraphTarget = "";
+    /// <summary>Template for -set: arguments passed to BuildGraph (supports {UbtTarget}, {ProjectPath}, {ShortSha}, {ProjectName}).</summary>
+    [ObservableProperty] private string _buildGraphSetArgsTemplate = "";
+    /// <summary>Number of stdout lines to batch before flushing to the UI log (default 50).</summary>
+    [ObservableProperty] private int _logBatchSize = 50;
+
     // Performance — saved to SHARED config
     /// <summary>Maximum number of concurrent git.exe processes for commit type annotation (1–20).</summary>
     [ObservableProperty] private int _maxConcurrentGitProcesses = UgsConfig.DefaultMaxConcurrentGitProcesses;
@@ -438,6 +456,17 @@ public partial class SettingsDialogViewModel : ObservableObject
         // Publish (shared)
         AtomicPublish = config.Publish?.Atomic ?? true;
 
+        // BuildGraph scripts (shared)
+        var bg = config.BuildGraph ?? new UgsBuildGraphConfig();
+        EditorBuildGraphScript = bg.EditorScript;
+        EditorBuildGraphTarget = bg.EditorTarget;
+        GameBuildGraphScript = bg.GameScript;
+        GameBuildGraphTarget = bg.GameTarget;
+        ServerBuildGraphScript = bg.ServerScript;
+        ServerBuildGraphTarget = bg.ServerTarget;
+        BuildGraphSetArgsTemplate = bg.SetArgsTemplate;
+        LogBatchSize = bg.LogBatchSize;
+
         // Build targets (shared) — already migrated by ConfigService
         BuildTargets.Clear();
         foreach (var step in config.Engine?.BuildTargets ?? new())
@@ -456,10 +485,9 @@ public partial class SettingsDialogViewModel : ObservableObject
         var localState = _configService.LoadLocalState(_repoPath);
 
         // Update shared config — use with expressions since config types are now immutable records (fixes M-2)
-        // Bump version to 3 since we now persist commit type annotation fields (C2)
+        // Preserve the loaded config version so migrations are not re-run on next load
         sharedConfig = sharedConfig with
         {
-            Version = 3,
             NetworkBase = NetworkBaseUrl,
             Engine = (sharedConfig.Engine ?? new UgsEngineConfig()) with
             {
@@ -498,6 +526,22 @@ public partial class SettingsDialogViewModel : ObservableObject
             };
         }
 
+        // BuildGraph scripts
+        sharedConfig = sharedConfig with
+        {
+            BuildGraph = new UgsBuildGraphConfig
+            {
+                EditorScript = EditorBuildGraphScript,
+                EditorTarget = EditorBuildGraphTarget,
+                GameScript = GameBuildGraphScript,
+                GameTarget = GameBuildGraphTarget,
+                ServerScript = ServerBuildGraphScript,
+                ServerTarget = ServerBuildGraphTarget,
+                SetArgsTemplate = BuildGraphSetArgsTemplate,
+                LogBatchSize = LogBatchSize,
+            }
+        };
+
         _configService.SaveConfig(_repoPath, sharedConfig);
 
         // Propagate new concurrency limit to process-wide throttle
@@ -510,6 +554,19 @@ public partial class SettingsDialogViewModel : ObservableObject
         localState.EnginePathOverride = EnginePathOverride;
         _configService.SaveLocalState(_repoPath, localState);
     }
+
+    /// <summary>
+    /// True when all three BuildGraph script fields are empty, indicating the warning should be shown.
+    /// </summary>
+    public bool HasNoBuildGraphScripts =>
+        string.IsNullOrWhiteSpace(EditorBuildGraphScript)
+        && string.IsNullOrWhiteSpace(GameBuildGraphScript)
+        && string.IsNullOrWhiteSpace(ServerBuildGraphScript);
+
+    // Notify HasNoBuildGraphScripts when any script field changes
+    partial void OnEditorBuildGraphScriptChanged(string value) => OnPropertyChanged(nameof(HasNoBuildGraphScripts));
+    partial void OnGameBuildGraphScriptChanged(string value) => OnPropertyChanged(nameof(HasNoBuildGraphScripts));
+    partial void OnServerBuildGraphScriptChanged(string value) => OnPropertyChanged(nameof(HasNoBuildGraphScripts));
 
     /// <summary>Sets the editor badge color from a preset swatch.</summary>
     [RelayCommand]

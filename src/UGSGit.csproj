@@ -81,4 +81,6 @@
         <TrimmerRootAssembly Include="UGSGit.Plugins.UnrealSync"/>
         <TrimmerRootAssembly Include="Avalonia.Themes.Fluent"/>
     </ItemGroup>
+
+
 </Project>

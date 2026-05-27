@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -30,7 +31,7 @@ public static class ConfigService
 
     static ConfigService()
     {
-        JsonOptions.TypeInfoResolverChain.Add(UnrealSyncJsonContext.Default);
+        JsonOptions.TypeInfoResolverChain.Add(PluginAbstractionsJsonContext.Default);
     }
 
     /// <summary>
@@ -50,14 +51,14 @@ public static class ConfigService
         }
 
         var json = File.ReadAllText(configPath);
-        var config = JsonSerializer.Deserialize(json, UnrealSyncJsonContext.Default.UgsConfig)
+        var config = JsonSerializer.Deserialize(json, PluginAbstractionsJsonContext.Default.UgsConfig)
             ?? new UgsConfig();
 
         // Validate version — for unknown future versions, preserve what we can and log a warning
-        if (config.Version > 3)
+        if (config.Version > 5)
         {
             Native.OS.LogException(new InvalidOperationException(
-                $"UgsConfig version {config.Version} is newer than supported (max 3). Attempting to preserve known fields."));
+                $"UgsConfig version {config.Version} is newer than supported (max 5). Attempting to preserve known fields."));
         }
 
         // Migrate v2 → v3: commit type annotation fields added
@@ -70,6 +71,30 @@ public static class ConfigService
                 CommitContentBadgeColor = config.CommitContentBadgeColor ?? string.Empty,
                 MaxConcurrentGitProcesses = config.MaxConcurrentGitProcesses > 0
                     ? config.MaxConcurrentGitProcesses : UgsConfig.DefaultMaxConcurrentGitProcesses
+            };
+        }
+
+        // Migrate v3 → v4: BuildGraph script fields added
+        if (config.Version < 4)
+        {
+            config = config with
+            {
+                Version = 4,
+                BuildGraph = new UgsBuildGraphConfig(),
+            };
+        }
+
+        // Migrate v4 → v5: logBatchSize field added to BuildGraph config
+        if (config.Version < 5)
+        {
+            config = config with
+            {
+                Version = 5,
+                BuildGraph = config.BuildGraph with
+                {
+                    LogBatchSize = config.BuildGraph.LogBatchSize > 0
+                        ? config.BuildGraph.LogBatchSize : 50
+                },
             };
         }
 
@@ -117,7 +142,7 @@ public static class ConfigService
         }
 
         var json = File.ReadAllText(localPath);
-        return JsonSerializer.Deserialize(json, UnrealSyncJsonContext.Default.UgsWorkspaceState)
+        return JsonSerializer.Deserialize(json, PluginAbstractionsJsonContext.Default.UgsWorkspaceState)
             ?? new UgsWorkspaceState();
     }
 
@@ -131,7 +156,7 @@ public static class ConfigService
         if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
             Directory.CreateDirectory(dir);
 
-        var json = JsonSerializer.Serialize(state, UnrealSyncJsonContext.Default.UgsWorkspaceState);
+        var json = JsonSerializer.Serialize(state, PluginAbstractionsJsonContext.Default.UgsWorkspaceState);
         File.WriteAllText(localPath, json);
     }
 
@@ -141,7 +166,7 @@ public static class ConfigService
     public static void SaveConfig(string repoPath, UgsConfig config)
     {
         var configPath = GetConfigPath(repoPath);
-        var json = JsonSerializer.Serialize(config, UnrealSyncJsonContext.Default.UgsConfig);
+        var json = JsonSerializer.Serialize(config, PluginAbstractionsJsonContext.Default.UgsConfig);
         File.WriteAllText(configPath, json);
     }
 
@@ -188,6 +213,16 @@ public static class ConfigService
             BuildDefaults = config.BuildDefaults with
             {
                 OutputDirectory = ResolveEnvVars(config.BuildDefaults.OutputDirectory),
+            },
+            BuildGraph = config.BuildGraph with
+            {
+                EditorScript = ResolveEnvVars(config.BuildGraph.EditorScript),
+                EditorTarget = ResolveEnvVars(config.BuildGraph.EditorTarget),
+                GameScript = ResolveEnvVars(config.BuildGraph.GameScript),
+                GameTarget = ResolveEnvVars(config.BuildGraph.GameTarget),
+                ServerScript = ResolveEnvVars(config.BuildGraph.ServerScript),
+                ServerTarget = ResolveEnvVars(config.BuildGraph.ServerTarget),
+                SetArgsTemplate = ResolveEnvVars(config.BuildGraph.SetArgsTemplate),
             },
         };
     }

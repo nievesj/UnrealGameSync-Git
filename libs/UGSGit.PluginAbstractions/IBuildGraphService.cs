@@ -15,6 +15,10 @@ public interface IBuildGraphService
     /// <summary>
     /// Stage build outputs by running a BuildGraph node, producing a
     /// staged directory ready for packaging.
+    /// Progress reports are raised from a background thread.
+    /// Callers must provide an <see cref="IProgress{T}"/> that marshals
+    /// callbacks to the appropriate thread (e.g., <see cref="Progress{T}"/>
+    /// created on the UI thread).
     /// </summary>
     /// <param name="editorTarget">The editor target name (e.g., "UnrealEditor", "UE5Editor").</param>
     /// <param name="platform">Target platform for staging (e.g., "Win64", "Android", "IOS").</param>
@@ -23,6 +27,10 @@ public interface IBuildGraphService
     /// <param name="log">Progress reporter for streaming BuildGraph log output.</param>
     /// <param name="ct">Cancellation token to abort staging early.</param>
     /// <param name="timeout">Optional maximum duration for the staging operation; null means no timeout.</param>
+    /// <param name="buildGraphScript">Custom BuildGraph script path relative to engine root; null/empty falls back to "Engine/Build/Graph/Examples/BuildEditorAndTools.xml".</param>
+    /// <param name="buildGraphTarget">Custom BuildGraph target name; null/empty falls back to "Copy to Staging Directory".</param>
+    /// <param name="setArgsTemplate">Template for -set: arguments with {UbtTarget}, {ProjectPath}, {ShortSha}, {ProjectName} expansion.</param>
+    /// <param name="logBatchSize">Number of stdout lines to batch before reporting progress. Higher values reduce UI pressure during high-volume output.</param>
     /// <returns>A <see cref="StageResult"/> describing the staging outcome and the path to staged output on success.</returns>
     Task<StageResult> StageAsync(
         string editorTarget,
@@ -31,7 +39,11 @@ public interface IBuildGraphService
         bool includePdb,
         IProgress<string> log,
         CancellationToken ct = default,
-        TimeSpan? timeout = null);
+        TimeSpan? timeout = null,
+        string? buildGraphScript = null,
+        string? buildGraphTarget = null,
+        string? setArgsTemplate = null,
+        int logBatchSize = 50);
 
     /// <summary>
     /// Create a compressed archive (.zip) from a previously staged output directory.

@@ -25,7 +25,7 @@ public static class EngineInfoService
         try
         {
             var json = File.ReadAllText(versionPath);
-            var buildVersion = JsonSerializer.Deserialize(json, UnrealSyncJsonContext.Default.BuildVersion);
+            var buildVersion = JsonSerializer.Deserialize(json, PluginAbstractionsJsonContext.Default.BuildVersion);
             if (buildVersion == null)
                 return new EngineInfo { Version = "Unknown", BuildType = "Unknown", IsSourceBuild = true };
 

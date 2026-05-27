@@ -781,6 +781,93 @@ namespace UGSGit.Views
             var menu = new ContextMenu();
             var tags = new List<Models.Tag>();
             var isHead = commit.IsCurrentHead;
+            var shortSha = commit.SHA.Length >= 10 ? commit.SHA[..10] : commit.SHA;
+            var commitRef = new CommitRef(shortSha, isHead);
+
+            // Plugin-contributed commit menu items (e.g. "Sync Editor" from UnrealSync)
+            // Rendered at the top of the menu so frequently-used plugin actions are immediately accessible.
+            var menuContributors = Services.HostServices.MenuContributors.GetContributorsForRepo(repo.FullPath);
+            if (menuContributors.Count > 0)
+            {
+                // Pass 1: Filter visible contributors
+                var visibleContributors = new List<ICommitMenuContributor>();
+                foreach (var contributor in menuContributors)
+                {
+                    if (contributor.IsVisible(commitRef))
+                        visibleContributors.Add(contributor);
+                }
+
+                if (visibleContributors.Count > 0)
+                {
+                    // Pass 2: Partition into groups and singletons, preserving registration order.
+                    // A "group" is 2+ visible contributors sharing the same GroupKey.
+                    // Singletons (null GroupKey, or group with only 1 visible member) render flat.
+                    var groupOrder = new List<string>();
+                    var grouped = new Dictionary<string, List<ICommitMenuContributor>>();
+
+                    foreach (var c in visibleContributors)
+                    {
+                        if (string.IsNullOrEmpty(c.GroupKey))
+                            continue;
+
+                        if (!grouped.TryGetValue(c.GroupKey, out var list))
+                        {
+                            list = new List<ICommitMenuContributor>();
+                            grouped[c.GroupKey] = list;
+                            groupOrder.Add(c.GroupKey);
+                        }
+                        list.Add(c);
+                    }
+
+                    // Demote groups with only 1 visible member to singletons
+                    // (a 1-item submenu is pointless UX)
+                    var demotedKeys = new List<string>();
+                    foreach (var key in groupOrder)
+                    {
+                        if (grouped[key].Count == 1)
+                            demotedKeys.Add(key);
+                    }
+                    foreach (var key in demotedKeys)
+                        grouped.Remove(key);
+
+                    // Pass 3: Render — interleave groups and singletons in registration order.
+                    // Walk visibleContributors and emit each group/flat item once.
+                    var rendered = new HashSet<ICommitMenuContributor>();
+
+                    foreach (var c in visibleContributors)
+                    {
+                        if (rendered.Contains(c)) continue;
+
+                        if (!string.IsNullOrEmpty(c.GroupKey) && grouped.TryGetValue(c.GroupKey, out var members))
+                        {
+                            // Render entire group as a submenu
+                            var leader = members[0]; // first registered = submenu header source
+                            var groupMenuItem = new MenuItem();
+                            groupMenuItem.Header = leader.GroupHeader ?? leader.GroupKey;
+                            groupMenuItem.Icon = this.CreateMenuIcon(leader.GroupIconResourceKey ?? "Icons.Fetch");
+
+                            foreach (var member in members)
+                            {
+                                groupMenuItem.Items.Add(
+                                    CreatePluginMenuItem(member, commit, shortSha, isHead, repo));
+                                rendered.Add(member);
+                            }
+
+                            menu.Items.Add(groupMenuItem);
+                        }
+                        else
+                        {
+                            // Singleton flat item (null GroupKey or demoted 1-item group)
+                            menu.Items.Add(
+                                CreatePluginMenuItem(c, commit, shortSha, isHead, repo));
+                            rendered.Add(c);
+                        }
+                    }
+
+                    // Separator after plugin block (only if items were rendered)
+                    menu.Items.Add(new MenuItem() { Header = "-" });
+                }
+            }
 
             if (commit.HasDecorators)
             {
@@ -815,77 +902,6 @@ namespace UGSGit.Views
             {
                 foreach (var tag in tags)
                     FillTagMenu(menu, repo, tag, current, commit.IsMerged);
-                menu.Items.Add(new MenuItem() { Header = "-" });
-            }
-
-            // Plugin-contributed commit menu items (e.g. "Sync Editor" from UnrealSync)
-            var menuContributors = Services.HostServices.MenuContributors.GetContributorsForRepo(repo.FullPath);
-            if (menuContributors.Count > 0)
-            {
-                foreach (var contributor in menuContributors)
-                {
-                    if (!contributor.IsVisible(new CommitRef(commit.SHA.Substring(0, 9))))
-                        continue;
-
-                    var pluginItem = new MenuItem();
-                    pluginItem.Header = contributor.Header;
-                    pluginItem.Icon = this.CreateMenuIcon(contributor.IconResourceKey ?? "Icons.Fetch");
-
-                    // Determine enabled state: some contributors require a build-available annotation
-                    // (Sync Editor), while others (Launch Editor) work on any commit.
-                    var isEnabled = contributor.IsEnabled(new CommitRef(commit.SHA.Substring(0, 9)));
-                    if (contributor.RequiresBuildAnnotation)
-                    {
-                        var hasBuildAnnotation = commit.Annotations != null &&
-                            commit.Annotations.Any(a => a.AnnotationType == CommitAnnotationTypes.BuildAvailable);
-                        isEnabled &= hasBuildAnnotation;
-                    }
-                    pluginItem.IsEnabled = isEnabled;
-
-                    pluginItem.Click += async (_, e) =>
-                    {
-                        pluginItem.IsEnabled = false;
-
-                        var shortSha = commit.SHA.Substring(0, 9);
-                        var actionName = contributor.Header;
-                        var commitRef = new CommitRef(shortSha);
-
-                        if (contributor.IsLongRunning)
-                        {
-                            // Long-running action: show modal progress popup
-                            var progress = new ViewModels.CommitActionProgress(actionName, shortSha);
-                            var window = new Views.CommitActionProgress { DataContext = progress };
-                            window.SetContributorIcon(contributor.IconResourceKey);
-                            window.SetAction(contributor.ExecuteAsync, commitRef);
-
-                            var owner = TopLevel.GetTopLevel(this) as Window;
-                            await window.ShowDialog(owner);
-
-                            if (progress.IsError)
-                                repo.SendNotification($"{actionName} failed: {progress.ErrorMessage}", true);
-                            else if (progress.IsComplete)
-                                repo.SendNotification($"{actionName}: completed for {shortSha}");
-                        }
-                        else
-                        {
-                            // Fast action: no progress popup, just execute and show toast
-                            try
-                            {
-                                await contributor.ExecuteAsync(commitRef, null, CancellationToken.None);
-                                repo.SendNotification($"{actionName}: completed");
-                            }
-                            catch (Exception ex)
-                            {
-                                repo.SendNotification($"{actionName} failed: {ex.Message}", true);
-                            }
-                        }
-
-                        pluginItem.IsEnabled = true;
-                        e.Handled = true;
-                    };
-                    menu.Items.Add(pluginItem);
-                }
-
                 menu.Items.Add(new MenuItem() { Header = "-" });
             }
 
@@ -1273,6 +1289,72 @@ namespace UGSGit.Views
             menu.Items.Add(copy);
 
             return menu;
+        }
+
+        /// <summary>
+        /// Creates a MenuItem for a single plugin contributor, wiring the
+        /// RequiresBuildAnnotation gate, IsLongRunning progress popup, and click handler.
+        /// Shared by both flat rendering and grouped submenu rendering.
+        /// </summary>
+        private MenuItem CreatePluginMenuItem(
+            ICommitMenuContributor contributor,
+            Models.Commit commit,
+            string shortSha,
+            bool isHead,
+            ViewModels.Repository repo)
+        {
+            var commitRef = new CommitRef(shortSha, isHead);
+            var menuItem = new MenuItem();
+            menuItem.Header = contributor.Header;
+            menuItem.Icon = this.CreateMenuIcon(contributor.IconResourceKey ?? "Icons.Fetch");
+
+            var isEnabled = contributor.IsEnabled(commitRef);
+            if (contributor.RequiresBuildAnnotation)
+            {
+                var hasBuildAnnotation = commit.Annotations != null &&
+                    commit.Annotations.Any(a => a.AnnotationType == CommitAnnotationTypes.BuildAvailable);
+                isEnabled &= hasBuildAnnotation;
+            }
+            menuItem.IsEnabled = isEnabled;
+
+            menuItem.Click += async (_, e) =>
+            {
+                menuItem.IsEnabled = false;
+                var actionName = contributor.Header;
+
+                if (contributor.IsLongRunning)
+                {
+                    var progress = new ViewModels.CommitActionProgress(actionName, shortSha);
+                    var window = new Views.CommitActionProgress { DataContext = progress };
+                    window.SetContributorIcon(contributor.IconResourceKey);
+                    window.SetAction(contributor.ExecuteAsync, commitRef);
+
+                    var owner = TopLevel.GetTopLevel(this) as Window;
+                    await window.ShowDialog(owner);
+
+                    if (progress.IsError)
+                        repo.SendNotification($"{actionName} failed: {progress.ErrorMessage}", true);
+                    else if (progress.IsComplete)
+                        repo.SendNotification($"{actionName}: completed for {shortSha}");
+                }
+                else
+                {
+                    try
+                    {
+                        await contributor.ExecuteAsync(commitRef, null, CancellationToken.None);
+                        repo.SendNotification($"{actionName}: completed");
+                    }
+                    catch (Exception ex)
+                    {
+                        repo.SendNotification($"{actionName} failed: {ex.Message}", true);
+                    }
+                }
+
+                menuItem.IsEnabled = true;
+                e.Handled = true;
+            };
+
+            return menuItem;
         }
 
         private void FillCurrentBranchMenu(ContextMenu menu, ViewModels.Repository repo, Models.Branch current)

@@ -42,6 +42,13 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     private readonly System.Text.StringBuilder _logBuilder = new();
     private int _isBusyFlag;
 
+    /// <summary>
+    /// Raised after <see cref="ReloadConfig"/> refreshes build targets and package profiles.
+    /// Consumers (e.g., UnrealSyncTab) use this to re-register package contributors
+    /// with updated profile instances, since immutable records are replaced on reload.
+    /// </summary>
+    public event Action? PackageProfilesRefreshed;
+
     /// <summary>Static header label displayed in the status panel.</summary>
     [ObservableProperty]
     private string _branchText = "Unreal Game Sync for Git";
@@ -63,6 +70,15 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
 
     /// <summary>Indicates whether a sync, build, or package operation is in progress.</summary>
     public bool IsBusy => _isBusyFlag != 0;
+
+    /// <summary>Repository root path.</summary>
+    public string RepoPath => _repoPath;
+
+    /// <summary>
+    /// Checks if the given profile has a valid BuildGraph script configuration.
+    /// Public so context menu contributors can determine package profile validity.
+    /// </summary>
+    public bool IsPackageProfileValid(UgsPackageProfile profile) => HasBuildGraphScriptForProfile(profile);
 
     /// <summary>Atomically acquires the busy flag and notifies binding. Returns true if acquired, false if already busy.</summary>
     private bool TrySetBusy()
@@ -215,6 +231,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
 
         // Load package profiles (Phase 1b)
         LoadPackageProfiles();
+        PackageProfilesRefreshed?.Invoke();
     }
 
     private void LoadPackageProfiles(UgsConfig? config = null)
@@ -233,18 +250,22 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
             return;
         }
 
-        // Fall back to hardcoded defaults
+        // Fall back to hardcoded defaults, deriving BuildGraph script/target from config
+        var bg = config.BuildGraph ?? new UgsBuildGraphConfig();
         PackageProfiles.Add(new UgsPackageProfile(
             "editor-dev", $"Editor (Dev)", $"{projectName}Editor",
-            "Win64", "Development", false));
+            "Win64", "Development", false,
+            bg.EditorScript, bg.EditorTarget));
 
         PackageProfiles.Add(new UgsPackageProfile(
             "game-ship", $"Game (Ship)", projectName,
-            "Win64", "Shipping", false));
+            "Win64", "Shipping", false,
+            bg.GameScript, bg.GameTarget));
 
         PackageProfiles.Add(new UgsPackageProfile(
             "server-dev", $"Server (Dev)", $"{projectName}Server",
-            "Linux", "Development", false));
+            "Linux", "Development", false,
+            bg.ServerScript, bg.ServerTarget));
     }
 
     private void ResetCancellationToken()
@@ -304,12 +325,36 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task BuildAsync()
     {
+        var progress = new Progress<string>(AppendLog);
+        ResetCancellationToken();
+        try
+        {
+            await BuildAsync(progress, _buildCts!.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            AppendLog("\nBuild cancelled.");
+        }
+        catch (System.Exception ex)
+        {
+            AppendLog($"\nBuild error: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Public overload for BuildAsync that accepts an external progress reporter and cancellation token.
+    /// Used by context menu contributors. Logs and re-throws on failure so the host popup can
+    /// detect error state. Does NOT catch OperationCanceledException — lets it propagate to host.
+    /// Creates a linked CTS from external ct and internal _buildCts so both cancel sources work.
+    /// </summary>
+    public async Task BuildAsync(IProgress<string>? log, CancellationToken ct)
+    {
         if (!TrySetBusy()) return;
 
         try
         {
             ResetCancellationToken();
-            var progress = new Progress<string>(AppendLog);
+            using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, _buildCts!.Token);
 
             if (BuildTargets.Count > 0)
             {
@@ -318,7 +363,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
                     _config.BuildDefaults?.OutputDirectory ?? "Saved/StagedBuilds"));
 
                 var result = await _buildService.ExecuteAllAsync(
-                    new List<UgsBuildStep>(BuildTargets), progress, _buildCts!.Token, archiveDir).ConfigureAwait(true);
+                    new List<UgsBuildStep>(BuildTargets), log ?? new Progress<string>(), linked.Token, archiveDir).ConfigureAwait(true);
                 AppendLog($"\nBuild {result.Status}: {result.Message}");
             }
             else
@@ -326,9 +371,10 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
                 AppendLog("\nNo build targets configured.");
             }
         }
-        catch (System.Exception ex)
+        catch (System.Exception ex) when (ex is not OperationCanceledException)
         {
             AppendLog($"\nBuild error: {ex.Message}");
+            throw;
         }
         finally
         {
@@ -357,19 +403,131 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         }
     }
 
+    /// <summary>
+    /// Returns a normalized profile type key based on the profile's EditorTarget suffix.
+    /// Returns "Editor", "Server", or "Game" as fallback.
+    /// </summary>
+    private static string GetProfileType(UgsPackageProfile profile)
+    {
+        var target = profile.EditorTarget ?? "";
+        if (target.EndsWith("Server", StringComparison.OrdinalIgnoreCase)) return "Server";
+        if (target.EndsWith("Editor", StringComparison.OrdinalIgnoreCase)) return "Editor";
+        return "Game";
+    }
+
+    /// <summary>
+    /// Checks if the given profile has a matching BuildGraph script configured.
+    /// Returns true if the profile has its own override, or if all config scripts are empty
+    /// (meaning the user intends built-in defaults).
+    /// Only returns false when the user has explicitly configured SOME scripts
+    /// but left the one for this profile type empty (likely a configuration error).
+    /// </summary>
+    private bool HasBuildGraphScriptForProfile(UgsPackageProfile profile)
+    {
+        // Per-profile override always counts as configured
+        if (!string.IsNullOrWhiteSpace(profile.BuildGraphScript))
+            return true;
+
+        var bg = _config.BuildGraph ?? new UgsBuildGraphConfig();
+
+        // If all scripts are empty, user intends to use built-in defaults — allow it
+        if (string.IsNullOrWhiteSpace(bg.EditorScript)
+            && string.IsNullOrWhiteSpace(bg.GameScript)
+            && string.IsNullOrWhiteSpace(bg.ServerScript))
+        {
+            return true;
+        }
+
+        // User has configured some scripts — check the matching one for this profile type
+        var type = GetProfileType(profile);
+        return type switch
+        {
+            "Server" => !string.IsNullOrWhiteSpace(bg.ServerScript),
+            "Editor" => !string.IsNullOrWhiteSpace(bg.EditorScript),
+            _ => !string.IsNullOrWhiteSpace(bg.GameScript),
+        };
+    }
+
+    /// <summary>
+    /// Resolves the BuildGraph script and target for a given profile.
+    /// Resolution order: profile override → global config → built-in default.
+    /// </summary>
+    private (string? script, string? target) ResolveBuildGraphScript(UgsPackageProfile profile, UgsConfig config)
+    {
+        // Per-profile override takes highest priority
+        if (!string.IsNullOrWhiteSpace(profile.BuildGraphScript)
+            || !string.IsNullOrWhiteSpace(profile.BuildGraphTarget))
+        {
+            return (profile.BuildGraphScript, profile.BuildGraphTarget);
+        }
+
+        var bg = config.BuildGraph ?? new UgsBuildGraphConfig();
+        var type = GetProfileType(profile);
+        return type switch
+        {
+            "Server" => (bg.ServerScript, bg.ServerTarget),
+            "Editor" => (bg.EditorScript, bg.EditorTarget),
+            _ => (bg.GameScript, bg.GameTarget),
+        };
+    }
+
     /// <summary>Packages the project using the selected profile.</summary>
     [RelayCommand]
     private async Task PackageAsync(UgsPackageProfile profile)
+    {
+        CanPublish = false;
+        var progress = new Progress<string>(AppendLog);
+        ResetCancellationToken();
+        try
+        {
+            await PackageAsync(profile, progress, _buildCts!.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            AppendLog("\nPackage cancelled.");
+        }
+        catch (System.Exception ex)
+        {
+            AppendLog($"\nPackage error: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Public overload for PackageAsync that accepts an external progress reporter and cancellation token.
+    /// Logs and re-throws on failure so the host popup can detect error state.
+    /// Does NOT catch OperationCanceledException — lets it propagate to host.
+    /// Creates a linked CTS from external ct and internal _buildCts so both cancel sources work.
+    /// </summary>
+    public async Task PackageAsync(UgsPackageProfile profile, IProgress<string>? log, CancellationToken ct)
     {
         if (!TrySetBusy()) return;
         CanPublish = false;
 
         try
         {
+            // Guard: required BuildGraph script must be configured
+            if (!HasBuildGraphScriptForProfile(profile))
+            {
+                var msg = $"BuildGraph script not configured for profile '{profile.DisplayName}'. " +
+                          "Set it in UnrealSync Settings → BuildGraph Scripts.";
+                AppendLog($"\nError: {msg}");
+                throw new InvalidOperationException(msg);
+            }
+
             ResetCancellationToken();
-            var progress = new Progress<string>(AppendLog);
+            using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, _buildCts!.Token);
             var buildGraphFactory = _context.GetService<IBuildGraphServiceFactory>()!;
-            var buildGraph = buildGraphFactory.Create(_enginePath, _config);
+            var progress = log ?? new Progress<string>();
+
+            // Resolve script + target + setArgs for this profile
+            var (script, target) = ResolveBuildGraphScript(profile, _config);
+            var setArgs = _config.BuildGraph?.SetArgsTemplate;
+
+            // Compute shortSha and projectName for BuildGraphService constructor
+            var shortSha = CommitText?.Length >= 10 ? CommitText[..10] : "unknown";
+            var projectName = ProjectName;
+
+            var buildGraph = buildGraphFactory.Create(_enginePath, _config, _uprojectPath, shortSha, projectName);
 
             // Determine zip output path
             var zipName = FormatZipName(_config.Archive?.ZipNaming, profile);
@@ -382,19 +540,25 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
                 profile.Platform,
                 profile.Configuration,
                 profile.IncludePdb,
-                progress, _buildCts!.Token).ConfigureAwait(true);
+                progress, linked.Token,
+                buildGraphScript: script,
+                buildGraphTarget: target,
+                setArgsTemplate: setArgs,
+                logBatchSize: _config.BuildGraph?.LogBatchSize ?? 50).ConfigureAwait(true);
 
             AppendLog($"\nStage {stageResult.Status}: {stageResult.Message}");
 
             // Guard: if stage failed, do NOT proceed to zip (fixes C-2)
             if (stageResult.Status != BuildStatus.Success || string.IsNullOrEmpty(stageResult.StagingDirectory))
-                return;
+            {
+                throw new InvalidOperationException($"Stage failed: {stageResult.Message}");
+            }
 
             // Create zip (fixes C-1: uses structured StagingDirectory field)
             var zipResult = await buildGraph.CreateZipAsync(
                 stageResult.StagingDirectory, zipPath,
                 _config.Archive?.ExcludePdb ?? true,
-                progress, _buildCts!.Token).ConfigureAwait(true);
+                progress, linked.Token).ConfigureAwait(true);
 
             AppendLog($"\nZip created: {zipResult}");
             LastZipPath = zipResult;
@@ -403,13 +567,10 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
                 : _config.GameChannel;
             CanPublish = true;
         }
-        catch (OperationCanceledException)
-        {
-            AppendLog("\nPackage cancelled.");
-        }
-        catch (System.Exception ex)
+        catch (System.Exception ex) when (ex is not OperationCanceledException)
         {
             AppendLog($"\nPackage error: {ex.Message}");
+            throw;
         }
         finally
         {
@@ -422,14 +583,42 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task PublishAsync()
     {
-        if (!CanPublish || string.IsNullOrEmpty(LastZipPath)) return;
+        try
+        {
+            await PublishAsync(null, CancellationToken.None);
+        }
+        catch (OperationCanceledException)
+        {
+            AppendLog("\nPublish cancelled.");
+        }
+        catch (System.Exception ex)
+        {
+            AppendLog($"\nPublish error: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Public overload for PublishAsync that accepts an external progress reporter and cancellation token.
+    /// Logs and re-throws on failure so the host popup can detect error state.
+    /// Does NOT catch OperationCanceledException — lets it propagate to host.
+    /// </summary>
+    public async Task PublishAsync(IProgress<string>? log, CancellationToken ct)
+    {
+        if (!CanPublish || string.IsNullOrEmpty(LastZipPath))
+        {
+            log?.Report("Publish not available: no zip has been packaged yet.");
+            return;
+        }
+
+        ct.ThrowIfCancellationRequested();
 
         try
         {
             if (string.IsNullOrEmpty(_config.NetworkBase))
             {
-                AppendLog("\nPublish not configured. Open Settings to set network base URL.");
-                return;
+                var msg = "Publish not configured. Open Settings to set network base URL.";
+                log?.Report(msg);
+                throw new InvalidOperationException(msg);
             }
 
             var publishChannel = LastZipChannel;
@@ -447,16 +636,26 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
                 _config.NetworkBase,
                 publishChannel,
                 atomic,
-                progress, CancellationToken.None).ConfigureAwait(true);
+                progress, ct).ConfigureAwait(true);
 
             PublishStatusText = result.Status == PublishStatus.Success
                 ? $"Published to {_config.NetworkBase}"
                 : result.Message;
-            AppendLog($"\n{result.Message}");
+            var msgText = $"\n{result.Message}";
+            AppendLog(msgText);
+            log?.Report(msgText);
+
+            if (result.Status != PublishStatus.Success)
+            {
+                throw new InvalidOperationException(result.Message ?? $"Publish returned status: {result.Status}");
+            }
         }
-        catch (System.Exception ex)
+        catch (System.Exception ex) when (ex is not OperationCanceledException)
         {
-            AppendLog($"\nPublish error: {ex.Message}");
+            var errMsg = $"\nPublish error: {ex.Message}";
+            AppendLog(errMsg);
+            log?.Report(errMsg);
+            throw;
         }
     }
 
@@ -487,7 +686,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     private async Task DeployEditorCoreAsync()
     {
         var deployService = _context.GetService<IDeployService>()!;
-        var shortSha = CommitText?.Length >= 9 ? CommitText[..9] : CommitText;
+        var shortSha = CommitText?.Length >= 10 ? CommitText[..10] : CommitText;
         var progress = new Progress<string>(AppendLog);
 
         if (string.IsNullOrEmpty(shortSha))
@@ -526,7 +725,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         try
         {
             var localState = _configService.LoadLocalState(_repoPath);
-            var shortSha = CommitText?.Length >= 9 ? CommitText[..9] : CommitText;
+            var shortSha = CommitText?.Length >= 10 ? CommitText[..10] : CommitText;
             var deployedSha = localState.LastDeployedArchiveSha;
 
             if (string.IsNullOrEmpty(deployedSha))
@@ -610,6 +809,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
 
         // Refresh package profiles
         LoadPackageProfiles();
+        PackageProfilesRefreshed?.Invoke();
     }
 
     /// <summary>
@@ -636,9 +836,17 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         _editorProcess?.Dispose();
     }
 
+    /// <summary>Clears the output log.</summary>
+    [RelayCommand]
+    private void ClearLog()
+    {
+        _logBuilder.Clear();
+        LogOutput = string.Empty;
+    }
+
     private string FormatZipName(string? template, UgsPackageProfile profile)
     {
-        var shortSha = CommitText?.Length >= 7 ? CommitText[..7] : "unknown";
+        var shortSha = CommitText?.Length >= 10 ? CommitText[..10] : "unknown";
         return (template ?? "{target}-{platform}-{config}-{shortSha}.zip")
             .Replace("{branch}", _currentBranch ?? "unknown")
             .Replace("{target}", profile.EditorTarget)
