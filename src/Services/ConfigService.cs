@@ -54,10 +54,10 @@ public static class ConfigService
             ?? new UgsConfig();
 
         // Validate version — for unknown future versions, preserve what we can and log a warning
-        if (config.Version > 3)
+        if (config.Version > 4)
         {
             Native.OS.LogException(new InvalidOperationException(
-                $"UgsConfig version {config.Version} is newer than supported (max 3). Attempting to preserve known fields."));
+                $"UgsConfig version {config.Version} is newer than supported (max 4). Attempting to preserve known fields."));
         }
 
         // Migrate v2 → v3: commit type annotation fields added
@@ -70,6 +70,16 @@ public static class ConfigService
                 CommitContentBadgeColor = config.CommitContentBadgeColor ?? string.Empty,
                 MaxConcurrentGitProcesses = config.MaxConcurrentGitProcesses > 0
                     ? config.MaxConcurrentGitProcesses : UgsConfig.DefaultMaxConcurrentGitProcesses
+            };
+        }
+
+        // Migrate v3 → v4: BuildGraph script fields added
+        if (config.Version < 4)
+        {
+            config = config with
+            {
+                Version = 4,
+                BuildGraph = new UgsBuildGraphConfig(),
             };
         }
 
@@ -188,6 +198,16 @@ public static class ConfigService
             BuildDefaults = config.BuildDefaults with
             {
                 OutputDirectory = ResolveEnvVars(config.BuildDefaults.OutputDirectory),
+            },
+            BuildGraph = config.BuildGraph with
+            {
+                EditorScript = ResolveEnvVars(config.BuildGraph.EditorScript),
+                EditorTarget = ResolveEnvVars(config.BuildGraph.EditorTarget),
+                GameScript = ResolveEnvVars(config.BuildGraph.GameScript),
+                GameTarget = ResolveEnvVars(config.BuildGraph.GameTarget),
+                ServerScript = ResolveEnvVars(config.BuildGraph.ServerScript),
+                ServerTarget = ResolveEnvVars(config.BuildGraph.ServerTarget),
+                SetArgsTemplate = ResolveEnvVars(config.BuildGraph.SetArgsTemplate),
             },
         };
     }

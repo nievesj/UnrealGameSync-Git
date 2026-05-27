@@ -15,7 +15,7 @@ public record class UgsConfig
 
     /// <summary>Config schema version number. Increment on breaking format changes.</summary>
     [JsonPropertyName("version")]
-    public int Version { get; init; } = 3;
+    public int Version { get; init; } = 4;
 
     /// <summary>Engine path, targets, and project file configuration.</summary>
     [JsonPropertyName("engine")]
@@ -80,6 +80,10 @@ public record class UgsConfig
     /// <summary>Publish deployment configuration (atomic updates).</summary>
     [JsonPropertyName("publish")]
     public UgsPublishConfig Publish { get; init; } = new();
+
+    /// <summary>BuildGraph script and target overrides (editor/game/server).</summary>
+    [JsonPropertyName("buildGraph")]
+    public UgsBuildGraphConfig BuildGraph { get; init; } = new();
 }
 
 /// <summary>
@@ -157,6 +161,64 @@ public record class UgsPublishConfig
 {
     /// <summary>Whether to use atomic (all-or-nothing) publish updates.</summary>
     [JsonPropertyName("atomic")] public bool Atomic { get; init; } = true;
+}
+
+/// <summary>
+/// Per-project BuildGraph script and target configuration.
+/// All fields are optional — empty strings trigger built-in fallback defaults.
+/// </summary>
+public record class UgsBuildGraphConfig
+{
+    /// <summary>
+    /// Path to the editor BuildGraph XML script, relative to the engine root.
+    /// Example: "Wardenship/WardenshipEditor.xml"
+    /// Default (empty): "Engine/Build/Graph/Examples/BuildEditorAndTools.xml"
+    /// </summary>
+    [JsonPropertyName("editorScript")]
+    public string EditorScript { get; init; } = "";
+
+    /// <summary>
+    /// BuildGraph aggregate target name for the editor script.
+    /// Example: "Package Wardenship Editor"
+    /// Default (empty): "Copy to Staging Directory"
+    /// </summary>
+    [JsonPropertyName("editorTarget")]
+    public string EditorTarget { get; init; } = "";
+
+    /// <summary>
+    /// Path to the game BuildGraph XML script.
+    /// Example: "Wardenship/WardenshipGame.xml"
+    /// </summary>
+    [JsonPropertyName("gameScript")]
+    public string GameScript { get; init; } = "";
+
+    /// <summary>
+    /// BuildGraph aggregate target name for the game script.
+    /// Example: "Package Wardenship Game"
+    /// </summary>
+    [JsonPropertyName("gameTarget")]
+    public string GameTarget { get; init; } = "";
+
+    /// <summary>
+    /// Path to the server BuildGraph XML script.
+    /// </summary>
+    [JsonPropertyName("serverScript")]
+    public string ServerScript { get; init; } = "";
+
+    /// <summary>
+    /// BuildGraph aggregate target name for the server script.
+    /// </summary>
+    [JsonPropertyName("serverTarget")]
+    public string ServerTarget { get; init; } = "";
+
+    /// <summary>
+    /// Template for -set: arguments passed to BuildGraph.
+    /// Supports variable expansion: {UbtTarget}, {ProjectPath}, {ShortSha}, {ProjectName}.
+    /// Default (empty): "-set:EditorTarget={UbtTarget} -set:ArchiveStream={UbtTarget}"
+    /// Custom example: "-set:UProjectPath={ProjectPath} -set:ArchiveSuffix={ShortSha}"
+    /// </summary>
+    [JsonPropertyName("setArgsTemplate")]
+    public string SetArgsTemplate { get; init; } = "";
 }
 
 /// <summary>

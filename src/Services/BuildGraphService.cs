@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -20,13 +22,20 @@ public class BuildGraphService : IBuildGraphService
 {
     private readonly string _enginePath;
     private readonly string _repoPath;
+    private readonly string _uprojectPath;
+    private readonly string _shortSha;
+    private readonly string _projectName;
     private readonly UgsConfig _config;
 
-    public BuildGraphService(string enginePath, string repoPath, UgsConfig config)
+    public BuildGraphService(string enginePath, string repoPath, UgsConfig config,
+        string uprojectPath = "", string shortSha = "", string projectName = "")
     {
         _enginePath = enginePath;
         _repoPath = repoPath;
         _config = config;
+        _uprojectPath = uprojectPath;
+        _shortSha = shortSha;
+        _projectName = projectName;
     }
 
     /// <summary>
@@ -40,7 +49,10 @@ public class BuildGraphService : IBuildGraphService
         bool includePdb,
         IProgress<string> log,
         CancellationToken ct,
-        TimeSpan? timeout = null)
+        TimeSpan? timeout = null,
+        string? buildGraphScript = null,
+        string? buildGraphTarget = null,
+        string? setArgsTemplate = null)
     {
         var runUat = GetRunUatPath();
 
@@ -49,11 +61,23 @@ public class BuildGraphService : IBuildGraphService
             return new StageResult(BuildStatus.Failed, "stage", string.Empty,
                 $"RunUAT not found at {runUat}. Is this a source build?");
 
+        // Resolve script, target, and -set: arguments with fallback to built-in defaults
+        var script = !string.IsNullOrWhiteSpace(buildGraphScript)
+            ? buildGraphScript
+            : "Engine/Build/Graph/Examples/BuildEditorAndTools.xml";
+
+        var target = !string.IsNullOrWhiteSpace(buildGraphTarget)
+            ? buildGraphTarget
+            : "Copy to Staging Directory";
+
+        var setArgs = !string.IsNullOrWhiteSpace(setArgsTemplate)
+            ? ExpandBuildGraphVariables(setArgsTemplate, editorTarget)
+            : $"-set:EditorTarget={editorTarget} -set:ArchiveStream={editorTarget}";
+
         var args = $"BuildGraph " +
-                   $"-Script=\"Engine/Build/Graph/Examples/BuildEditorAndTools.xml\" " +
-                   $"-Target=\"Copy to Staging Directory\" " +
-                   $"-set:EditorTarget={editorTarget} " +
-                   $"-set:ArchiveStream={editorTarget} ";
+                   $"-Script=\"{script}\" " +
+                   $"-Target=\"{target}\" " +
+                   $"{setArgs} ";
 
         if (!includePdb)
             args += "-set:ExcludePdb=true ";
@@ -81,16 +105,43 @@ public class BuildGraphService : IBuildGraphService
             process = new Process { StartInfo = psi };
             process.Start();
 
-            // Read stdout and stderr concurrently to avoid deadlock
-            var stdoutTask = process.StandardOutput.ReadToEndAsync(linkedCts.Token);
-            var stderrTask = process.StandardError.ReadToEndAsync(linkedCts.Token);
+            // Stream stdout line-by-line for live UI feedback
+            var stdoutBuilder = new System.Text.StringBuilder();
+            var stderrBuilder = new System.Text.StringBuilder();
+
+            var stdoutTask = Task.Run(async () =>
+            {
+                while (!process.StandardOutput.EndOfStream)
+                {
+                    linkedCts.Token.ThrowIfCancellationRequested();
+                    var line = await process.StandardOutput.ReadLineAsync(linkedCts.Token).ConfigureAwait(false);
+                    if (line != null)
+                    {
+                        stdoutBuilder.AppendLine(line);
+                        log.Report(line + Environment.NewLine);
+                    }
+                }
+            }, linkedCts.Token);
+
+            var stderrTask = Task.Run(async () =>
+            {
+                while (!process.StandardError.EndOfStream)
+                {
+                    linkedCts.Token.ThrowIfCancellationRequested();
+                    var line = await process.StandardError.ReadLineAsync(linkedCts.Token).ConfigureAwait(false);
+                    if (line != null)
+                    {
+                        stderrBuilder.AppendLine(line);
+                    }
+                }
+            }, linkedCts.Token);
+
+            await Task.WhenAll(stdoutTask, stderrTask).WaitAsync(linkedCts.Token);
             await process.WaitForExitAsync(linkedCts.Token);
 
-            var stdout = await stdoutTask;
-            var stderr = await stderrTask;
-
             sw.Stop();
-            log.Report(stdout);
+            var stdout = stdoutBuilder.ToString();
+            var stderr = stderrBuilder.ToString();
             if (!string.IsNullOrWhiteSpace(stderr)) log.Report(stderr);
 
             if (process.ExitCode != 0)
@@ -189,4 +240,17 @@ public class BuildGraphService : IBuildGraphService
         return Path.GetFullPath(Path.Combine(_repoPath, outputDir));
     }
 
+    /// <summary>
+    /// Expand variable placeholders in a BuildGraph -set: argument template.
+    /// Supported variables: {UbtTarget}, {ProjectPath}, {ShortSha}, {ProjectName}.
+    /// Unknown variables are left as-is.
+    /// </summary>
+    private string ExpandBuildGraphVariables(string template, string ubtTarget)
+    {
+        return template
+            .Replace("{UbtTarget}", ubtTarget)
+            .Replace("{ProjectPath}", _uprojectPath)
+            .Replace("{ShortSha}", _shortSha)
+            .Replace("{ProjectName}", _projectName);
+    }
 }

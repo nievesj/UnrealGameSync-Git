@@ -233,18 +233,22 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
             return;
         }
 
-        // Fall back to hardcoded defaults
+        // Fall back to hardcoded defaults, deriving BuildGraph script/target from config
+        var bg = config.BuildGraph ?? new UgsBuildGraphConfig();
         PackageProfiles.Add(new UgsPackageProfile(
             "editor-dev", $"Editor (Dev)", $"{projectName}Editor",
-            "Win64", "Development", false));
+            "Win64", "Development", false,
+            bg.EditorScript, bg.EditorTarget));
 
         PackageProfiles.Add(new UgsPackageProfile(
             "game-ship", $"Game (Ship)", projectName,
-            "Win64", "Shipping", false));
+            "Win64", "Shipping", false,
+            bg.GameScript, bg.GameTarget));
 
         PackageProfiles.Add(new UgsPackageProfile(
             "server-dev", $"Server (Dev)", $"{projectName}Server",
-            "Linux", "Development", false));
+            "Linux", "Development", false,
+            bg.ServerScript, bg.ServerTarget));
     }
 
     private void ResetCancellationToken()
@@ -357,6 +361,74 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         }
     }
 
+    /// <summary>
+    /// Returns a normalized profile type key based on the profile's EditorTarget suffix.
+    /// Returns "Editor", "Server", or "Game" as fallback.
+    /// </summary>
+    private static string GetProfileType(UgsPackageProfile profile)
+    {
+        var target = profile.EditorTarget ?? "";
+        if (target.EndsWith("Server", StringComparison.OrdinalIgnoreCase)) return "Server";
+        if (target.EndsWith("Editor", StringComparison.OrdinalIgnoreCase)) return "Editor";
+        return "Game";
+    }
+
+    /// <summary>
+    /// Checks if the given profile has a matching BuildGraph script configured.
+    /// Returns true if the profile has its own override, or if all config scripts are empty
+    /// (meaning the user intends built-in defaults).
+    /// Only returns false when the user has explicitly configured SOME scripts
+    /// but left the one for this profile type empty (likely a configuration error).
+    /// </summary>
+    private bool HasBuildGraphScriptForProfile(UgsPackageProfile profile)
+    {
+        // Per-profile override always counts as configured
+        if (!string.IsNullOrWhiteSpace(profile.BuildGraphScript))
+            return true;
+
+        var bg = _config.BuildGraph ?? new UgsBuildGraphConfig();
+
+        // If all scripts are empty, user intends to use built-in defaults — allow it
+        if (string.IsNullOrWhiteSpace(bg.EditorScript)
+            && string.IsNullOrWhiteSpace(bg.GameScript)
+            && string.IsNullOrWhiteSpace(bg.ServerScript))
+        {
+            return true;
+        }
+
+        // User has configured some scripts — check the matching one for this profile type
+        var type = GetProfileType(profile);
+        return type switch
+        {
+            "Server" => !string.IsNullOrWhiteSpace(bg.ServerScript),
+            "Editor" => !string.IsNullOrWhiteSpace(bg.EditorScript),
+            _ => !string.IsNullOrWhiteSpace(bg.GameScript),
+        };
+    }
+
+    /// <summary>
+    /// Resolves the BuildGraph script and target for a given profile.
+    /// Resolution order: profile override → global config → built-in default.
+    /// </summary>
+    private (string? script, string? target) ResolveBuildGraphScript(UgsPackageProfile profile, UgsConfig config)
+    {
+        // Per-profile override takes highest priority
+        if (!string.IsNullOrWhiteSpace(profile.BuildGraphScript)
+            || !string.IsNullOrWhiteSpace(profile.BuildGraphTarget))
+        {
+            return (profile.BuildGraphScript, profile.BuildGraphTarget);
+        }
+
+        var bg = config.BuildGraph ?? new UgsBuildGraphConfig();
+        var type = GetProfileType(profile);
+        return type switch
+        {
+            "Server" => (bg.ServerScript, bg.ServerTarget),
+            "Editor" => (bg.EditorScript, bg.EditorTarget),
+            _ => (bg.GameScript, bg.GameTarget),
+        };
+    }
+
     /// <summary>Packages the project using the selected profile.</summary>
     [RelayCommand]
     private async Task PackageAsync(UgsPackageProfile profile)
@@ -366,10 +438,27 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
 
         try
         {
+            // Guard: required BuildGraph script must be configured
+            if (!HasBuildGraphScriptForProfile(profile))
+            {
+                AppendLog($"\nError: BuildGraph script not configured for profile '{profile.DisplayName}'. " +
+                          "Set it in UnrealSync Settings → BuildGraph Scripts.");
+                return;
+            }
+
             ResetCancellationToken();
             var progress = new Progress<string>(AppendLog);
             var buildGraphFactory = _context.GetService<IBuildGraphServiceFactory>()!;
-            var buildGraph = buildGraphFactory.Create(_enginePath, _config);
+
+            // Resolve script + target + setArgs for this profile
+            var (script, target) = ResolveBuildGraphScript(profile, _config);
+            var setArgs = _config.BuildGraph?.SetArgsTemplate;
+
+            // Compute shortSha and projectName for BuildGraphService constructor
+            var shortSha = CommitText?.Length >= 7 ? CommitText[..7] : "unknown";
+            var projectName = ProjectName;
+
+            var buildGraph = buildGraphFactory.Create(_enginePath, _config, _uprojectPath, shortSha, projectName);
 
             // Determine zip output path
             var zipName = FormatZipName(_config.Archive?.ZipNaming, profile);
@@ -382,7 +471,10 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
                 profile.Platform,
                 profile.Configuration,
                 profile.IncludePdb,
-                progress, _buildCts!.Token).ConfigureAwait(true);
+                progress, _buildCts!.Token,
+                buildGraphScript: script,
+                buildGraphTarget: target,
+                setArgsTemplate: setArgs).ConfigureAwait(true);
 
             AppendLog($"\nStage {stageResult.Status}: {stageResult.Message}");
 

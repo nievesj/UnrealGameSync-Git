@@ -1,3 +1,5 @@
+#nullable enable
+
 namespace UGSGit.PluginAbstractions;
 
 /// <summary>
@@ -10,11 +12,15 @@ namespace UGSGit.PluginAbstractions;
 /// <param name="Platform">Target platform for packaging (e.g. "Win64", "Android").</param>
 /// <param name="Configuration">Build configuration for packaging (e.g. "Development", "Shipping").</param>
 /// <param name="IncludePdb">Whether to include PDB/symbol files in the packaged output.</param>
+/// <param name="BuildGraphScript">Per-profile BuildGraph script path override; null falls back to UgsConfig.BuildGraph.</param>
+/// <param name="BuildGraphTarget">Per-profile BuildGraph target override; null falls back to UgsConfig.BuildGraph.</param>
 public record UgsPackageProfile(
     string Id,
     string DisplayName,
     string EditorTarget,
     string Platform,
     string Configuration,
-    bool IncludePdb = false
+    bool IncludePdb = false,
+    string? BuildGraphScript = null,
+    string? BuildGraphTarget = null
 );

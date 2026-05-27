@@ -130,6 +130,9 @@ public class BuildGraphServiceFactory : IBuildGraphServiceFactory
 
     public IBuildGraphService Create(string enginePath, UgsConfig config)
         => new BuildGraphService(enginePath, _repoPath, config);
+
+    public IBuildGraphService Create(string enginePath, UgsConfig config, string uprojectPath, string shortSha, string projectName)
+        => new BuildGraphService(enginePath, _repoPath, config, uprojectPath, shortSha, projectName);
 }
 
 /// <summary>

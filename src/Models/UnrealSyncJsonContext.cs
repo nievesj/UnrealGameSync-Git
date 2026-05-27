@@ -22,6 +22,7 @@ namespace UGSGit.Models;
 [JsonSerializable(typeof(DeployBuildInfo))]
 [JsonSerializable(typeof(DeployResult))]
 [JsonSerializable(typeof(UgsChangeTypeConfig))]
+[JsonSerializable(typeof(UgsBuildGraphConfig))]
 internal partial class UnrealSyncJsonContext : PluginAbstractionsJsonContext
 {
 }
