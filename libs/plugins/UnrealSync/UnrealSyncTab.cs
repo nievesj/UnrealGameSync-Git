@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -23,6 +24,9 @@ public class UnrealSyncTab : IRepositoryTab
     private readonly UnrealSyncCommitTypeAnnotator? _typeAnnotator;
     private readonly SyncEditorContributor? _menuContributor;
     private readonly LaunchEditorContributor? _launchContributor;
+    private readonly BuildCommitContributor? _buildContributor;
+    private readonly List<PackageCommitContributor> _packageContributors = new();
+    private readonly PublishCommitContributor? _publishContributor;
 
     /// <summary>
     /// Tab title shown in the tab bar.
@@ -112,6 +116,11 @@ public class UnrealSyncTab : IRepositoryTab
         if (_typeAnnotator != null && annotationProvider != null)
             annotationProvider.Register(_typeAnnotator);
 
+        // --- Register all commit menu contributors eagerly ---
+        // These contribute to the graph context menu, which must be available even
+        // before the UnrealSync tab has been activated.
+        var menuContributorProvider = context.GetService<ICommitMenuContributorProvider>();
+
         // Register Sync Editor context menu contributor for commit graph right-click
         // Only register for UE projects — Sync Editor is an Unreal workflow feature.
         if (deployService != null && configService != null && hasUProject)
@@ -120,7 +129,6 @@ public class UnrealSyncTab : IRepositoryTab
             _menuContributor = new SyncEditorContributor(deployService, configService, logger, context.RepositoryPath, context.RepositoryName);
         }
 
-        var menuContributorProvider = context.GetService<ICommitMenuContributorProvider>();
         if (_menuContributor != null && menuContributorProvider != null)
             menuContributorProvider.Register(_menuContributor);
 
@@ -135,6 +143,54 @@ public class UnrealSyncTab : IRepositoryTab
 
         if (_launchContributor != null && menuContributorProvider != null)
             menuContributorProvider.Register(_launchContributor);
+
+        // Register Build and Publish contributors eagerly (they hide via IsVisible until VM is bound)
+        if (menuContributorProvider != null && hasUProject)
+        {
+            _buildContributor = new BuildCommitContributor(repoPath);
+            menuContributorProvider.Register(_buildContributor);
+
+            _publishContributor = new PublishCommitContributor(repoPath);
+            menuContributorProvider.Register(_publishContributor);
+        }
+
+        // Package profiles are dynamic — register them when the workspace VM is ready
+        // Bind VM to Build/Publish on ready as well
+        if (menuContributorProvider != null && hasUProject)
+        {
+            _viewModel.FullWorkspaceReady += OnFullWorkspaceReady;
+        }
+        // Eagerly initialize workspace state so context menu contributors
+        // are bound to the VM even before the tab is first activated.
+        _viewModel.RefreshAsync().ContinueWith(
+            t =>
+            {
+                if (t.Exception != null)
+                {
+                    _context.GetService<IPluginLogger>()?.LogError(
+                        $"UnrealSync constructor init error: {t.Exception.Flatten().Message}",
+                        t.Exception.Flatten());
+                }
+            },
+            TaskContinuationOptions.OnlyOnFaulted);
+    }
+
+    private void OnFullWorkspaceReady(FullWorkspaceViewModel vm)
+    {
+        var menuContributorProvider = _context.GetService<ICommitMenuContributorProvider>();
+        if (menuContributorProvider == null) return;
+
+        // Bind Build and Publish contributors to the concrete workspace VM
+        _buildContributor?.SetViewModel(vm);
+        _publishContributor?.SetViewModel(vm);
+
+        // Register one Package contributor per profile (dynamic)
+        foreach (var profile in vm.PackageProfiles)
+        {
+            var pkg = new PackageCommitContributor(vm, profile, _context.RepositoryPath);
+            _packageContributors.Add(pkg);
+            menuContributorProvider.Register(pkg);
+        }
     }
 
     /// <summary>
@@ -198,11 +254,13 @@ public class UnrealSyncTab : IRepositoryTab
     }
 
     /// <summary>
-    /// Disposes the viewModel, unregisters the annotator and menu contributor,
+    /// Disposes the viewModel, unregisters the annotator and menu contributors,
     /// and disposes the GitFileQueryService.
     /// </summary>
     public void Dispose()
     {
+        _viewModel.FullWorkspaceReady -= OnFullWorkspaceReady;
+
         if (_annotator != null)
             _context.GetService<ICommitAnnotationProvider>()?.Unregister(_annotator);
 
@@ -214,6 +272,11 @@ public class UnrealSyncTab : IRepositoryTab
 
         if (_launchContributor != null)
             _context.GetService<ICommitMenuContributorProvider>()?.Unregister(_launchContributor);
+
+        var provider = _context.GetService<ICommitMenuContributorProvider>();
+        if (_buildContributor != null) provider?.Unregister(_buildContributor);
+        foreach (var pkg in _packageContributors) provider?.Unregister(pkg);
+        if (_publishContributor != null) provider?.Unregister(_publishContributor);
 
         // GitFileQueryService no longer implements IDisposable (throttling moved to process-wide GitProcessLimiter)
         // No disposal needed — the service has no unmanaged resources.

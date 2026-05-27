@@ -41,6 +41,7 @@ public class UnrealSyncTabViewModel : ObservableObject
     private readonly IGitSyncService _syncService;
     private SyncTabMode _mode = SyncTabMode.Detecting;
     private object _currentBody = null!;
+    private string? _lastUprojectPath;
 
     /// <summary>
     /// Read-only reference to the status panel ViewModel.
@@ -73,6 +74,13 @@ public class UnrealSyncTabViewModel : ObservableObject
                 OnPropertyChanged(nameof(IsDetecting));
         }
     }
+
+    /// <summary>
+    /// Fired when CurrentBody transitions to a FullWorkspaceViewModel.
+    /// Used by UnrealSyncTab to register context menu contributors that depend on the workspace VM.
+    /// Only fires once per project detection, not on every OnActivated() refresh.
+    /// </summary>
+    public event Action<FullWorkspaceViewModel>? FullWorkspaceReady;
 
     /// <summary>
     /// Initializes a new instance of <see cref="UnrealSyncTabViewModel"/>.
@@ -157,6 +165,17 @@ public class UnrealSyncTabViewModel : ObservableObject
 
     private void ProceedWithProject(string uprojectPath, IConfigService configService)
     {
+        // Skip VM recreation if the project file hasn't changed (preserves publish state)
+        if (_lastUprojectPath != null
+            && string.Equals(_lastUprojectPath, uprojectPath, StringComparison.OrdinalIgnoreCase)
+            && CurrentBody is FullWorkspaceViewModel existingVm)
+        {
+            existingVm.ReloadConfig();
+            return;
+        }
+
+        _lastUprojectPath = uprojectPath;
+
         var json = System.IO.File.ReadAllText(uprojectPath);
         var meta = UProjectMeta.ParseTolerant(json);
 
@@ -180,6 +199,7 @@ public class UnrealSyncTabViewModel : ObservableObject
                     _repoPath, enginePath, meta, _syncService, uprojectPath,
                     buildService, editorLauncher, configService, engineInfoService, _context);
                 CurrentBody = bodyVm;
+                FullWorkspaceReady?.Invoke(bodyVm);
             }
             else
             {

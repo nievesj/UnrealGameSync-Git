@@ -819,12 +819,13 @@ namespace UGSGit.Views
             }
 
             // Plugin-contributed commit menu items (e.g. "Sync Editor" from UnrealSync)
+            var shortSha = commit.SHA.Length >= 9 ? commit.SHA[..9] : commit.SHA;
             var menuContributors = Services.HostServices.MenuContributors.GetContributorsForRepo(repo.FullPath);
             if (menuContributors.Count > 0)
             {
                 foreach (var contributor in menuContributors)
                 {
-                    if (!contributor.IsVisible(new CommitRef(commit.SHA.Substring(0, 9))))
+                    if (!contributor.IsVisible(new CommitRef(shortSha, isHead)))
                         continue;
 
                     var pluginItem = new MenuItem();
@@ -833,7 +834,7 @@ namespace UGSGit.Views
 
                     // Determine enabled state: some contributors require a build-available annotation
                     // (Sync Editor), while others (Launch Editor) work on any commit.
-                    var isEnabled = contributor.IsEnabled(new CommitRef(commit.SHA.Substring(0, 9)));
+                    var isEnabled = contributor.IsEnabled(new CommitRef(shortSha, isHead));
                     if (contributor.RequiresBuildAnnotation)
                     {
                         var hasBuildAnnotation = commit.Annotations != null &&
@@ -846,9 +847,8 @@ namespace UGSGit.Views
                     {
                         pluginItem.IsEnabled = false;
 
-                        var shortSha = commit.SHA.Substring(0, 9);
                         var actionName = contributor.Header;
-                        var commitRef = new CommitRef(shortSha);
+                        var commitRef = new CommitRef(shortSha, isHead);
 
                         if (contributor.IsLongRunning)
                         {

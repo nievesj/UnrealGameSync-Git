@@ -64,6 +64,15 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     /// <summary>Indicates whether a sync, build, or package operation is in progress.</summary>
     public bool IsBusy => _isBusyFlag != 0;
 
+    /// <summary>Repository root path.</summary>
+    public string RepoPath => _repoPath;
+
+    /// <summary>
+    /// Checks if the given profile has a valid BuildGraph script configuration.
+    /// Public so context menu contributors can determine package profile validity.
+    /// </summary>
+    public bool IsPackageProfileValid(UgsPackageProfile profile) => HasBuildGraphScriptForProfile(profile);
+
     /// <summary>Atomically acquires the busy flag and notifies binding. Returns true if acquired, false if already busy.</summary>
     private bool TrySetBusy()
     {
@@ -308,12 +317,36 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task BuildAsync()
     {
+        var progress = new Progress<string>(AppendLog);
+        ResetCancellationToken();
+        try
+        {
+            await BuildAsync(progress, _buildCts!.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            AppendLog("\nBuild cancelled.");
+        }
+        catch (System.Exception ex)
+        {
+            AppendLog($"\nBuild error: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Public overload for BuildAsync that accepts an external progress reporter and cancellation token.
+    /// Used by context menu contributors. Logs and re-throws on failure so the host popup can
+    /// detect error state. Does NOT catch OperationCanceledException — lets it propagate to host.
+    /// Creates a linked CTS from external ct and internal _buildCts so both cancel sources work.
+    /// </summary>
+    public async Task BuildAsync(IProgress<string>? log, CancellationToken ct)
+    {
         if (!TrySetBusy()) return;
 
         try
         {
             ResetCancellationToken();
-            var progress = new Progress<string>(AppendLog);
+            using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, _buildCts!.Token);
 
             if (BuildTargets.Count > 0)
             {
@@ -322,7 +355,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
                     _config.BuildDefaults?.OutputDirectory ?? "Saved/StagedBuilds"));
 
                 var result = await _buildService.ExecuteAllAsync(
-                    new List<UgsBuildStep>(BuildTargets), progress, _buildCts!.Token, archiveDir).ConfigureAwait(true);
+                    new List<UgsBuildStep>(BuildTargets), log ?? new Progress<string>(), linked.Token, archiveDir).ConfigureAwait(true);
                 AppendLog($"\nBuild {result.Status}: {result.Message}");
             }
             else
@@ -330,9 +363,10 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
                 AppendLog("\nNo build targets configured.");
             }
         }
-        catch (System.Exception ex)
+        catch (System.Exception ex) when (ex is not OperationCanceledException)
         {
             AppendLog($"\nBuild error: {ex.Message}");
+            throw;
         }
         finally
         {
@@ -433,6 +467,31 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task PackageAsync(UgsPackageProfile profile)
     {
+        CanPublish = false;
+        var progress = new Progress<string>(AppendLog);
+        ResetCancellationToken();
+        try
+        {
+            await PackageAsync(profile, progress, _buildCts!.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            AppendLog("\nPackage cancelled.");
+        }
+        catch (System.Exception ex)
+        {
+            AppendLog($"\nPackage error: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Public overload for PackageAsync that accepts an external progress reporter and cancellation token.
+    /// Logs and re-throws on failure so the host popup can detect error state.
+    /// Does NOT catch OperationCanceledException — lets it propagate to host.
+    /// Creates a linked CTS from external ct and internal _buildCts so both cancel sources work.
+    /// </summary>
+    public async Task PackageAsync(UgsPackageProfile profile, IProgress<string>? log, CancellationToken ct)
+    {
         if (!TrySetBusy()) return;
         CanPublish = false;
 
@@ -441,14 +500,16 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
             // Guard: required BuildGraph script must be configured
             if (!HasBuildGraphScriptForProfile(profile))
             {
-                AppendLog($"\nError: BuildGraph script not configured for profile '{profile.DisplayName}'. " +
-                          "Set it in UnrealSync Settings → BuildGraph Scripts.");
-                return;
+                var msg = $"BuildGraph script not configured for profile '{profile.DisplayName}'. " +
+                          "Set it in UnrealSync Settings → BuildGraph Scripts.";
+                AppendLog($"\nError: {msg}");
+                throw new InvalidOperationException(msg);
             }
 
             ResetCancellationToken();
-            var progress = new Progress<string>(AppendLog);
+            using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct, _buildCts!.Token);
             var buildGraphFactory = _context.GetService<IBuildGraphServiceFactory>()!;
+            var progress = log ?? new Progress<string>();
 
             // Resolve script + target + setArgs for this profile
             var (script, target) = ResolveBuildGraphScript(profile, _config);
@@ -471,7 +532,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
                 profile.Platform,
                 profile.Configuration,
                 profile.IncludePdb,
-                progress, _buildCts!.Token,
+                progress, linked.Token,
                 buildGraphScript: script,
                 buildGraphTarget: target,
                 setArgsTemplate: setArgs,
@@ -481,13 +542,15 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
 
             // Guard: if stage failed, do NOT proceed to zip (fixes C-2)
             if (stageResult.Status != BuildStatus.Success || string.IsNullOrEmpty(stageResult.StagingDirectory))
-                return;
+            {
+                throw new InvalidOperationException($"Stage failed: {stageResult.Message}");
+            }
 
             // Create zip (fixes C-1: uses structured StagingDirectory field)
             var zipResult = await buildGraph.CreateZipAsync(
                 stageResult.StagingDirectory, zipPath,
                 _config.Archive?.ExcludePdb ?? true,
-                progress, _buildCts!.Token).ConfigureAwait(true);
+                progress, linked.Token).ConfigureAwait(true);
 
             AppendLog($"\nZip created: {zipResult}");
             LastZipPath = zipResult;
@@ -496,13 +559,10 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
                 : _config.GameChannel;
             CanPublish = true;
         }
-        catch (OperationCanceledException)
-        {
-            AppendLog("\nPackage cancelled.");
-        }
-        catch (System.Exception ex)
+        catch (System.Exception ex) when (ex is not OperationCanceledException)
         {
             AppendLog($"\nPackage error: {ex.Message}");
+            throw;
         }
         finally
         {
@@ -515,14 +575,42 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private async Task PublishAsync()
     {
-        if (!CanPublish || string.IsNullOrEmpty(LastZipPath)) return;
+        try
+        {
+            await PublishAsync(null, CancellationToken.None);
+        }
+        catch (OperationCanceledException)
+        {
+            AppendLog("\nPublish cancelled.");
+        }
+        catch (System.Exception ex)
+        {
+            AppendLog($"\nPublish error: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Public overload for PublishAsync that accepts an external progress reporter and cancellation token.
+    /// Logs and re-throws on failure so the host popup can detect error state.
+    /// Does NOT catch OperationCanceledException — lets it propagate to host.
+    /// </summary>
+    public async Task PublishAsync(IProgress<string>? log, CancellationToken ct)
+    {
+        if (!CanPublish || string.IsNullOrEmpty(LastZipPath))
+        {
+            log?.Report("Publish not available: no zip has been packaged yet.");
+            return;
+        }
+
+        ct.ThrowIfCancellationRequested();
 
         try
         {
             if (string.IsNullOrEmpty(_config.NetworkBase))
             {
-                AppendLog("\nPublish not configured. Open Settings to set network base URL.");
-                return;
+                var msg = "Publish not configured. Open Settings to set network base URL.";
+                log?.Report(msg);
+                throw new InvalidOperationException(msg);
             }
 
             var publishChannel = LastZipChannel;
@@ -540,16 +628,26 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
                 _config.NetworkBase,
                 publishChannel,
                 atomic,
-                progress, CancellationToken.None).ConfigureAwait(true);
+                progress, ct).ConfigureAwait(true);
 
             PublishStatusText = result.Status == PublishStatus.Success
                 ? $"Published to {_config.NetworkBase}"
                 : result.Message;
-            AppendLog($"\n{result.Message}");
+            var msgText = $"\n{result.Message}";
+            AppendLog(msgText);
+            log?.Report(msgText);
+
+            if (result.Status != PublishStatus.Success)
+            {
+                throw new InvalidOperationException(result.Message ?? $"Publish returned status: {result.Status}");
+            }
         }
-        catch (System.Exception ex)
+        catch (System.Exception ex) when (ex is not OperationCanceledException)
         {
-            AppendLog($"\nPublish error: {ex.Message}");
+            var errMsg = $"\nPublish error: {ex.Message}";
+            AppendLog(errMsg);
+            log?.Report(errMsg);
+            throw;
         }
     }
 
