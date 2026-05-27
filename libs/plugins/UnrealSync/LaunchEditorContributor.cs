@@ -72,6 +72,15 @@ public class LaunchEditorContributor : ICommitMenuContributor
     }
 
     /// <inheritdoc/>
+    public string? GroupKey => "UnrealSync";
+
+    /// <inheritdoc/>
+    public string? GroupHeader => "UnrealSync";
+
+    /// <inheritdoc/>
+    public string? GroupIconResourceKey => "Icons.UnrealSync";
+
+    /// <inheritdoc/>
     public async Task ExecuteAsync(CommitRef commit, IProgress<string>? log, CancellationToken ct)
     {
         EnsureCached();

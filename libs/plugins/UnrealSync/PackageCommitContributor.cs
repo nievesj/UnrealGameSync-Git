@@ -50,6 +50,12 @@ public class PackageCommitContributor : ICommitMenuContributor
             && _vm.IsPackageProfileValid(_profile);
     }
 
+    public string? GroupKey => "UnrealSync";
+
+    public string? GroupHeader => "UnrealSync";
+
+    public string? GroupIconResourceKey => "Icons.UnrealSync";
+
     public async Task ExecuteAsync(CommitRef commit, IProgress<string>? log, CancellationToken ct)
     {
         await _vm.PackageAsync(_profile, log, ct);

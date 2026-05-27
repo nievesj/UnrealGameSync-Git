@@ -70,6 +70,30 @@ public interface ICommitMenuContributor
     Task ExecuteAsync(CommitRef commit, IProgress<string>? log, CancellationToken ct);
 
     /// <summary>
+    /// Optional grouping key. When two or more visible contributors for the same
+    /// repository share the same non-null/empty GroupKey, the host renders them
+    /// as children of a single submenu. Null or empty means render as a flat
+    /// top-level item (legacy behavior).
+    /// </summary>
+    string? GroupKey => null;
+
+    /// <summary>
+    /// Display label for the parent submenu when GroupKey is set.
+    /// Only the GroupHeader of the first visible contributor in registration order
+    /// within the group is used; others are silently ignored.
+    /// Ignored when GroupKey is null/empty.
+    /// </summary>
+    string? GroupHeader => null;
+
+    /// <summary>
+    /// Icon resource key for the parent submenu when GroupKey is set.
+    /// Only the GroupIconResourceKey of the first visible contributor in
+    /// registration order within the group is used.
+    /// Ignored when GroupKey is null/empty.
+    /// </summary>
+    string? GroupIconResourceKey => null;
+
+    /// <summary>
     /// Executes the action with cancellation support only (no progress reporting).
     /// Default implementation bridges to the three-parameter overload with a null log.
     /// </summary>

@@ -110,6 +110,15 @@ public class SyncEditorContributor : ICommitMenuContributor
         }
     }
 
+    /// <inheritdoc/>
+    public string? GroupKey => "UnrealSync";
+
+    /// <inheritdoc/>
+    public string? GroupHeader => "UnrealSync";
+
+    /// <inheritdoc/>
+    public string? GroupIconResourceKey => "Icons.UnrealSync";
+
     /// <summary>
     /// Lazily caches config values on first access to avoid loading config on every right-click.
     /// </summary>
