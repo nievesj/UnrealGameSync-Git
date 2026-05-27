@@ -26,6 +26,7 @@ public interface IBuildGraphService
     /// <param name="buildGraphScript">Custom BuildGraph script path relative to engine root; null/empty falls back to "Engine/Build/Graph/Examples/BuildEditorAndTools.xml".</param>
     /// <param name="buildGraphTarget">Custom BuildGraph target name; null/empty falls back to "Copy to Staging Directory".</param>
     /// <param name="setArgsTemplate">Template for -set: arguments with {UbtTarget}, {ProjectPath}, {ShortSha}, {ProjectName} expansion.</param>
+    /// <param name="logBatchSize">Number of stdout lines to batch before reporting progress. Higher values reduce UI pressure during high-volume output.</param>
     /// <returns>A <see cref="StageResult"/> describing the staging outcome and the path to staged output on success.</returns>
     Task<StageResult> StageAsync(
         string editorTarget,
@@ -37,7 +38,8 @@ public interface IBuildGraphService
         TimeSpan? timeout = null,
         string? buildGraphScript = null,
         string? buildGraphTarget = null,
-        string? setArgsTemplate = null);
+        string? setArgsTemplate = null,
+        int logBatchSize = 50);
 
     /// <summary>
     /// Create a compressed archive (.zip) from a previously staged output directory.

@@ -15,7 +15,7 @@ public record class UgsConfig
 
     /// <summary>Config schema version number. Increment on breaking format changes.</summary>
     [JsonPropertyName("version")]
-    public int Version { get; init; } = 4;
+    public int Version { get; init; } = 5;
 
     /// <summary>Engine path, targets, and project file configuration.</summary>
     [JsonPropertyName("engine")]
@@ -219,6 +219,15 @@ public record class UgsBuildGraphConfig
     /// </summary>
     [JsonPropertyName("setArgsTemplate")]
     public string SetArgsTemplate { get; init; } = "";
+
+    /// <summary>
+    /// Number of stdout lines to batch before flushing to the UI log.
+    /// Higher values reduce UI pressure during high-volume BuildGraph output (e.g. 100).
+    /// Lower values increase responsiveness (e.g. 10).
+    /// Default: 50.
+    /// </summary>
+    [JsonPropertyName("logBatchSize")]
+    public int LogBatchSize { get; init; } = 50;
 }
 
 /// <summary>

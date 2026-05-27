@@ -81,6 +81,8 @@ public partial class SettingsDialogViewModel : ObservableObject
     [ObservableProperty] private string _serverBuildGraphTarget = "";
     /// <summary>Template for -set: arguments passed to BuildGraph (supports {UbtTarget}, {ProjectPath}, {ShortSha}, {ProjectName}).</summary>
     [ObservableProperty] private string _buildGraphSetArgsTemplate = "";
+    /// <summary>Number of stdout lines to batch before flushing to the UI log (default 50).</summary>
+    [ObservableProperty] private int _logBatchSize = 50;
 
     // Performance — saved to SHARED config
     /// <summary>Maximum number of concurrent git.exe processes for commit type annotation (1–20).</summary>
@@ -463,6 +465,7 @@ public partial class SettingsDialogViewModel : ObservableObject
         ServerBuildGraphScript = bg.ServerScript;
         ServerBuildGraphTarget = bg.ServerTarget;
         BuildGraphSetArgsTemplate = bg.SetArgsTemplate;
+        LogBatchSize = bg.LogBatchSize;
 
         // Build targets (shared) — already migrated by ConfigService
         BuildTargets.Clear();
@@ -536,6 +539,7 @@ public partial class SettingsDialogViewModel : ObservableObject
                 ServerScript = ServerBuildGraphScript,
                 ServerTarget = ServerBuildGraphTarget,
                 SetArgsTemplate = BuildGraphSetArgsTemplate,
+                LogBatchSize = LogBatchSize,
             }
         };
 

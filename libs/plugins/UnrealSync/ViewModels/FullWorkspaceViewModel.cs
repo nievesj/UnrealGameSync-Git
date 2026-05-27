@@ -474,7 +474,8 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
                 progress, _buildCts!.Token,
                 buildGraphScript: script,
                 buildGraphTarget: target,
-                setArgsTemplate: setArgs).ConfigureAwait(true);
+                setArgsTemplate: setArgs,
+                logBatchSize: _config.BuildGraph?.LogBatchSize ?? 50).ConfigureAwait(true);
 
             AppendLog($"\nStage {stageResult.Status}: {stageResult.Message}");
 

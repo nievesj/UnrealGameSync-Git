@@ -54,10 +54,10 @@ public static class ConfigService
             ?? new UgsConfig();
 
         // Validate version — for unknown future versions, preserve what we can and log a warning
-        if (config.Version > 4)
+        if (config.Version > 5)
         {
             Native.OS.LogException(new InvalidOperationException(
-                $"UgsConfig version {config.Version} is newer than supported (max 4). Attempting to preserve known fields."));
+                $"UgsConfig version {config.Version} is newer than supported (max 5). Attempting to preserve known fields."));
         }
 
         // Migrate v2 → v3: commit type annotation fields added
@@ -80,6 +80,20 @@ public static class ConfigService
             {
                 Version = 4,
                 BuildGraph = new UgsBuildGraphConfig(),
+            };
+        }
+
+        // Migrate v4 → v5: logBatchSize field added to BuildGraph config
+        if (config.Version < 5)
+        {
+            config = config with
+            {
+                Version = 5,
+                BuildGraph = config.BuildGraph with
+                {
+                    LogBatchSize = config.BuildGraph.LogBatchSize > 0
+                        ? config.BuildGraph.LogBatchSize : 50
+                },
             };
         }
 
