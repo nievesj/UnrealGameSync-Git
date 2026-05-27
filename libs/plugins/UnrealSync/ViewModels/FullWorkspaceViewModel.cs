@@ -728,6 +728,14 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
         _editorProcess?.Dispose();
     }
 
+    /// <summary>Clears the output log.</summary>
+    [RelayCommand]
+    private void ClearLog()
+    {
+        _logBuilder.Clear();
+        LogOutput = string.Empty;
+    }
+
     private string FormatZipName(string? template, UgsPackageProfile profile)
     {
         var shortSha = CommitText?.Length >= 7 ? CommitText[..7] : "unknown";

@@ -27,11 +27,15 @@
                         <Button.Flyout>
                             <Flyout>
                                 <StackPanel Spacing="4" MinWidth="180">
-                                    <TextBlock Text="Select profile:" FontWeight="Bold" />
+                                    <TextBlock Text="Select profile:"
+                                               FontSize="13" FontWeight="Bold"
+                                               Foreground="{DynamicResource Brush.FG2}" />
                                     <ItemsControl ItemsSource="{Binding PackageProfiles}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                 <Button Content="{Binding DisplayName}"
+                                                        Classes="flat"
+                                                        Height="28"
                                                         Command="{Binding $parent[ItemsControl].((vm:FullWorkspaceViewModel)DataContext).PackageCommand}"
                                                         CommandParameter="{Binding}"
                                                         HorizontalAlignment="Stretch"
@@ -149,11 +153,30 @@
                     CornerRadius="6"
                     Padding="8">
                 <ScrollViewer>
-                    <TextBlock Text="{Binding LogOutput}"
-                               FontFamily="{DynamicResource Fonts.Monospace}"
-                               FontSize="12"
-                               Foreground="{DynamicResource Brush.FG1}"
-                               TextWrapping="Wrap" />
+                    <SelectableTextBlock Text="{Binding LogOutput}"
+                                          FontFamily="{DynamicResource Fonts.Monospace}"
+                                          FontSize="12"
+                                          Foreground="{DynamicResource Brush.FG1}"
+                                          TextWrapping="Wrap">
+                        <SelectableTextBlock.ContextFlyout>
+                            <MenuFlyout>
+                                <MenuItem Header="Copy"
+                                           Command="{Binding $parent[SelectableTextBlock].Copy}"
+                                           IsEnabled="{Binding $parent[SelectableTextBlock].CanCopy}"
+                                           InputGesture="{x:Static TextBox.CopyGesture}">
+                                    <MenuItem.Icon>
+                                        <Path Width="11" Height="11" Data="{StaticResource Icons.Copy}" VerticalAlignment="Center" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Clear Log"
+                                           Command="{Binding $parent[ItemsControl].((vm:FullWorkspaceViewModel)DataContext).ClearLogCommand}">
+                                    <MenuItem.Icon>
+                                        <Path Width="11" Height="11" Data="{StaticResource Icons.Clear}" VerticalAlignment="Center" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </MenuFlyout>
+                        </SelectableTextBlock.ContextFlyout>
+                    </SelectableTextBlock>
                 </ScrollViewer>
             </Border>
         </Grid>
