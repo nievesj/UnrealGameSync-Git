@@ -1,12 +1,26 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:UGSGit.Plugins.UnrealSync.ViewModels;assembly=UGSGit.Plugins.UnrealSync"
+             xmlns:c="clr-namespace:UGSGit.Plugins.UnrealSync.Converters;assembly=UGSGit.Plugins.UnrealSync"
              x:Class="UGSGit.Plugins.UnrealSync.Views.StatusPanelView"
              x:DataType="vm:StatusPanelViewModel">
-    <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center" Margin="8,0,0,0">
-        <TextBlock Text="{Binding BranchText}"
+    <Grid ColumnDefinitions="Auto,Auto,*" VerticalAlignment="Center" Margin="8,0,0,0">
+        <TextBlock Grid.Column="0"
+                   Text="{Binding BranchText}"
                    FontWeight="Bold"
                    VerticalAlignment="Center"
                    Foreground="{DynamicResource Brush.FG1}" />
-    </StackPanel>
+
+        <Button Grid.Column="1"
+                Command="{Binding OpenSettingsCommand}"
+                Classes="icon_button"
+                Width="32" Height="32"
+                Margin="8,0,0,0"
+                ToolTip.Tip="Settings"
+                 IsVisible="{Binding OpenSettingsCommand, Converter={x:Static c:ObjectConverters.IsNotNull}}">
+            <Path Width="14" Height="14"
+                  Data="{StaticResource Icons.Settings}"
+                  Fill="{DynamicResource Brush.FG1}" />
+        </Button>
+    </Grid>
 </UserControl>

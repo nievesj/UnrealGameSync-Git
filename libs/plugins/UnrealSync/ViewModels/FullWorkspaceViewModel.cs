@@ -500,7 +500,16 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
     /// </summary>
     public async Task PackageAsync(UgsPackageProfile profile, IProgress<string>? log, CancellationToken ct)
     {
-        if (!TrySetBusy()) return;
+        await PackageAsync(profile, log, ct, null);
+    }
+
+    /// <summary>
+    /// Public overload for PackageAsync that accepts an optional commit SHA override.
+    /// Used by context menu contributors so the right-clicked commit SHA is embedded
+    /// in the zip filename, rather than falling back to CommitText (which is HEAD).
+    /// </summary>
+    public async Task PackageAsync(UgsPackageProfile profile, IProgress<string>? log, CancellationToken ct, string? commitSha)
+    {
         CanPublish = false;
 
         try
@@ -524,7 +533,8 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
             var setArgs = _config.BuildGraph?.SetArgsTemplate;
 
             // Compute shortSha and projectName for BuildGraphService constructor
-            var shortSha = CommitText?.Length >= 10 ? CommitText[..10] : "unknown";
+            var shaForZip = !string.IsNullOrWhiteSpace(commitSha) ? commitSha : CommitText;
+            var shortSha = shaForZip?.Length >= 10 ? shaForZip[..10] : "unknown";
             var projectName = ProjectName;
 
             var buildGraph = buildGraphFactory.Create(_enginePath, _config, _uprojectPath, shortSha, projectName);
@@ -534,7 +544,7 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
             var stagingBase = _config.BuildDefaults?.OutputDirectory ?? "Saved/StagedBuilds";
             var zipPath = Path.GetFullPath(Path.Combine(_repoPath, stagingBase, zipName));
 
-            // Stage via BuildGraph
+            // Stage via BuildGraph — the script already produces the zip file.
             var stageResult = await buildGraph.StageAsync(
                 profile.EditorTarget,
                 profile.Platform,
@@ -548,20 +558,21 @@ public partial class FullWorkspaceViewModel : ObservableObject, IDisposable
 
             AppendLog($"\nStage {stageResult.Status}: {stageResult.Message}");
 
-            // Guard: if stage failed, do NOT proceed to zip (fixes C-2)
+            // Guard: if stage failed, do NOT proceed (fixes C-2)
             if (stageResult.Status != BuildStatus.Success || string.IsNullOrEmpty(stageResult.StagingDirectory))
             {
                 throw new InvalidOperationException($"Stage failed: {stageResult.Message}");
             }
 
-            // Create zip (fixes C-1: uses structured StagingDirectory field)
-            var zipResult = await buildGraph.CreateZipAsync(
-                stageResult.StagingDirectory, zipPath,
-                _config.Archive?.ExcludePdb ?? true,
-                progress, linked.Token).ConfigureAwait(true);
+            // BuildGraph already produced the zip — verify and use it directly
+            if (!File.Exists(zipPath))
+            {
+                throw new InvalidOperationException(
+                    $"BuildGraph did not produce expected zip: {zipPath}");
+            }
 
-            AppendLog($"\nZip created: {zipResult}");
-            LastZipPath = zipResult;
+            AppendLog($"\nZip ready: {zipPath}");
+            LastZipPath = zipPath;
             LastZipChannel = profile.EditorTarget.EndsWith("Editor", StringComparison.OrdinalIgnoreCase)
                 ? _config.EditorChannel
                 : _config.GameChannel;

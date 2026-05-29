@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
+using Avalonia.Platform;
+using Avalonia.Media.Imaging;
 
 namespace UGSGit.Views
 {
@@ -32,6 +34,41 @@ namespace UGSGit.Views
 
         public static global::Avalonia.Controls.Shapes.Path CreateMenuIcon(this Control control, string iconKey)
         {
+            if (control?.FindResource(iconKey) is StreamGeometry geo)
+            {
+                return new global::Avalonia.Controls.Shapes.Path()
+                {
+                    Data = geo,
+                    Width = 12,
+                    Height = 12,
+                    Stretch = Stretch.Uniform
+                };
+            }
+
+            return null;
+        }
+
+        public static Control CreateMenuImage(this Control control, string iconKey)
+        {
+            if (iconKey?.StartsWith("avares://") == true || iconKey?.StartsWith("/") == true)
+            {
+                try
+                {
+                    var uri = new Uri(iconKey);
+                    using var stream = AssetLoader.Open(uri);
+                    var bitmap = new Bitmap(stream);
+                    return new Image()
+                    {
+                        Source = bitmap,
+                        Width = 12,
+                        Height = 12,
+                        Stretch = Stretch.Uniform
+                    };
+                }
+                catch { /* ignore missing/broken assets */ }
+            }
+
+            // Fallback: try as StreamGeometry
             if (control?.FindResource(iconKey) is StreamGeometry geo)
             {
                 return new global::Avalonia.Controls.Shapes.Path()

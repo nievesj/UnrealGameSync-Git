@@ -149,6 +149,10 @@ public class BuildGraphService(
             await Task.WhenAll(stdoutTask, stderrTask).WaitAsync(linkedCts.Token);
             await process.WaitForExitAsync(linkedCts.Token);
 
+            // Kill orphaned UAT child/grandchild processes that may still hold file handles
+            // (council finding C: only killed on error/cancel before, now on all paths).
+            ProcessHelper.KillProcessTree(process);
+
             sw.Stop();
             var stderr = stderrBuilder.ToString();
             if (!string.IsNullOrWhiteSpace(stderr)) log.Report(stderr);
@@ -207,31 +211,48 @@ public class BuildGraphService(
 
         await Task.Run(() =>
         {
-            if (File.Exists(outputPath))
-                File.Delete(outputPath);
-
+            // Retry loop for transient file locks — the output zip may still be held
+            // by the UAT BuildGraph process or antivirus/indexing after it exits.
             var outputDir = Path.GetDirectoryName(outputPath);
             if (!string.IsNullOrEmpty(outputDir) && !Directory.Exists(outputDir))
                 Directory.CreateDirectory(outputDir);
 
-            try
+            const int maxRetries = 20;
+            const int delayMs = 500;
+
+            for (var attempt = 0; attempt < maxRetries; attempt++)
             {
-                using var archive = ZipFile.Open(outputPath, ZipArchiveMode.Create);
-                foreach (var file in Directory.GetFiles(stagingDir, "*", SearchOption.AllDirectories))
+                ct.ThrowIfCancellationRequested();
+
+                try
                 {
-                    ct.ThrowIfCancellationRequested();
+                    if (File.Exists(outputPath))
+                        File.Delete(outputPath);
 
-                    if (excludePdb && file.EndsWith(".pdb", StringComparison.OrdinalIgnoreCase))
-                        continue;
+                    using var archive = ZipFile.Open(outputPath, ZipArchiveMode.Create);
+                    foreach (var file in Directory.GetFiles(stagingDir, "*", SearchOption.AllDirectories))
+                    {
+                        ct.ThrowIfCancellationRequested();
 
-                    var relativePath = Path.GetRelativePath(stagingDir, file);
-                    archive.CreateEntryFromFile(file, relativePath, GetCompressionLevel());
+                        if (excludePdb && file.EndsWith(".pdb", StringComparison.OrdinalIgnoreCase))
+                            continue;
+
+                        var relativePath = Path.GetRelativePath(stagingDir, file);
+                        archive.CreateEntryFromFile(file, relativePath, GetCompressionLevel());
+                    }
+
+                    return; // success
                 }
-            }
-            catch (OperationCanceledException) when (File.Exists(outputPath))
-            {
-                File.Delete(outputPath);
-                throw;
+                catch (OperationCanceledException) when (File.Exists(outputPath))
+                {
+                    File.Delete(outputPath);
+                    throw;
+                }
+                catch (IOException) when (attempt < maxRetries - 1)
+                {
+                    log.Report($"Zip file locked (attempt {attempt + 1}/{maxRetries}), waiting {delayMs}ms...");
+                    Thread.Sleep(delayMs);
+                }
             }
         }, ct);
 

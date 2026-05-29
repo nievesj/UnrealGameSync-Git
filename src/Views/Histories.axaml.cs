@@ -844,7 +844,7 @@ namespace UGSGit.Views
                             var leader = members[0]; // first registered = submenu header source
                             var groupMenuItem = new MenuItem();
                             groupMenuItem.Header = leader.GroupHeader ?? leader.GroupKey;
-                            groupMenuItem.Icon = this.CreateMenuIcon(leader.GroupIconResourceKey ?? "Icons.Fetch");
+                            groupMenuItem.Icon = this.CreateMenuImage(leader.GroupIconResourceKey ?? "Icons.Fetch");
 
                             foreach (var member in members)
                             {

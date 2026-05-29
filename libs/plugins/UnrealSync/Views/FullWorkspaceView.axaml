@@ -11,19 +11,8 @@
                 CornerRadius="6"
                 Padding="12"
                 Margin="0,0,0,8">
-            <StackPanel Spacing="8">
-                <!-- Only Settings remains in toolbar — all workspace actions moved to graph context menu -->
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <Button Command="{Binding OpenSettingsCommand}"
-                            Classes="icon_button"
-                            Width="32" Height="32"
-                            ToolTip.Tip="Settings">
-                        <Path Width="14" Height="14"
-                              Data="{StaticResource Icons.Settings}"
-                              Fill="{DynamicResource Brush.FG1}" />
-                    </Button>
-                </StackPanel>
-            </StackPanel>
+            <!-- All workspace actions moved to graph context menu; settings lives in the tab toolbar -->
+            <StackPanel Spacing="8" />
         </Border>
 
         <!-- Project Info + Build Targets + Output Log -->
