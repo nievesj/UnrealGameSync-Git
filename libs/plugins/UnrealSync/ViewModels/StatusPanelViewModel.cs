@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 
 using UGSGit.PluginAbstractions;
 
@@ -30,6 +31,12 @@ public partial class StatusPanelViewModel : ObservableObject
     /// </summary>
     [ObservableProperty]
     private string _branchText = "Unreal Game Sync for Git";
+
+    /// <summary>
+    /// Command to open the plugin settings dialog (set by the host when the workspace VM is ready).
+    /// </summary>
+    [ObservableProperty]
+    private IAsyncRelayCommand? _openSettingsCommand;
 
     /// <summary>
     /// Current commit short hash, or "---" if not yet fetched.

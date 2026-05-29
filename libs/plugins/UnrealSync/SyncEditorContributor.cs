@@ -117,7 +117,7 @@ public class SyncEditorContributor : ICommitMenuContributor
     public string? GroupHeader => "UnrealSync";
 
     /// <inheritdoc/>
-    public string? GroupIconResourceKey => "Icons.UnrealSync";
+    public string? GroupIconResourceKey => "avares://ugsgit/Resources/Images/unreal.png";
 
     /// <summary>
     /// Lazily caches config values on first access to avoid loading config on every right-click.

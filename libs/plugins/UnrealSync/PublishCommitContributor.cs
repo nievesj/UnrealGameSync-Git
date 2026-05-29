@@ -77,7 +77,7 @@ public class PublishCommitContributor : ICommitMenuContributor
     public string? GroupHeader => "UnrealSync";
 
     /// <inheritdoc/>
-    public string? GroupIconResourceKey => "Icons.UnrealSync";
+    public string? GroupIconResourceKey => "avares://ugsgit/Resources/Images/unreal.png";
 
     /// <inheritdoc/>
     public async Task ExecuteAsync(CommitRef commit, IProgress<string>? log, CancellationToken ct)

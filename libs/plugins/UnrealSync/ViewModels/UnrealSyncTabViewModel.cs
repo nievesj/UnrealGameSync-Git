@@ -206,6 +206,7 @@ public class UnrealSyncTabViewModel : ObservableObject
                     _repoPath, enginePath, meta, _syncService, uprojectPath,
                     buildService, editorLauncher, configService, engineInfoService, _context);
                 CurrentBody = bodyVm;
+                StatusPanel.OpenSettingsCommand = bodyVm.OpenSettingsCommand;
 
                 // Forward PackageProfilesRefreshed from the inner VM
                 bodyVm.PackageProfilesRefreshed += () => PackageProfilesRefreshed?.Invoke();
@@ -216,6 +217,7 @@ public class UnrealSyncTabViewModel : ObservableObject
             {
                 Mode = SyncTabMode.EngineNotFound;
                 CurrentBody = new EngineNotFoundViewModel(meta);
+                StatusPanel.OpenSettingsCommand = null;
             }
         });
     }

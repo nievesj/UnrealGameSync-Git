@@ -54,10 +54,10 @@ public class PackageCommitContributor : ICommitMenuContributor
 
     public string? GroupHeader => "UnrealSync";
 
-    public string? GroupIconResourceKey => "Icons.UnrealSync";
+    public string? GroupIconResourceKey => "avares://ugsgit/Resources/Images/unreal.png";
 
     public async Task ExecuteAsync(CommitRef commit, IProgress<string>? log, CancellationToken ct)
     {
-        await _vm.PackageAsync(_profile, log, ct);
+        await _vm.PackageAsync(_profile, log, ct, commit.ShortSha);
     }
 }
