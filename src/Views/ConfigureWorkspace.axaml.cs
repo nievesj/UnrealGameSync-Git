@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public partial class ConfigureWorkspace : ChromelessWindow
     {

@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 using Avalonia.Controls;
 using Avalonia.Media;
 
-namespace UGSGit
+namespace SourceGit
 {
     public class DateTimeConverter : JsonConverter<DateTime>
     {

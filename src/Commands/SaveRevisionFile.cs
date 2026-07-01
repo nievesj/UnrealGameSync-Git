@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace UGSGit.Commands
+namespace SourceGit.Commands
 {
     public static class SaveRevisionFile
     {

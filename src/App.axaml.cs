@@ -14,7 +14,7 @@ using Avalonia.Media.Fonts;
 using Avalonia.Styling;
 using Avalonia.Threading;
 
-namespace UGSGit
+namespace SourceGit
 {
     public partial class App : Application
     {
@@ -187,7 +187,7 @@ namespace UGSGit
             {
                 if (!string.IsNullOrEmpty(defaultFont))
                 {
-                    monospaceFont = $"fonts:UGSGit#JetBrains Mono,{defaultFont}";
+                    monospaceFont = $"fonts:SourceGit#JetBrains Mono,{defaultFont}";
                     resDic.Add("Fonts.Monospace", FontFamily.Parse(monospaceFont));
                 }
             }
@@ -487,8 +487,8 @@ namespace UGSGit
 
 #if !DISABLE_PLUGINS
             // Register built-in plugin manifests BEFORE external discovery (NEW-3: cross-check requires built-ins first)
-            Models.PluginRegistry.Instance.RegisterBuiltInManifest(new Plugins.HelloWorld.HelloWorldPluginManifest());
-            Models.PluginRegistry.Instance.RegisterBuiltInManifest(new Plugins.UnrealSync.UnrealSyncManifest());
+            Models.PluginRegistry.Instance.RegisterBuiltInManifest(new UGSGit.Plugins.HelloWorld.HelloWorldPluginManifest());
+            Models.PluginRegistry.Instance.RegisterBuiltInManifest(new UGSGit.Plugins.UnrealSync.UnrealSyncManifest());
 
             // Discover and load external plugins (disabled in AOT builds via DISABLE_PLUGINS)
             var pluginResults = Models.PluginLoader.Discover();

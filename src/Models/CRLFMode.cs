@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace UGSGit.Models
+namespace SourceGit.Models
 {
     public class CRLFMode(string name, string value, string desc)
     {

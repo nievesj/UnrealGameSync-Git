@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
-using UGSGit.Models;
+using SourceGit.Models;
 using UGSGit.PluginAbstractions;
 
-namespace UGSGit.Services;
+namespace SourceGit.Services;
 
 /// <summary>
 /// Reads and writes .unrealsync-settings.json config files with environment variable expansion,

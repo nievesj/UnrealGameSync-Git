@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 using UGSGit.PluginAbstractions;
 
-namespace UGSGit.Services;
+namespace SourceGit.Services;
 
 /// <summary>
 /// Multi-source engine detection following the same algorithm as Unreal Engine's

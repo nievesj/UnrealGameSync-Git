@@ -9,7 +9,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform;
 
-namespace UGSGit.Native
+namespace SourceGit.Native
 {
     [SupportedOSPlatform("macOS")]
     internal class MacOS : OS.IBackend

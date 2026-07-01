@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 
-namespace UGSGit.Commands
+namespace SourceGit.Commands
 {
     public class DiffTool : Command
     {

@@ -5,7 +5,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public class ColorPicker : Control
     {

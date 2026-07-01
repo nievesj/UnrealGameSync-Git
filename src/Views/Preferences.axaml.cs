@@ -7,9 +7,9 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 
-using UGSGit.ViewModels;
+using SourceGit.ViewModels;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public partial class Preferences : ChromelessWindow
     {

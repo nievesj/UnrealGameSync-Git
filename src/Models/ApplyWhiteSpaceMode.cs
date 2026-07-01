@@ -1,4 +1,4 @@
-namespace UGSGit.Models
+namespace SourceGit.Models
 {
     public class ApplyWhiteSpaceMode(string n, string d, string a)
     {

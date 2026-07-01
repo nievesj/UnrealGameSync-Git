@@ -7,7 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 using UGSGit.PluginAbstractions;
 
-namespace UGSGit.Models
+namespace SourceGit.Models
 {
     /// <summary>
     /// Singleton that holds all discovered plugin manifests and manages enabled/disabled state.

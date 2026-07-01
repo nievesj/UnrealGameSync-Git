@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace UGSGit.Commands
+namespace SourceGit.Commands
 {
     public partial class Command
     {

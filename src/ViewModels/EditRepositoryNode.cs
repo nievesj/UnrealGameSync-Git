@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
-namespace UGSGit.ViewModels
+namespace SourceGit.ViewModels
 {
     public class EditRepositoryNode : Popup
     {

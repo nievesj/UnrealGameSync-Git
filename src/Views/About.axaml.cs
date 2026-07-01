@@ -3,7 +3,7 @@ using System.Reflection;
 
 using Avalonia.Interactivity;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public partial class About : ChromelessWindow
     {

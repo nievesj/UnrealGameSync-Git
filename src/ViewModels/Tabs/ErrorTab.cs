@@ -2,10 +2,10 @@ using System;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-using UGSGit.Models;
+using SourceGit.Models;
 using UGSGit.PluginAbstractions;
 
-namespace UGSGit.ViewModels.Tabs
+namespace SourceGit.ViewModels.Tabs
 {
     public class ErrorTab : IRepositoryTab
     {

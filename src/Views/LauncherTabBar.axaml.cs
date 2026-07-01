@@ -8,7 +8,7 @@ using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Styling;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public class LauncherTabSizeBox : Border
     {

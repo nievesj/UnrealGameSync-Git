@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Media;
 
-namespace UGSGit.Models
+namespace SourceGit.Models
 {
     public record CommitGraphLayout(double StartY, double ClipWidth, double RowHeight);
 

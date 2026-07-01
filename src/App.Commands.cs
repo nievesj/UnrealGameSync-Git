@@ -2,7 +2,7 @@ using System;
 using System.Windows.Input;
 using Avalonia.Controls.ApplicationLifetimes;
 
-namespace UGSGit
+namespace SourceGit
 {
     public partial class App
     {

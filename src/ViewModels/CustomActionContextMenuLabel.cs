@@ -1,4 +1,4 @@
-namespace UGSGit.ViewModels
+namespace SourceGit.ViewModels
 {
     public class CustomActionContextMenuLabel(string name, bool isGlobal)
     {

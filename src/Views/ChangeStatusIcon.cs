@@ -6,7 +6,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Styling;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public class ChangeStatusIcon : Control
     {
@@ -47,7 +47,7 @@ namespace UGSGit.Views
             if (Change == null || Bounds.Width <= 0)
                 return;
 
-            var typeface = new Typeface("fonts:UGSGit#JetBrains Mono");
+            var typeface = new Typeface("fonts:SourceGit#JetBrains Mono");
 
             var idx = (int)(IsUnstagedChange ? Change.WorkTree : Change.Index);
             var indicator = INDICATOR[idx];

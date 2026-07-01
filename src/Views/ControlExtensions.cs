@@ -7,7 +7,7 @@ using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Media.Imaging;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public static class ControlExtensions
     {

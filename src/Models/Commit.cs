@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace UGSGit.Models
+namespace SourceGit.Models
 {
     public enum CommitSearchMethod
     {
@@ -30,13 +30,13 @@ namespace UGSGit.Models
         /// Annotations contributed by plugin commit annotators (e.g., editor build availability).
         /// Set by Histories VM during graph generation.
         /// </summary>
-        public List<PluginAbstractions.CommitAnnotation>? Annotations
+        public List<UGSGit.PluginAbstractions.CommitAnnotation>? Annotations
         {
             get => _annotations;
             set => SetProperty(ref _annotations, value);
         }
 
-        private List<PluginAbstractions.CommitAnnotation>? _annotations;
+        private List<UGSGit.PluginAbstractions.CommitAnnotation>? _annotations;
 
         public bool IsMerged { get; set; } = false;
         public int Color { get; set; } = 0;

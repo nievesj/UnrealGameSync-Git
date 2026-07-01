@@ -1,4 +1,4 @@
-namespace UGSGit.Models
+namespace SourceGit.Models
 {
     public record ScanDir(string path, string desc)
     {

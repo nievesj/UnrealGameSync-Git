@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 using Avalonia.Media;
 
-namespace UGSGit.Models
+namespace SourceGit.Models
 {
     public class ThemeOverrides
     {

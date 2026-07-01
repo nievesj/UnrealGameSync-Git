@@ -18,7 +18,7 @@ using Avalonia.VisualTree;
 
 using UGSGit.PluginAbstractions;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public class HistoriesLayout : Grid
     {

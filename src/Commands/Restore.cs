@@ -1,4 +1,4 @@
-namespace UGSGit.Commands
+namespace SourceGit.Commands
 {
     public class Restore : Command
     {

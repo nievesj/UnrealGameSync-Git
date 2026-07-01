@@ -3,7 +3,7 @@ using System;
 using Avalonia.Controls;
 using Avalonia.Media;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public class WorktreeIcon : global::Avalonia.Controls.Shapes.Path
     {

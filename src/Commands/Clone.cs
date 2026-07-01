@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace UGSGit.Commands
+namespace SourceGit.Commands
 {
     public class Clone : Command
     {

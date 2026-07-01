@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 using UGSGit.PluginAbstractions;
 
-namespace UGSGit.Services;
+namespace SourceGit.Services;
 
 /// <summary>
 /// Implements <see cref="IGitFileQueryService"/> using per-commit <c>git diff-tree</c> calls.

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 
-namespace UGSGit.Models
+namespace SourceGit.Models
 {
     public class TextInlineChange(int dp, int dc, int ap, int ac)
     {

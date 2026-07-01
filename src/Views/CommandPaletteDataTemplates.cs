@@ -1,7 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public class CommandPaletteDataTemplates : IDataTemplate
     {

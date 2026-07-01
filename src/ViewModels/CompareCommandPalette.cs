@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace UGSGit.ViewModels
+namespace SourceGit.ViewModels
 {
     public class CompareCommandPalette : ICommandPalette
     {

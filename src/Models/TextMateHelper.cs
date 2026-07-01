@@ -15,7 +15,7 @@ using TextMateSharp.Internal.Types;
 using TextMateSharp.Registry;
 using TextMateSharp.Themes;
 
-namespace UGSGit.Models
+namespace SourceGit.Models
 {
     public static class GrammarUtility
     {

@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Data.Converters;
 using Avalonia.Media;
 
-namespace UGSGit.Converters
+namespace SourceGit.Converters
 {
     public static class IntConverters
     {

@@ -1,6 +1,6 @@
 using Avalonia.Input;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public class StealHotKey(Key key, KeyModifiers keyModifiers = KeyModifiers.None)
     {

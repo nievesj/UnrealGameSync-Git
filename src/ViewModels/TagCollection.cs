@@ -6,7 +6,7 @@ using Avalonia.Collections;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace UGSGit.ViewModels
+namespace SourceGit.ViewModels
 {
     public class TagToolTip
     {

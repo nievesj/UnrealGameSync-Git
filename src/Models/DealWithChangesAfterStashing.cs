@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace UGSGit.Models
+namespace SourceGit.Models
 {
     public class DealWithChangesAfterStashing(string label, string desc)
     {

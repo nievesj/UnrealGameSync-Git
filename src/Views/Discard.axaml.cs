@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public partial class Discard : UserControl
     {

@@ -2,7 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public partial class GotoRevisionSelector : ChromelessWindow
     {

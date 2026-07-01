@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Avalonia.Controls;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public partial class CommitRelationTracking : UserControl
     {

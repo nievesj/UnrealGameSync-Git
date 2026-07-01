@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 using UGSGit.PluginAbstractions;
 
-namespace UGSGit.Services;
+namespace SourceGit.Services;
 
 /// <summary>
 /// Finds and launches the Unreal Engine editor. Cross-platform.

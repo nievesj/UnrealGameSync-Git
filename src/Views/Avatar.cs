@@ -13,7 +13,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public class Avatar : Control, Models.IAvatarHost
     {
@@ -63,7 +63,7 @@ namespace UGSGit.Views
             else if (!UseGitHubStyleAvatar)
             {
                 var fallback = GetFallbackString(User.Name);
-                var typeface = new Typeface("fonts:UGSGit#JetBrains Mono");
+                var typeface = new Typeface("fonts:SourceGit#JetBrains Mono");
                 var label = new FormattedText(
                     fallback,
                     CultureInfo.CurrentCulture,

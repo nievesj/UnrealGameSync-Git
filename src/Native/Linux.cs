@@ -8,7 +8,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Platform;
 
-namespace UGSGit.Native
+namespace SourceGit.Native
 {
     [SupportedOSPlatform("linux")]
     internal class Linux : OS.IBackend

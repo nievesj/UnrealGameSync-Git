@@ -13,7 +13,8 @@
         <Description>OpenSource GIT client</Description>
         <Company>nievesj</Company>
         <Copyright>Copyright © $([System.DateTime]::Now.Year) sourcegit-scm &amp; nievesj.</Copyright>
-        <AssemblyName>ugsgit</AssemblyName>
+        <AssemblyName>SourceGit</AssemblyName>
+        <RootNamespace>SourceGit</RootNamespace>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageProjectUrl>https://github.com/nievesj/UnrealGameSync-Git</PackageProjectUrl>
         <RepositoryUrl>https://github.com/nievesj/UnrealGameSync-Git</RepositoryUrl>
@@ -75,7 +76,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <TrimmerRootAssembly Include="UGSGit"/>
+        <TrimmerRootAssembly Include="SourceGit"/>
         <TrimmerRootAssembly Include="UGSGit.PluginAbstractions"/>
         <TrimmerRootAssembly Include="UGSGit.Plugins.HelloWorld"/>
         <TrimmerRootAssembly Include="UGSGit.Plugins.UnrealSync"/>

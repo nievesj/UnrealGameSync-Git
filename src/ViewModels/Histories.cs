@@ -10,7 +10,7 @@ using Avalonia.Controls;
 using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace UGSGit.ViewModels
+namespace SourceGit.ViewModels
 {
     public class Histories : ObservableObject
     {
@@ -221,7 +221,7 @@ namespace UGSGit.ViewModels
                 {
                     var shortSha = commit.SHA.Length >= 9 ? commit.SHA[..9] : commit.SHA;
                     if (annotations.TryGetValue(shortSha, out var list))
-                        commit.Annotations = new List<PluginAbstractions.CommitAnnotation>(list);
+                        commit.Annotations = new List<UGSGit.PluginAbstractions.CommitAnnotation>(list);
                     else
                         commit.Annotations = null;
                 }

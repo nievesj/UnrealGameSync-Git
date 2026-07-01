@@ -1,4 +1,4 @@
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public partial class CommitDetailStandalone : ChromelessWindow
     {

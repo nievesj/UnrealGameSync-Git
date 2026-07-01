@@ -7,11 +7,11 @@ using Avalonia.Threading;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-using UGSGit.Models;
+using SourceGit.Models;
 using UGSGit.PluginAbstractions;
-using UGSGit.ViewModels.Tabs;
+using SourceGit.ViewModels.Tabs;
 
-namespace UGSGit.ViewModels
+namespace SourceGit.ViewModels
 {
     public class LauncherPage : ObservableObject
     {

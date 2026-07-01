@@ -12,7 +12,7 @@ using Avalonia.Controls;
 using Avalonia.Platform;
 using Avalonia.Threading;
 
-namespace UGSGit.Native
+namespace SourceGit.Native
 {
     [SupportedOSPlatform("windows")]
     internal class Windows : OS.IBackend

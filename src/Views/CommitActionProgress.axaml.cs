@@ -7,9 +7,9 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using UGSGit.PluginAbstractions;
-using UGSGit.ViewModels;
+using SourceGit.ViewModels;
 
-namespace UGSGit.Views;
+namespace SourceGit.Views;
 
 public partial class CommitActionProgress : ChromelessWindow
 {

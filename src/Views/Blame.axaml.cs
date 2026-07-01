@@ -15,7 +15,7 @@ using AvaloniaEdit.Rendering;
 using AvaloniaEdit.TextMate;
 using AvaloniaEdit.Utils;
 
-namespace UGSGit.Views
+namespace SourceGit.Views
 {
     public class BlameTextEditor : TextEditor
     {
