@@ -659,6 +659,7 @@ namespace SourceGit.ViewModels
             }
 
             _repo.MarkBranchesDirtyManually();
+            _repo.RefreshSubmodules(); // Committing will not change submodule's HEAD (stage already changes it), So we need refresh submodules here manually.
             IsCommitting = false;
         }
 
@@ -708,7 +709,11 @@ namespace SourceGit.ViewModels
         private List<Models.Change> GetStagedChanges(List<Models.Change> cached)
         {
             if (_useAmend)
-                return new Commands.QueryStagedChangesWithAmend(_repo.FullPath).GetResult();
+            {
+                var changes = new Commands.QueryStagedChangesWithAmend(_repo.FullPath).GetResult();
+                changes.Sort((l, r) => Models.NumericSort.Compare(l.Path, r.Path));
+                return changes;
+            }
 
             var rs = new List<Models.Change>();
             foreach (var c in cached)

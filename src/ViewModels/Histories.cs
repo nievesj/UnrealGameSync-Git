@@ -46,14 +46,27 @@ namespace SourceGit.ViewModels
             }
         }
 
-        public bool IsDateTimeColumnVisible
+        public bool IsAuthorTimeColumnVisible
         {
-            get => _repo.UIStates.IsDateTimeColumnVisibleInHistory;
+            get => _repo.UIStates.IsAuthorTimeColumnVisibleInHistory;
             set
             {
-                if (_repo.UIStates.IsDateTimeColumnVisibleInHistory != value)
+                if (_repo.UIStates.IsAuthorTimeColumnVisibleInHistory != value)
                 {
-                    _repo.UIStates.IsDateTimeColumnVisibleInHistory = value;
+                    _repo.UIStates.IsAuthorTimeColumnVisibleInHistory = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        public bool IsCommitTimeColumnVisible
+        {
+            get => _repo.UIStates.IsCommitTimeColumnVisibleInHistory;
+            set
+            {
+                if (_repo.UIStates.IsCommitTimeColumnVisibleInHistory != value)
+                {
+                    _repo.UIStates.IsCommitTimeColumnVisibleInHistory = value;
                     OnPropertyChanged();
                 }
             }
@@ -64,6 +77,7 @@ namespace SourceGit.ViewModels
             get => _commits;
             set
             {
+                GenerateGraph(value, true);
                 if (SetProperty(ref _commits, value))
                     PostCommitsChanged();
             }
@@ -84,7 +98,6 @@ namespace SourceGit.ViewModels
                 {
                     _repo.UIStates.GraphHighlighting = value;
                     GenerateGraph(_commits);
-                    OnPropertyChanged();
                 }
             }
         }
@@ -94,7 +107,8 @@ namespace SourceGit.ViewModels
             get => _selectedCommits;
             set
             {
-                if (SetProperty(ref _selectedCommits, value))
+                var oldCount = _selectedCommits.Count;
+                if (SetProperty(ref _selectedCommits, value) && oldCount + value.Count > 0)
                     PostSelectedCommitsChanged();
             }
         }
@@ -153,6 +167,12 @@ namespace SourceGit.ViewModels
             }
         }
 
+        public double AuthorColumnWidth
+        {
+            get => _repo.UIStates.AuthorColumnWidth;
+            set => _repo.UIStates.AuthorColumnWidth = value;
+        }
+
         public bool IsOpenAsStandaloneVisible
         {
             get => DetailContext is CommitDetail or RevisionCompare;
@@ -182,64 +202,6 @@ namespace SourceGit.ViewModels
             OnPropertyChanged(nameof(CurrentBranch));
         }
 
-        public void GenerateGraph(List<Models.Commit> commits)
-        {
-            var firstParentOnly = _repo.UIStates.HistoryShowFlags.HasFlag(Models.HistoryShowFlags.FirstParentOnly);
-            var highlighting = _repo.UIStates.GraphHighlighting;
-            var extraHeads = new HashSet<string>();
-
-            if (highlighting >= Models.CommitGraphHighlighting.SelectedCommitsOnly)
-            {
-                foreach (var c in _selectedCommits)
-                    extraHeads.Add(c.SHA);
-            }
-
-            Graph = Models.CommitGraph.Generate(commits, firstParentOnly, highlighting, extraHeads);
-
-            // Fetch annotations asynchronously and apply when ready
-            _graphGeneration++;
-            _annotationCts?.Cancel();
-            _annotationCts?.Dispose();
-            _annotationCts = new CancellationTokenSource();
-            _ = FetchAnnotationsAsync(commits, _graphGeneration, _annotationCts.Token);
-        }
-
-        private async Task FetchAnnotationsAsync(List<Models.Commit> commits, int generation, CancellationToken ct)
-        {
-            try
-            {
-                var provider = Services.HostServices.AnnotationProvider;
-                var shas = commits.Select(c => c.SHA.Length >= 9 ? c.SHA[..9] : c.SHA).Distinct().ToList();
-                var annotations = await provider.GetAnnotationsAsync(shas, ct).ConfigureAwait(true);
-
-                // Abort if graph has been regenerated since we started
-                if (generation != _graphGeneration)
-                    return;
-
-                // Apply annotations to commits
-                foreach (var commit in commits)
-                {
-                    var shortSha = commit.SHA.Length >= 9 ? commit.SHA[..9] : commit.SHA;
-                    if (annotations.TryGetValue(shortSha, out var list))
-                        commit.Annotations = new List<UGSGit.PluginAbstractions.CommitAnnotation>(list);
-                    else
-                        commit.Annotations = null;
-                }
-
-                // Trigger visual refresh of annotation presenters
-                OnPropertyChanged(nameof(Commits));
-            }
-            catch (OperationCanceledException)
-            {
-                // Expected on cancellation, swallow
-            }
-            catch (Exception ex)
-            {
-                // Log but don't crash the graph
-                Native.OS.LogException(ex);
-            }
-        }
-
         public Models.BisectState UpdateBisectInfo()
         {
             var test = Path.Combine(_repo.GitDir, "BISECT_START");
@@ -249,26 +211,40 @@ namespace SourceGit.ViewModels
                 return Models.BisectState.None;
             }
 
+            var head = new Commands.QueryRevisionByRefName(_repo.FullPath, "HEAD").GetResult();
             var info = new Models.Bisect();
+            var markedHead = false;
             var dir = Path.Combine(_repo.GitDir, "refs", "bisect");
             if (Directory.Exists(dir))
             {
                 var files = new DirectoryInfo(dir).GetFiles();
                 foreach (var file in files)
                 {
+                    var sha = File.ReadAllText(file.FullName).Trim();
+                    if (!markedHead)
+                        markedHead = head.Equals(sha, StringComparison.Ordinal);
+
                     if (file.Name.StartsWith("bad"))
-                        info.Bads.Add(File.ReadAllText(file.FullName).Trim());
+                        info.Bads.Add(sha);
                     else if (file.Name.StartsWith("good"))
-                        info.Goods.Add(File.ReadAllText(file.FullName).Trim());
+                        info.Goods.Add(sha);
+                    else if (file.Name.StartsWith("skip"))
+                        info.Skipped.Add(sha);
                 }
             }
 
             Bisect = info;
 
-            if (info.Bads.Count == 0 || info.Goods.Count == 0)
-                return Models.BisectState.WaitingForRange;
-            else
-                return Models.BisectState.Detecting;
+            if (info.Bads.Count == 0)
+                return Models.BisectState.WaitingForFirstBad;
+
+            if (markedHead)
+                return Models.BisectState.WaitingForCheckoutAnother;
+
+            if (info.Goods.Count == 0)
+                return Models.BisectState.WaitingForFirstGood;
+
+            return Models.BisectState.WaitingForMark;
         }
 
         public void NavigateTo(string commitSHA)
@@ -312,6 +288,12 @@ namespace SourceGit.ViewModels
             return await new Commands.QuerySingleCommit(_repo.FullPath, sha)
                 .GetResultAsync()
                 .ConfigureAwait(false);
+        }
+
+        public void CheckoutCommitDetached(Models.Commit c)
+        {
+            if (!c.IsCurrentHead && _repo.CanCreatePopup())
+                _repo.ShowPopup(new CheckoutDetached(_repo, c));
         }
 
         public async Task<bool> CheckoutBranchByDecoratorAsync(Models.Decorator decorator)
@@ -402,7 +384,7 @@ namespace SourceGit.ViewModels
                 if (firstRemoteBranch != null)
                     _repo.ShowPopup(new CreateBranch(_repo, firstRemoteBranch));
                 else if (!_repo.IsBare)
-                    _repo.ShowPopup(new CheckoutCommit(_repo, commit));
+                    _repo.ShowPopup(new CheckoutDetached(_repo, commit));
             }
         }
 
@@ -528,6 +510,64 @@ namespace SourceGit.ViewModels
 
             if (_repo.UIStates.GraphHighlighting >= Models.CommitGraphHighlighting.SelectedCommitsOnly)
                 GenerateGraph(_commits);
+        }
+
+        private void GenerateGraph(List<Models.Commit> commits, bool commitsChanged = false)
+        {
+            var firstParentOnly = _repo.UIStates.HistoryShowFlags.HasFlag(Models.HistoryShowFlags.FirstParentOnly);
+            var highlighting = _repo.UIStates.GraphHighlighting;
+            var extraHeads = new HashSet<string>();
+
+            if (highlighting >= Models.CommitGraphHighlighting.SelectedCommitsOnly)
+            {
+                foreach (var c in _selectedCommits)
+                    extraHeads.Add(c.SHA);
+            }
+
+            Graph = Models.CommitGraph.Generate(commits, commitsChanged, firstParentOnly, highlighting, extraHeads);
+
+            // Fetch annotations asynchronously and apply when ready
+            _graphGeneration++;
+            _annotationCts?.Cancel();
+            _annotationCts?.Dispose();
+            _annotationCts = new CancellationTokenSource();
+            _ = FetchAnnotationsAsync(commits, _graphGeneration, _annotationCts.Token);
+        }
+
+        private async Task FetchAnnotationsAsync(List<Models.Commit> commits, int generation, CancellationToken ct)
+        {
+            try
+            {
+                var provider = Services.HostServices.AnnotationProvider;
+                var shas = commits.Select(c => c.SHA.Length >= 9 ? c.SHA[..9] : c.SHA).Distinct().ToList();
+                var annotations = await provider.GetAnnotationsAsync(shas, ct).ConfigureAwait(true);
+
+                // Abort if graph has been regenerated since we started
+                if (generation != _graphGeneration)
+                    return;
+
+                // Apply annotations to commits
+                foreach (var commit in commits)
+                {
+                    var shortSha = commit.SHA.Length >= 9 ? commit.SHA[..9] : commit.SHA;
+                    if (annotations.TryGetValue(shortSha, out var list))
+                        commit.Annotations = new List<UGSGit.PluginAbstractions.CommitAnnotation>(list);
+                    else
+                        commit.Annotations = null;
+                }
+
+                // Trigger visual refresh of annotation presenters
+                OnPropertyChanged(nameof(Commits));
+            }
+            catch (OperationCanceledException)
+            {
+                // Expected on cancellation, swallow
+            }
+            catch (Exception ex)
+            {
+                // Log but don't crash the graph
+                Native.OS.LogException(ex);
+            }
         }
 
         private Repository _repo = null;

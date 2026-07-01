@@ -30,6 +30,12 @@ namespace SourceGit.Models
             set;
         } = string.Empty;
 
+        public bool EnableRecursiveWhenAutoUpdatingSubmodules
+        {
+            get;
+            set;
+        } = true;
+
         public bool AskBeforeAutoUpdatingSubmodules
         {
             get;
@@ -165,10 +171,7 @@ namespace SourceGit.Models
         private static string HashContent(string source)
         {
             var hash = MD5.HashData(Encoding.Default.GetBytes(source));
-            var builder = new StringBuilder(hash.Length * 2);
-            foreach (var c in hash)
-                builder.Append(c.ToString("x2"));
-            return builder.ToString();
+            return Convert.ToHexStringLower(hash);
         }
 
         private static Dictionary<string, RepositorySettings> _cache = new();
