@@ -13,62 +13,28 @@ namespace UGSGit.ViewModels
             get;
         }
 
-        public bool IgnoreWhitespace
+        public int OldMode
         {
-            get => Preferences.Instance.IgnoreWhitespaceChangesInDiff;
-            set
-            {
-                if (value != Preferences.Instance.IgnoreWhitespaceChangesInDiff)
-                {
-                    Preferences.Instance.IgnoreWhitespaceChangesInDiff = value;
-                    OnPropertyChanged();
-                    LoadContent();
-                }
-            }
+            get => _oldMode;
+            private set => SetProperty(ref _oldMode, value);
         }
 
-        public bool ShowEntireFile
+        public int NewMode
         {
-            get => Preferences.Instance.UseFullTextDiff;
-            set
-            {
-                if (value != Preferences.Instance.UseFullTextDiff)
-                {
-                    Preferences.Instance.UseFullTextDiff = value;
-                    OnPropertyChanged();
-
-                    if (Content is TextDiffContext ctx)
-                        LoadContent();
-                }
-            }
-        }
-
-        public bool UseSideBySide
-        {
-            get => Preferences.Instance.UseSideBySideDiff;
-            set
-            {
-                if (value != Preferences.Instance.UseSideBySideDiff)
-                {
-                    Preferences.Instance.UseSideBySideDiff = value;
-                    OnPropertyChanged();
-
-                    if (Content is TextDiffContext ctx && ctx.IsSideBySide() != value)
-                        Content = ctx.SwitchMode();
-                }
-            }
-        }
-
-        public string FileModeChange
-        {
-            get => _fileModeChange;
-            private set => SetProperty(ref _fileModeChange, value);
+            get => _newMode;
+            private set => SetProperty(ref _newMode, value);
         }
 
         public bool IsTextDiff
         {
             get => _isTextDiff;
             private set => SetProperty(ref _isTextDiff, value);
+        }
+
+        public bool IsIgnoreWhitespaceVisible
+        {
+            get => _isIgnoreWhitespaceVisible;
+            private set => SetProperty(ref _isIgnoreWhitespaceVisible, value);
         }
 
         public object Content
@@ -91,8 +57,10 @@ namespace UGSGit.ViewModels
             if (previous != null)
             {
                 _isTextDiff = previous._isTextDiff;
+                _isIgnoreWhitespaceVisible = previous._isIgnoreWhitespaceVisible;
                 _content = previous._content;
-                _fileModeChange = previous._fileModeChange;
+                _oldMode = previous._oldMode;
+                _newMode = previous._newMode;
                 _unifiedLines = previous._unifiedLines;
                 _info = previous._info;
             }
@@ -124,18 +92,25 @@ namespace UGSGit.ViewModels
 
         public void CheckSettings()
         {
+            var pref = Preferences.Instance;
+
             if (Content is TextDiffContext ctx)
             {
-                if ((ShowEntireFile && _info.UnifiedLines != _entireFileLine) ||
-                    (!ShowEntireFile && _info.UnifiedLines == _entireFileLine) ||
-                    (IgnoreWhitespace != _info.IgnoreWhitespace))
+                if ((pref.UseFullTextDiff && _info.UnifiedLines != _entireFileLines) ||
+                    (!pref.UseFullTextDiff && _info.UnifiedLines == _entireFileLines) ||
+                    (pref.IgnoreWhitespaceChangesInDiff != _info.IgnoreWhitespace))
                 {
                     LoadContent();
                     return;
                 }
 
-                if (ctx.IsSideBySide() != UseSideBySide)
+                if (ctx.IsSideBySide() != pref.UseSideBySideDiff)
                     Content = ctx.SwitchMode();
+            }
+            else if (Content is Models.NoOrEOLChange)
+            {
+                if (pref.IgnoreWhitespaceChangesInDiff != _info.IgnoreWhitespace)
+                    LoadContent();
             }
         }
 
@@ -150,10 +125,12 @@ namespace UGSGit.ViewModels
 
             Task.Run(async () =>
             {
-                var numLines = Preferences.Instance.UseFullTextDiff ? _entireFileLine : _unifiedLines;
-                var ignoreWhitespace = Preferences.Instance.IgnoreWhitespaceChangesInDiff;
+                var pref = Preferences.Instance;
+                var numLines = pref.UseFullTextDiff ? _entireFileLines : _unifiedLines;
+                var ignoreWhitespace = pref.IgnoreWhitespaceChangesInDiff;
+                var ignoreCRAtEOL = pref.IgnoreCRAtEOLInDiff;
 
-                var latest = await new Commands.Diff(_repo, _option, numLines, ignoreWhitespace)
+                var latest = await new Commands.Diff(_repo, _option, numLines, ignoreWhitespace, ignoreCRAtEOL)
                     .ReadAsync()
                     .ConfigureAwait(false);
 
@@ -262,6 +239,10 @@ namespace UGSGit.ViewModels
                     else
                         rs = latest.LFSDiff;
                 }
+                else if (IsEmptyFileHash(latest.OldHash) || IsEmptyFileHash(latest.NewHash))
+                {
+                    rs = new Models.EmptyFile();
+                }
                 else
                 {
                     rs = new Models.NoOrEOLChange();
@@ -269,11 +250,13 @@ namespace UGSGit.ViewModels
 
                 Dispatcher.UIThread.Post(() =>
                 {
-                    FileModeChange = latest.FileModeChange;
+                    OldMode = latest.OldMode;
+                    NewMode = latest.NewMode;
 
                     if (rs is Models.TextDiff cur)
                     {
                         IsTextDiff = true;
+                        IsIgnoreWhitespaceVisible = true;
 
                         if (Preferences.Instance.UseSideBySideDiff)
                             Content = new TwoSideTextDiff(_option, cur, _content as TextDiffContext);
@@ -283,6 +266,7 @@ namespace UGSGit.ViewModels
                     else
                     {
                         IsTextDiff = false;
+                        IsIgnoreWhitespaceVisible = (rs is Models.NoOrEOLChange);
                         Content = rs;
                     }
                 });
@@ -314,6 +298,20 @@ namespace UGSGit.ViewModels
             };
         }
 
+        private bool IsEmptyFileHash(string hash)
+        {
+            if (string.IsNullOrEmpty(hash))
+                return false;
+
+            if (hash.Length == 40)
+                return hash.Equals(Models.EmptyFile.SHA1, StringComparison.Ordinal);
+
+            if (hash.Length == 64)
+                return hash.Equals(Models.EmptyFile.SHA256, StringComparison.Ordinal);
+
+            return false;
+        }
+
         private class Info
         {
             public string Argument { get; }
@@ -341,12 +339,14 @@ namespace UGSGit.ViewModels
             }
         }
 
-        private readonly int _entireFileLine = 999999999;
+        private readonly int _entireFileLines = 999999999;
         private readonly string _repo;
         private readonly Models.DiffOption _option = null;
-        private string _fileModeChange = string.Empty;
+        private int _oldMode = 0;
+        private int _newMode = 0;
         private int _unifiedLines = 4;
         private bool _isTextDiff = false;
+        private bool _isIgnoreWhitespaceVisible = true;
         private object _content = null;
         private Info _info = null;
     }

@@ -69,7 +69,7 @@ namespace UGSGit.Views
             }
         }
 
-        private async void OnSearchSuggestionDoubleTapped(object sender, TappedEventArgs e)
+        private async void OnSearchSuggestionTapped(object sender, TappedEventArgs e)
         {
             if (DataContext is not ViewModels.CommitDetail vm)
                 return;

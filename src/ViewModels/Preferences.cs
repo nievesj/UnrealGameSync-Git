@@ -195,12 +195,6 @@ namespace UGSGit.ViewModels
             set => SetProperty(ref _check4UpdatesOnStartup, value);
         }
 
-        public bool ShowAuthorTimeInGraph
-        {
-            get => _showAuthorTimeInGraph;
-            set => SetProperty(ref _showAuthorTimeInGraph, value);
-        }
-
         public bool ShowChildren
         {
             get => _showChildren;
@@ -217,6 +211,12 @@ namespace UGSGit.ViewModels
         {
             get => _showTagsInGraph;
             set => SetProperty(ref _showTagsInGraph, value);
+        }
+
+        public bool UseCompactBranchNamesInGraph
+        {
+            get => _useCompactBranchNamesInGraph;
+            set => SetProperty(ref _useCompactBranchNamesInGraph, value);
         }
 
         public bool UseTwoColumnsLayoutInHistories
@@ -245,15 +245,8 @@ namespace UGSGit.ViewModels
 
         public bool IgnoreCRAtEOLInDiff
         {
-            get => Models.DiffOption.IgnoreCRAtEOL;
-            set
-            {
-                if (Models.DiffOption.IgnoreCRAtEOL != value)
-                {
-                    Models.DiffOption.IgnoreCRAtEOL = value;
-                    OnPropertyChanged();
-                }
-            }
+            get => _ignoreCRAtEOLInDiff;
+            set => SetProperty(ref _ignoreCRAtEOLInDiff, value);
         }
 
         public bool UseStashAndReapplyByDefault
@@ -475,12 +468,6 @@ namespace UGSGit.ViewModels
                     OnPropertyChanged();
                 }
             }
-        }
-
-        public uint StatisticsSampleColor
-        {
-            get => _statisticsSampleColor;
-            set => SetProperty(ref _statisticsSampleColor, value);
         }
 
         public List<RepositoryNode> RepositoryNodes
@@ -840,8 +827,8 @@ namespace UGSGit.ViewModels
         private bool _useFixedTabWidth = true;
         private bool _useAutoHideScrollBars = true;
         private bool _useGitHubStyleAvatar = true;
-        private bool _showAuthorTimeInGraph = false;
         private bool _showChildren = false;
+        private bool _useCompactBranchNamesInGraph = true;
 
         private bool _check4UpdatesOnStartup = true;
         private double _lastCheckUpdateTime = 0;
@@ -852,6 +839,7 @@ namespace UGSGit.ViewModels
         private bool _displayTimeAsPeriodInHistories = false;
         private bool _useSideBySideDiff = false;
         private bool _ignoreWhitespaceChangesInDiff = false;
+        private bool _ignoreCRAtEOLInDiff = true;
         private bool _useSyntaxHighlighting = false;
         private bool _enableDiffViewWordWrap = false;
         private bool _showHiddenSymbolsInDiffView = false;
@@ -867,7 +855,6 @@ namespace UGSGit.ViewModels
 
         private string _gitDefaultCloneDir = string.Empty;
         private int _shellOrTerminalType = -1;
-        private uint _statisticsSampleColor = 0xFF00FF00;
 
         #region IPluginStateStore Implementation
         bool? IPluginStateStore.GetGlobalState(string pluginId)

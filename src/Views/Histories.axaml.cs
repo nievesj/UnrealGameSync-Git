@@ -22,13 +22,16 @@ namespace UGSGit.Views
 {
     public class HistoriesLayout : Grid
     {
-        public static readonly StyledProperty<bool> UseHorizontalProperty =
-            AvaloniaProperty.Register<HistoriesLayout, bool>(nameof(UseHorizontal));
+        public static readonly DirectProperty<HistoriesLayout, bool> UseHorizontalProperty =
+            AvaloniaProperty.RegisterDirect<HistoriesLayout, bool>(
+                nameof(UseHorizontal),
+                static o => o.UseHorizontal,
+                static (o, v) => o.UseHorizontal = v);
 
         public bool UseHorizontal
         {
-            get => GetValue(UseHorizontalProperty);
-            set => SetValue(UseHorizontalProperty, value);
+            get => _useHorizontal;
+            set => SetAndRaise(UseHorizontalProperty, ref _useHorizontal, value);
         }
 
         protected override Type StyleKeyOverride => typeof(Grid);
@@ -80,26 +83,34 @@ namespace UGSGit.Views
                 }
             }
         }
+
+        private bool _useHorizontal = false;
     }
 
     public class HistoriesCommitList : DataGrid
     {
-        public static readonly StyledProperty<int> TotalCommitsProperty =
-            AvaloniaProperty.Register<HistoriesCommitList, int>(nameof(TotalCommits), 0);
+        public static readonly DirectProperty<HistoriesCommitList, int> TotalCommitsProperty =
+            AvaloniaProperty.RegisterDirect<HistoriesCommitList, int>(
+                nameof(TotalCommits),
+                static o => o.TotalCommits,
+                static (o, v) => o.TotalCommits = v);
 
         public int TotalCommits
         {
-            get => GetValue(TotalCommitsProperty);
-            set => SetValue(TotalCommitsProperty, value);
+            get => _totalCommits;
+            set => SetAndRaise(TotalCommitsProperty, ref _totalCommits, value);
         }
 
-        public static readonly StyledProperty<List<Models.Commit>> SelectedCommitsProperty =
-            AvaloniaProperty.Register<HistoriesCommitList, List<Models.Commit>>(nameof(SelectedCommits), []);
+        public static readonly DirectProperty<HistoriesCommitList, List<Models.Commit>> SelectedCommitsProperty =
+            AvaloniaProperty.RegisterDirect<HistoriesCommitList, List<Models.Commit>>(
+                nameof(SelectedCommits),
+                static o => o.SelectedCommits,
+                static (o, v) => o.SelectedCommits = v);
 
         public List<Models.Commit> SelectedCommits
         {
-            get => GetValue(SelectedCommitsProperty);
-            set => SetValue(SelectedCommitsProperty, value);
+            get => _selectedCommits;
+            set => SetAndRaise(SelectedCommitsProperty, ref _selectedCommits, value);
         }
 
         protected override Type StyleKeyOverride => typeof(DataGrid);
@@ -108,13 +119,12 @@ namespace UGSGit.Views
         {
             SelectionMode = DataGridSelectionMode.Extended;
             CanUserReorderColumns = false;
-            CanUserResizeColumns = true;
+            CanUserResizeColumns = false;
             CanUserSortColumns = false;
             AutoGenerateColumns = false;
             IsReadOnly = true;
             HeadersVisibility = DataGridHeadersVisibility.Column;
             ClipboardCopyMode = DataGridClipboardCopyMode.None;
-            Focusable = false;
             HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
             VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
         }
@@ -178,7 +188,7 @@ namespace UGSGit.Views
                 var old = SelectedCommits;
                 if (old.Count != commits.Count)
                 {
-                    SetCurrentValue(SelectedCommitsProperty, commits);
+                    SelectedCommits = commits;
                 }
                 else if (commits.Count > 0)
                 {
@@ -197,7 +207,7 @@ namespace UGSGit.Views
                     }
 
                     if (!equals)
-                        SetCurrentValue(SelectedCommitsProperty, commits);
+                        SelectedCommits = commits;
                 }
 
                 _ignoreSelectionChanged = false;
@@ -211,12 +221,14 @@ namespace UGSGit.Views
                 if (e.Key == Key.Up)
                 {
                     e.Handled = true;
-                    await this.FindAncestorOfType<Histories>()?.GotoChild();
+                    if (this.FindAncestorOfType<Histories>() is { } histories)
+                        await histories.GotoChild();
                 }
                 else if (e.Key == Key.Down)
                 {
                     e.Handled = true;
-                    await this.FindAncestorOfType<Histories>()?.GotoParent();
+                    if (this.FindAncestorOfType<Histories>() is { } histories)
+                        await histories.GotoParent();
                 }
             }
             else if (e.KeyModifiers.HasFlag(OperatingSystem.IsMacOS() ? KeyModifiers.Meta : KeyModifiers.Control) &&
@@ -267,7 +279,7 @@ namespace UGSGit.Views
             var property = typeof(DataGrid).GetProperty("NoSelectionChangeCount", BindingFlags.Instance | BindingFlags.NonPublic);
             if (property != null)
             {
-                var old = (int)property.GetValue(this);
+                var old = (int)property.GetValue(this)!;
                 property.SetValue(this, old + 1);
             }
         }
@@ -277,59 +289,76 @@ namespace UGSGit.Views
             var property = typeof(DataGrid).GetProperty("NoSelectionChangeCount", BindingFlags.Instance | BindingFlags.NonPublic);
             if (property != null)
             {
-                var old = (int)property.GetValue(this);
+                var old = (int)property.GetValue(this)!;
                 property.SetValue(this, old - 1);
             }
         }
 
         private bool _ignoreSelectionChanged = false;
+        private int _totalCommits = 0;
+        private List<Models.Commit> _selectedCommits = [];
     }
 
     public partial class Histories : UserControl
     {
-        public static readonly StyledProperty<Models.Branch> CurrentBranchProperty =
-            AvaloniaProperty.Register<Histories, Models.Branch>(nameof(CurrentBranch));
+        public static readonly DirectProperty<Histories, Models.Branch> CurrentBranchProperty =
+            AvaloniaProperty.RegisterDirect<Histories, Models.Branch>(
+                nameof(CurrentBranch),
+                static o => o.CurrentBranch,
+                static (o, v) => o.CurrentBranch = v);
 
         public Models.Branch CurrentBranch
         {
-            get => GetValue(CurrentBranchProperty);
-            set => SetValue(CurrentBranchProperty, value);
+            get => _currentBranch;
+            set => SetAndRaise(CurrentBranchProperty, ref _currentBranch, value);
         }
 
-        public static readonly StyledProperty<Models.Bisect> BisectProperty =
-            AvaloniaProperty.Register<Histories, Models.Bisect>(nameof(Bisect));
+        public static readonly DirectProperty<Histories, Models.Bisect> BisectProperty =
+            AvaloniaProperty.RegisterDirect<Histories, Models.Bisect>(
+                nameof(Bisect),
+                static o => o.Bisect,
+                static (o, v) => o.Bisect = v);
 
         public Models.Bisect Bisect
         {
-            get => GetValue(BisectProperty);
-            set => SetValue(BisectProperty, value);
+            get => _bisect;
+            set => SetAndRaise(BisectProperty, ref _bisect, value);
         }
 
-        public static readonly StyledProperty<AvaloniaList<Models.IssueTracker>> IssueTrackersProperty =
-            AvaloniaProperty.Register<Histories, AvaloniaList<Models.IssueTracker>>(nameof(IssueTrackers));
+        public static readonly DirectProperty<Histories, AvaloniaList<Models.IssueTracker>> IssueTrackersProperty =
+            AvaloniaProperty.RegisterDirect<Histories, AvaloniaList<Models.IssueTracker>>(
+                nameof(IssueTrackers),
+                static o => o.IssueTrackers,
+                static (o, v) => o.IssueTrackers = v);
 
         public AvaloniaList<Models.IssueTracker> IssueTrackers
         {
-            get => GetValue(IssueTrackersProperty);
-            set => SetValue(IssueTrackersProperty, value);
+            get => _issueTrackers;
+            set => SetAndRaise(IssueTrackersProperty, ref _issueTrackers, value);
         }
 
-        public static readonly StyledProperty<bool> IsScrollToTopVisibleProperty =
-            AvaloniaProperty.Register<Histories, bool>(nameof(IsScrollToTopVisible));
+        public static readonly DirectProperty<Histories, bool> IsScrollToTopVisibleProperty =
+            AvaloniaProperty.RegisterDirect<Histories, bool>(
+                nameof(IsScrollToTopVisible),
+                static o => o.IsScrollToTopVisible,
+                static (o, v) => o.IsScrollToTopVisible = v);
 
         public bool IsScrollToTopVisible
         {
-            get => GetValue(IsScrollToTopVisibleProperty);
-            set => SetValue(IsScrollToTopVisibleProperty, value);
+            get => _isScrollToTopVisible;
+            set => SetAndRaise(IsScrollToTopVisibleProperty, ref _isScrollToTopVisible, value);
         }
 
-        public static readonly StyledProperty<bool> IsDetailsPanelExpandedProperty =
-            AvaloniaProperty.Register<Histories, bool>(nameof(IsDetailsPanelExpanded), true);
+        public static readonly DirectProperty<Histories, bool> IsDetailsPanelExpandedProperty =
+            AvaloniaProperty.RegisterDirect<Histories, bool>(
+                nameof(IsDetailsPanelExpanded),
+                static o => o.IsDetailsPanelExpanded,
+                static (o, v) => o.IsDetailsPanelExpanded = v);
 
         public bool IsDetailsPanelExpanded
         {
-            get => GetValue(IsDetailsPanelExpandedProperty);
-            set => SetValue(IsDetailsPanelExpandedProperty, value);
+            get => _isDetailsPanelExpanded;
+            set => SetAndRaise(IsDetailsPanelExpandedProperty, ref _isDetailsPanelExpanded, value);
         }
 
         public Histories()
@@ -423,6 +452,131 @@ namespace UGSGit.Views
             }
         }
 
+        protected override void OnDataContextChanged(EventArgs e)
+        {
+            base.OnDataContextChanged(e);
+
+            if (DataContext is ViewModels.Histories vm)
+                CommitListContainer.Columns[1].Width = new(vm.AuthorColumnWidth, DataGridLengthUnitType.Pixel);
+        }
+
+        private void OnCommitListHeaderPointerMoved(object sender, PointerEventArgs e)
+        {
+            if (sender is not Border border)
+                return;
+
+            if (DataContext is not ViewModels.Histories { IsAuthorColumnVisible: true } vm)
+                return;
+
+            var pos = e.GetPosition(border);
+            if (_resizingAuthorColumn)
+            {
+                var posX = CommitListContainer.Columns[0].ActualWidth;
+                var maxW = posX + CommitListContainer.Columns[1].ActualWidth - 100;
+                var delta = posX - pos.X;
+                var w = Math.Max(Math.Min(vm.AuthorColumnWidth + delta, maxW), 80);
+                CommitListContainer.Columns[1].Width = new(w, DataGridLengthUnitType.Pixel);
+                vm.AuthorColumnWidth = w;
+            }
+            else
+            {
+                var dis = CommitListContainer.Columns[0].ActualWidth - 4 - pos.X;
+                if (dis < 4 && dis > -4)
+                {
+                    if (border.Cursor != _resizingCursor)
+                        border.Cursor = _resizingCursor;
+                }
+                else if (border.Cursor != Cursor.Default)
+                {
+                    border.Cursor = Cursor.Default;
+                }
+            }
+        }
+
+        private void OnCommitListHeaderPointerPressed(object sender, PointerPressedEventArgs e)
+        {
+            if (sender is not Border border)
+                return;
+
+            var pos = e.GetPosition(border);
+            var dis = CommitListContainer.Columns[0].ActualWidth - 4 - pos.X;
+            if (dis > 4 || dis < -4)
+                return;
+
+            if (e.GetCurrentPoint(border).Properties.IsLeftButtonPressed)
+            {
+                _resizingAuthorColumn = true;
+                e.Handled = true;
+            }
+        }
+
+        private void OnCommitListHeaderPointerReleased(object sender, PointerReleasedEventArgs e)
+        {
+            _resizingAuthorColumn = false;
+        }
+
+        private void OnCommitListHeaderContextRequested(object sender, ContextRequestedEventArgs e)
+        {
+            if (DataContext is not ViewModels.Histories vm)
+                return;
+
+            if (sender is not Border border)
+                return;
+
+            var columnsHeader = new MenuItem();
+            columnsHeader.Header = new TextBlock() { Text = App.Text("Histories.ShowColumns"), FontWeight = FontWeight.Bold };
+            columnsHeader.IsEnabled = false;
+
+            var authorColumn = new MenuItem();
+            authorColumn.Header = App.Text("Histories.Header.Author");
+            if (vm.IsAuthorColumnVisible)
+                authorColumn.Icon = this.CreateMenuIcon("Icons.Check");
+            authorColumn.Click += (_, ev) =>
+            {
+                vm.IsAuthorColumnVisible = !vm.IsAuthorColumnVisible;
+                ev.Handled = true;
+            };
+
+            var shaColumn = new MenuItem();
+            shaColumn.Header = App.Text("Histories.Header.SHA");
+            if (vm.IsSHAColumnVisible)
+                shaColumn.Icon = this.CreateMenuIcon("Icons.Check");
+            shaColumn.Click += (_, ev) =>
+            {
+                vm.IsSHAColumnVisible = !vm.IsSHAColumnVisible;
+                ev.Handled = true;
+            };
+
+            var authorTimeColumn = new MenuItem();
+            authorTimeColumn.Header = App.Text("Histories.Header.AuthorTime");
+            if (vm.IsAuthorTimeColumnVisible)
+                authorTimeColumn.Icon = this.CreateMenuIcon("Icons.Check");
+            authorTimeColumn.Click += (_, ev) =>
+            {
+                vm.IsAuthorTimeColumnVisible = !vm.IsAuthorTimeColumnVisible;
+                ev.Handled = true;
+            };
+
+            var commitTimeColumn = new MenuItem();
+            commitTimeColumn.Header = App.Text("Histories.Header.CommitTime");
+            if (vm.IsCommitTimeColumnVisible)
+                commitTimeColumn.Icon = this.CreateMenuIcon("Icons.Check");
+            commitTimeColumn.Click += (_, ev) =>
+            {
+                vm.IsCommitTimeColumnVisible = !vm.IsCommitTimeColumnVisible;
+                ev.Handled = true;
+            };
+
+            var menu = new ContextMenu();
+            menu.Items.Add(columnsHeader);
+            menu.Items.Add(authorColumn);
+            menu.Items.Add(shaColumn);
+            menu.Items.Add(authorTimeColumn);
+            menu.Items.Add(commitTimeColumn);
+            menu.Open(border);
+            e.Handled = true;
+        }
+
         private void OnCommitListLayoutUpdated(object _1, EventArgs _2)
         {
             if (!IsLoaded)
@@ -450,19 +604,15 @@ namespace UGSGit.Views
                 }
             }
 
-            SetCurrentValue(IsScrollToTopVisibleProperty, startY >= rowHeight);
+            IsScrollToTopVisible = startY >= rowHeight;
 
             var clipWidth = dataGrid.Columns[0].ActualWidth - 4;
-            if (Math.Abs(_lastGraphStartY - startY) > 0.01 ||
-                Math.Abs(_lastGraphClipWidth - clipWidth) > 0.01 ||
-                Math.Abs(_lastGraphRowHeight - rowHeight) > 0.01)
-            {
-                _lastGraphStartY = startY;
-                _lastGraphClipWidth = clipWidth;
-                _lastGraphRowHeight = rowHeight;
-
+            var lastLayout = CommitGraph.Layout;
+            if (lastLayout == null ||
+                Math.Abs(lastLayout.StartY - startY) > 0.01 ||
+                Math.Abs(lastLayout.ClipWidth - clipWidth) > 0.01 ||
+                Math.Abs(lastLayout.RowHeight - rowHeight) > 0.01)
                 CommitGraph.Layout = new(startY, clipWidth, rowHeight);
-            }
         }
 
         private void OnScrollToTopPointerPressed(object sender, PointerPressedEventArgs e)
@@ -473,82 +623,29 @@ namespace UGSGit.Views
 
         private void OnCommitListContextRequested(object sender, ContextRequestedEventArgs e)
         {
-            if (e.Source is Control { DataContext: Models.Commit })
+            var repoView = this.FindAncestorOfType<Repository>();
+            if (repoView is not { DataContext: ViewModels.Repository repo })
+                return;
+
+            var selected = CommitListContainer.SelectedItems;
+            if (selected is not { Count: > 0 })
+                return;
+
+            var commits = new List<Models.Commit>();
+            for (var i = selected.Count - 1; i >= 0; i--)
             {
-                var repoView = this.FindAncestorOfType<Repository>();
-                if (repoView is not { DataContext: ViewModels.Repository repo })
-                    return;
-
-                var selected = CommitListContainer.SelectedItems;
-                if (selected is not { Count: > 0 })
-                    return;
-
-                var commits = new List<Models.Commit>();
-                for (var i = selected.Count - 1; i >= 0; i--)
-                {
-                    if (selected[i] is Models.Commit c)
-                        commits.Add(c);
-                }
-
-                if (selected.Count > 1)
-                {
-                    var menu = CreateContextMenuForMultipleCommits(repo, commits);
-                    menu.Open(CommitListContainer);
-                }
-                else if (selected.Count == 1)
-                {
-                    var menu = CreateContextMenuForSingleCommit(repo, commits[0]);
-                    menu.Open(CommitListContainer);
-                }
+                if (selected[i] is Models.Commit c)
+                    commits.Add(c);
             }
-            else if (e.Source is Control elem)
+
+            if (selected.Count > 1)
             {
-                var headersPresenter = CommitListContainer.FindDescendantOfType<DataGridColumnHeadersPresenter>();
-                if (!headersPresenter.IsVisualAncestorOf(elem))
-                    return;
-
-                if (DataContext is not ViewModels.Histories vm)
-                    return;
-
-                var columnsHeader = new MenuItem();
-                columnsHeader.Header = new TextBlock() { Text = App.Text("Histories.ShowColumns"), FontWeight = FontWeight.Bold };
-                columnsHeader.IsEnabled = false;
-
-                var authorColumn = new MenuItem();
-                authorColumn.Header = App.Text("Histories.Header.Author");
-                if (vm.IsAuthorColumnVisible)
-                    authorColumn.Icon = this.CreateMenuIcon("Icons.Check");
-                authorColumn.Click += (_, ev) =>
-                {
-                    vm.IsAuthorColumnVisible = !vm.IsAuthorColumnVisible;
-                    ev.Handled = true;
-                };
-
-                var shaColumn = new MenuItem();
-                shaColumn.Header = App.Text("Histories.Header.SHA");
-                if (vm.IsSHAColumnVisible)
-                    shaColumn.Icon = this.CreateMenuIcon("Icons.Check");
-                shaColumn.Click += (_, ev) =>
-                {
-                    vm.IsSHAColumnVisible = !vm.IsSHAColumnVisible;
-                    ev.Handled = true;
-                };
-
-                var timeColumn = new MenuItem();
-                timeColumn.Header = App.Text("Histories.Header.DateTime");
-                if (vm.IsDateTimeColumnVisible)
-                    timeColumn.Icon = this.CreateMenuIcon("Icons.Check");
-                timeColumn.Click += (_, ev) =>
-                {
-                    vm.IsDateTimeColumnVisible = !vm.IsDateTimeColumnVisible;
-                    ev.Handled = true;
-                };
-
-                var menu = new ContextMenu();
-                menu.Items.Add(columnsHeader);
-                menu.Items.Add(authorColumn);
-                menu.Items.Add(shaColumn);
-                menu.Items.Add(timeColumn);
+                var menu = CreateContextMenuForMultipleCommits(repo, commits);
+                menu.Open(CommitListContainer);
+            }
+            else if (selected.Count == 1)
+            {
+                var menu = CreateContextMenuForSingleCommit(repo, commits[0]);
                 menu.Open(CommitListContainer);
             }
 
@@ -561,9 +658,14 @@ namespace UGSGit.Views
 
             if (DataContext is ViewModels.Histories histories &&
                 CommitListContainer.SelectedItems is { Count: 1 } &&
-                sender is DataGrid grid &&
-                !Equals(e.Source, grid))
+                e.Source is Control { DataContext: Models.Commit c })
             {
+                if (histories.Bisect != null)
+                {
+                    histories.CheckoutCommitDetached(c);
+                    return;
+                }
+
                 if (e.Source is CommitRefsPresenter crp)
                 {
                     var decorator = crp.DecoratorAt(e.GetPosition(crp));
@@ -572,9 +674,14 @@ namespace UGSGit.Views
                         return;
                 }
 
-                if (e.Source is Control { DataContext: Models.Commit c })
-                    await histories.CheckoutBranchByCommitAsync(c);
+                await histories.CheckoutBranchByCommitAsync(c);
             }
+        }
+
+        private void OnCommitGraphLoaded(object sender, RoutedEventArgs e)
+        {
+            // Force-update the graph layout to ensure the graph is correctly rendered when it's loaded.
+            OnCommitListLayoutUpdated(sender, e);
         }
 
         private void OnTabHeaderPointerPressed(object sender, PointerPressedEventArgs e)
@@ -597,13 +704,13 @@ namespace UGSGit.Views
                 {
                     var standalone = new CommitDetailStandalone();
                     standalone.DataContext = detail.Clone();
-                    standalone.Show(TopLevel.GetTopLevel(this) as Window);
+                    this.ShowWindow(standalone);
                 }
                 else if (vm.DetailContext is ViewModels.RevisionCompare compare)
                 {
                     var standalone = new RevisionCompareStandalone();
                     standalone.DataContext = compare.Clone();
-                    standalone.Show(TopLevel.GetTopLevel(this) as Window);
+                    this.ShowWindow(standalone);
                 }
             }
 
@@ -879,15 +986,15 @@ namespace UGSGit.Views
                             FillCurrentBranchMenu(menu, repo, current);
                             break;
                         case Models.DecoratorType.LocalBranchHead:
-                            var lb = repo.Branches.Find(x => x.IsLocal && d.Name == x.Name);
+                            var lb = repo.Branches.Find(x => x.IsLocal && d.Name.Equals(x.Name, StringComparison.Ordinal));
                             FillOtherLocalBranchMenu(menu, repo, lb, current, commit.IsMerged);
                             break;
                         case Models.DecoratorType.RemoteBranchHead:
-                            var rb = repo.Branches.Find(x => !x.IsLocal && d.Name == x.FriendlyName);
+                            var rb = repo.Branches.Find(x => !x.IsLocal && d.Name.Equals(x.FriendlyName, StringComparison.Ordinal));
                             FillRemoteBranchMenu(menu, repo, rb, current, commit.IsMerged);
                             break;
                         case Models.DecoratorType.Tag:
-                            var t = repo.Tags.Find(x => x.Name == d.Name);
+                            var t = repo.Tags.Find(x => d.Name.Equals(x.Name, StringComparison.Ordinal));
                             if (t != null)
                                 tags.Add(t);
                             break;
@@ -901,7 +1008,7 @@ namespace UGSGit.Views
             if (tags.Count > 0)
             {
                 foreach (var tag in tags)
-                    FillTagMenu(menu, repo, tag, current, commit.IsMerged);
+                    FillTagMenu(menu, repo, tag, current);
                 menu.Items.Add(new MenuItem() { Header = "-" });
             }
 
@@ -933,7 +1040,7 @@ namespace UGSGit.Views
             if (!repo.IsBare)
             {
                 var target = commit.GetFriendlyName();
-                if (target.Length > 32)
+                if (target.Length > 40)
                     target = commit.SHA.Substring(0, 10);
 
                 if (!isHead)
@@ -963,20 +1070,55 @@ namespace UGSGit.Views
                     };
                     menu.Items.Add(rebase);
 
-                    if (!commit.HasDecorators)
+                    var merge = new MenuItem();
+                    merge.Header = App.Text("BranchCM.Merge", target, current.Name);
+                    merge.Icon = this.CreateMenuIcon("Icons.Merge");
+                    merge.Click += (_, e) =>
                     {
-                        var merge = new MenuItem();
-                        merge.Header = App.Text("CommitCM.Merge", current.Name);
-                        merge.Icon = this.CreateMenuIcon("Icons.Merge");
-                        merge.Click += (_, e) =>
+                        if (repo.CanCreatePopup())
                         {
-                            if (repo.CanCreatePopup())
-                                repo.ShowPopup(new ViewModels.Merge(repo, commit, current.Name));
+                            var found = false;
+                            foreach (var d in commit.Decorators)
+                            {
+                                if (d.Type == Models.DecoratorType.LocalBranchHead)
+                                {
+                                    var b = repo.Branches.Find(x => x.IsLocal && x.Name.Equals(d.Name, StringComparison.Ordinal));
+                                    if (b != null)
+                                    {
+                                        found = true;
+                                        repo.ShowPopup(new ViewModels.Merge(repo, b, current.Name, false));
+                                        break;
+                                    }
+                                }
+                                else if (d.Type == Models.DecoratorType.RemoteBranchHead)
+                                {
+                                    var rb = repo.Branches.Find(x => !x.IsLocal && x.FriendlyName.Equals(d.Name, StringComparison.Ordinal));
+                                    if (rb != null)
+                                    {
+                                        found = true;
+                                        repo.ShowPopup(new ViewModels.Merge(repo, rb, current.Name, false));
+                                        break;
+                                    }
+                                }
+                                else if (d.Type == Models.DecoratorType.Tag)
+                                {
+                                    var t = repo.Tags.Find(x => x.Name.Equals(d.Name, StringComparison.Ordinal));
+                                    if (t != null)
+                                    {
+                                        found = true;
+                                        repo.ShowPopup(new ViewModels.Merge(repo, t, current.Name));
+                                        break;
+                                    }
+                                }
+                            }
 
-                            e.Handled = true;
-                        };
-                        menu.Items.Add(merge);
-                    }
+                            if (!found)
+                                repo.ShowPopup(new ViewModels.Merge(repo, commit, current.Name));
+                        }
+
+                        e.Handled = true;
+                    };
+                    menu.Items.Add(merge);
 
                     var cherryPick = new MenuItem();
                     cherryPick.Header = App.Text("CommitCM.CherryPick");
@@ -1008,7 +1150,7 @@ namespace UGSGit.Views
                     checkoutCommit.Click += (_, e) =>
                     {
                         if (repo.CanCreatePopup())
-                            repo.ShowPopup(new ViewModels.CheckoutCommit(repo, commit));
+                            repo.ShowPopup(new ViewModels.CheckoutDetached(repo, commit));
                         e.Handled = true;
                     };
                     menu.Items.Add(checkoutCommit);
@@ -1024,7 +1166,6 @@ namespace UGSGit.Views
                     {
                         var manually = new MenuItem();
                         manually.Header = App.Text("CommitCM.InteractiveRebase.Manually", current.Name, target);
-                        manually.Icon = this.CreateMenuIcon("Icons.InteractiveRebase");
                         manually.Click += async (_, e) =>
                         {
                             await this.ShowDialogAsync(new ViewModels.InteractiveRebase(repo, commit));
@@ -1171,7 +1312,9 @@ namespace UGSGit.Views
                     {
                         var folder = selected[0];
                         var folderPath = folder is { Path: { IsAbsoluteUri: true } path } ? path.LocalPath : folder.Path.ToString();
-                        await repo.SaveCommitAsPatchAsync(commit, folderPath);
+                        var succ = await repo.SaveCommitAsPatchAsync(commit, folderPath);
+                        if (succ)
+                            repo.SendNotification(App.Text("SaveAsPatchSuccess"));
                     }
                 }
                 catch (Exception exception)
@@ -1276,6 +1419,24 @@ namespace UGSGit.Views
                 e.Handled = true;
             };
 
+            var copyAuthorTime = new MenuItem();
+            copyAuthorTime.Header = App.Text("CommitCM.CopyAuthorTime");
+            copyAuthorTime.Icon = this.CreateMenuIcon("Icons.DateTime");
+            copyAuthorTime.Click += async (_, e) =>
+            {
+                await this.CopyTextAsync(Models.DateTimeFormat.Format(commit.AuthorTime));
+                e.Handled = true;
+            };
+
+            var copyCommitterTime = new MenuItem();
+            copyCommitterTime.Header = App.Text("CommitCM.CopyCommitterTime");
+            copyCommitterTime.Icon = this.CreateMenuIcon("Icons.DateTime");
+            copyCommitterTime.Click += async (_, e) =>
+            {
+                await this.CopyTextAsync(Models.DateTimeFormat.Format(commit.CommitterTime));
+                e.Handled = true;
+            };
+
             var copy = new MenuItem();
             copy.Header = App.Text("Copy");
             copy.Icon = this.CreateMenuIcon("Icons.Copy");
@@ -1286,6 +1447,8 @@ namespace UGSGit.Views
             copy.Items.Add(copyMessage);
             copy.Items.Add(copyAuthor);
             copy.Items.Add(copyCommitter);
+            copy.Items.Add(copyAuthorTime);
+            copy.Items.Add(copyCommitterTime);
             menu.Items.Add(copy);
 
             return menu;
@@ -1433,7 +1596,7 @@ namespace UGSGit.Views
                 {
                     var finish = new MenuItem();
                     finish.Header = App.Text("BranchCM.Finish", current.Name);
-                    finish.Icon = this.CreateMenuIcon("Icons.GitFlow");
+                    finish.Icon = this.CreateMenuIcon("Icons.GitFlow.Finish");
                     finish.Click += (_, e) =>
                     {
                         if (repo.CanCreatePopup())
@@ -1495,6 +1658,18 @@ namespace UGSGit.Views
                 submenu.Items.Add(merge);
             }
 
+            var push = new MenuItem();
+            push.Header = App.Text("BranchCM.Push", branch.Name);
+            push.Icon = this.CreateMenuIcon("Icons.Push");
+            push.IsEnabled = repo.Remotes.Count > 0;
+            push.Click += (_, e) =>
+            {
+                if (repo.CanCreatePopup())
+                    repo.ShowPopup(new ViewModels.Push(repo, branch));
+                e.Handled = true;
+            };
+            submenu.Items.Add(push);
+
             var rename = new MenuItem();
             rename.Header = App.Text("BranchCM.Rename", branch.Name);
             rename.Icon = this.CreateMenuIcon("Icons.Rename");
@@ -1525,7 +1700,7 @@ namespace UGSGit.Views
                 {
                     var finish = new MenuItem();
                     finish.Header = App.Text("BranchCM.Finish", branch.Name);
-                    finish.Icon = this.CreateMenuIcon("Icons.GitFlow");
+                    finish.Icon = this.CreateMenuIcon("Icons.GitFlow.Finish");
                     finish.Click += (_, e) =>
                     {
                         if (repo.CanCreatePopup())
@@ -1564,6 +1739,9 @@ namespace UGSGit.Views
 
         private void FillRemoteBranchMenu(ContextMenu menu, ViewModels.Repository repo, Models.Branch branch, Models.Branch current, bool merged)
         {
+            if (branch == null)
+                return;
+
             var name = branch.FriendlyName;
 
             var submenu = new MenuItem();
@@ -1596,7 +1774,6 @@ namespace UGSGit.Views
                     repo.ShowPopup(new ViewModels.Merge(repo, branch, current.Name, false));
                 e.Handled = true;
             };
-
             submenu.Items.Add(merge);
 
             var delete = new MenuItem();
@@ -1636,7 +1813,7 @@ namespace UGSGit.Views
             menu.Items.Add(submenu);
         }
 
-        private void FillTagMenu(ContextMenu menu, ViewModels.Repository repo, Models.Tag tag, Models.Branch current, bool merged)
+        private void FillTagMenu(ContextMenu menu, ViewModels.Repository repo, Models.Tag tag, Models.Branch current)
         {
             var submenu = new MenuItem();
             submenu.Header = tag.Name;
@@ -1660,20 +1837,6 @@ namespace UGSGit.Views
                 e.Handled = true;
             };
             submenu.Items.Add(push);
-
-            if (!repo.IsBare && !merged)
-            {
-                var merge = new MenuItem();
-                merge.Header = App.Text("TagCM.Merge", tag.Name, current.Name);
-                merge.Icon = this.CreateMenuIcon("Icons.Merge");
-                merge.Click += (_, e) =>
-                {
-                    if (repo.CanCreatePopup())
-                        repo.ShowPopup(new ViewModels.Merge(repo, tag, current.Name));
-                    e.Handled = true;
-                };
-                submenu.Items.Add(merge);
-            }
 
             var delete = new MenuItem();
             delete.Header = App.Text("TagCM.Delete", tag.Name);
@@ -1728,8 +1891,13 @@ namespace UGSGit.Views
                 await this.ShowDialogAsync(new ViewModels.InteractiveRebase(repo, on, prefill));
         }
 
-        private double _lastGraphStartY = 0;
-        private double _lastGraphClipWidth = 0;
-        private double _lastGraphRowHeight = 0;
+
+        private Models.Branch _currentBranch = null;
+        private Models.Bisect _bisect = null;
+        private AvaloniaList<Models.IssueTracker> _issueTrackers = null;
+        private bool _isScrollToTopVisible = false;
+        private bool _isDetailsPanelExpanded = true;
+        private bool _resizingAuthorColumn = false;
+        private Cursor _resizingCursor = new(StandardCursorType.SizeWestEast);
     }
 }

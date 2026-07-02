@@ -77,7 +77,7 @@ namespace UGSGit.Views
 
         private void GotoDownload(object _, RoutedEventArgs e)
         {
-            Native.OS.OpenBrowser("https://github.com/sourcegit-scm/sourcegit/releases/latest");
+            Native.OS.OpenBrowser("https://github.com/nievesj/UnrealGameSync-Git/releases/latest");
             e.Handled = true;
         }
 

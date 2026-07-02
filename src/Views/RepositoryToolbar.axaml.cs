@@ -26,7 +26,7 @@ namespace UGSGit.Views
 
                 RenderOptions.SetBitmapInterpolationMode(menu, BitmapInterpolationMode.HighQuality);
                 RenderOptions.SetEdgeMode(menu, EdgeMode.Antialias);
-                RenderOptions.SetTextRenderingMode(menu, TextRenderingMode.Antialias);
+                RenderOptions.SetTextRenderingMode(menu, TextRenderingMode.SubpixelAntialias);
 
                 var explore = new MenuItem();
                 explore.Header = App.Text("Repository.Explore");
@@ -63,7 +63,23 @@ namespace UGSGit.Views
                         item.Icon = new Image { Width = 16, Height = 16, Source = dupTool.IconImage };
 
                         var options = dupTool.MakeLaunchOptions(fullpath);
-                        if (options is { Count: > 0 })
+                        var count = (dupTool.SupportOpenFolder ? 1 : 0) + (options?.Count ?? 0);
+                        if (count == 0)
+                            continue;
+
+                        if (count == 1)
+                        {
+                            var args = fullpath.Quoted();
+                            if (options is { Count: 1 })
+                                args = options[0].Args;
+
+                            item.Click += (_, e) =>
+                            {
+                                dupTool.Launch(args);
+                                e.Handled = true;
+                            };
+                        }
+                        else
                         {
                             foreach (var opt in options)
                             {
@@ -78,23 +94,18 @@ namespace UGSGit.Views
                                 item.Items.Add(subItem);
                             }
 
-                            var openAsFolder = new MenuItem();
-                            openAsFolder.Header = App.Text("Repository.OpenAsFolder");
-                            openAsFolder.Click += (_, e) =>
+                            if (dupTool.SupportOpenFolder)
                             {
-                                dupTool.Launch(fullpath.Quoted());
-                                e.Handled = true;
-                            };
-                            item.Items.Add(new MenuItem() { Header = "-" });
-                            item.Items.Add(openAsFolder);
-                        }
-                        else
-                        {
-                            item.Click += (_, e) =>
-                            {
-                                dupTool.Launch(fullpath.Quoted());
-                                e.Handled = true;
-                            };
+                                var open = new MenuItem();
+                                open.Header = App.Text("Repository.OpenAsFolder");
+                                open.Click += (_, e) =>
+                                {
+                                    dupTool.Launch(fullpath.Quoted());
+                                    e.Handled = true;
+                                };
+                                item.Items.Add(new MenuItem() { Header = "-" });
+                                item.Items.Add(open);
+                            }
                         }
 
                         menu.Items.Add(item);
@@ -235,7 +246,6 @@ namespace UGSGit.Views
                 {
                     var startFeature = new MenuItem();
                     startFeature.Header = App.Text("GitFlow.StartFeature");
-                    startFeature.Icon = this.CreateMenuIcon("Icons.GitFlow.Feature");
                     startFeature.Click += (_, e) =>
                     {
                         if (repo.CanCreatePopup())
@@ -245,7 +255,6 @@ namespace UGSGit.Views
 
                     var startRelease = new MenuItem();
                     startRelease.Header = App.Text("GitFlow.StartRelease");
-                    startRelease.Icon = this.CreateMenuIcon("Icons.GitFlow.Release");
                     startRelease.Click += (_, e) =>
                     {
                         if (repo.CanCreatePopup())
@@ -255,7 +264,6 @@ namespace UGSGit.Views
 
                     var startHotfix = new MenuItem();
                     startHotfix.Header = App.Text("GitFlow.StartHotfix");
-                    startHotfix.Icon = this.CreateMenuIcon("Icons.GitFlow.Hotfix");
                     startHotfix.Click += (_, e) =>
                     {
                         if (repo.CanCreatePopup())
@@ -266,6 +274,22 @@ namespace UGSGit.Views
                     menu.Items.Add(startFeature);
                     menu.Items.Add(startRelease);
                     menu.Items.Add(startHotfix);
+
+                    var type = repo.CurrentBranch != null ? repo.GetGitFlowType(repo.CurrentBranch) : Models.GitFlowBranchType.None;
+                    if (type != Models.GitFlowBranchType.None)
+                    {
+                        var finish = new MenuItem();
+                        finish.Header = App.Text("GitFlow.Finish", repo.CurrentBranch.Name);
+                        finish.Icon = this.CreateMenuIcon("Icons.GitFlow.Finish");
+                        finish.Click += (_, e) =>
+                        {
+                            if (repo.CanCreatePopup())
+                                repo.ShowPopup(new ViewModels.GitFlowFinish(repo, repo.CurrentBranch, type));
+                            e.Handled = true;
+                        };
+                        menu.Items.Add(new MenuItem() { Header = "-" });
+                        menu.Items.Add(finish);
+                    }
                 }
                 else
                 {

@@ -1,7 +1,5 @@
-using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia;
 using Avalonia.Data.Converters;
-using Avalonia.Media;
 
 namespace UGSGit.Converters
 {
@@ -21,9 +19,6 @@ namespace UGSGit.Converters
 
         public static readonly FuncValueConverter<int, Thickness> ToTreeMargin =
             new(v => new Thickness(v * 16, 0, 0, 0));
-
-        public static readonly FuncValueConverter<int, IBrush> ToBookmarkBrush =
-            new(v => Models.Bookmarks.Get(v) ?? Application.Current?.FindResource("Brush.FG1") as IBrush);
 
         public static readonly FuncValueConverter<int, string> ToUnsolvedDesc =
             new(v => v == 0 ? App.Text("MergeConflictEditor.AllResolved") : App.Text("MergeConflictEditor.ConflictsRemaining", v));

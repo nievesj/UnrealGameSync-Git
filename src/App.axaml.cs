@@ -187,7 +187,7 @@ namespace UGSGit
             {
                 if (!string.IsNullOrEmpty(defaultFont))
                 {
-                    monospaceFont = $"fonts:UGSGit#JetBrains Mono,{defaultFont}";
+                    monospaceFont = $"fonts:UGSGit#JetBrains Mono NL,{defaultFont}";
                     resDic.Add("Fonts.Monospace", FontFamily.Parse(monospaceFont));
                 }
             }
@@ -282,7 +282,7 @@ namespace UGSGit
             if (args.Length <= 1 || !args[0].Equals("--rebase-todo-editor", StringComparison.Ordinal))
                 return false;
 
-            var file = args[1];
+            var file = args[1].Replace('\\', '/').Trim('\"').Trim();
             var filename = Path.GetFileName(file);
             if (!filename.Equals("git-rebase-todo", StringComparison.OrdinalIgnoreCase))
                 return true;
@@ -311,7 +311,7 @@ namespace UGSGit
 
             exitCode = 0;
 
-            var file = args[1];
+            var file = args[1].Replace('\\', '/').Trim('\"').Trim();
             var filename = Path.GetFileName(file);
             if (!filename.Equals("COMMIT_EDITMSG", StringComparison.OrdinalIgnoreCase))
                 return true;
@@ -340,7 +340,7 @@ namespace UGSGit
             if (args is not { Length: > 1 } || !args[0].Equals("--history", StringComparison.Ordinal))
                 return false;
 
-            var fullPath = Path.GetFullPath(args[1]);
+            var fullPath = Path.GetFullPath(args[1].Replace('\\', '/').Trim('\"').Trim());
             var dir = Path.GetDirectoryName(fullPath);
 
             var test = new Commands.QueryRepositoryRootPath(dir).GetResult();
@@ -355,7 +355,7 @@ namespace UGSGit
             Models.AvatarManager.Instance.Start();
 
             var repo = test.StdOut.Trim();
-            var relativePath = Path.GetRelativePath(repo, fullPath);
+            var relativePath = Path.GetRelativePath(repo, fullPath).Replace('\\', '/');
             if (File.Exists(fullPath))
             {
                 desktop.MainWindow = new Views.FileHistories()
@@ -367,7 +367,7 @@ namespace UGSGit
             {
                 desktop.MainWindow = new Views.DirHistories()
                 {
-                    DataContext = new ViewModels.DirHistories(repo, relativePath.TrimEnd('/', '\\'))
+                    DataContext = new ViewModels.DirHistories(repo, relativePath.TrimEnd('/'))
                 };
             }
             else
@@ -385,7 +385,7 @@ namespace UGSGit
             if (args is not { Length: > 1 } || !args[0].Equals("--blame", StringComparison.Ordinal))
                 return false;
 
-            var file = Path.GetFullPath(args[1]);
+            var file = Path.GetFullPath(args[1].Replace('\\', '/').Trim('\"').Trim());
             var dir = Path.GetDirectoryName(file);
 
             var test = new Commands.QueryRepositoryRootPath(dir).GetResult();
@@ -420,7 +420,7 @@ namespace UGSGit
             if (args is not { Length: > 1 } || !args[0].Equals("--core-editor", StringComparison.Ordinal))
                 return false;
 
-            var file = args[1];
+            var file = args[1].Replace('\\', '/').Trim('\"').Trim();
             if (!File.Exists(file))
             {
                 desktop.Shutdown(-1);
@@ -456,12 +456,10 @@ namespace UGSGit
             _ipcChannel = new Models.IpcChannel();
             if (!_ipcChannel.IsFirstInstance)
             {
-                var arg = desktop.Args is { Length: > 0 } ? desktop.Args[0].Trim() : string.Empty;
+                var arg = desktop.Args is { Length: > 0 } ? desktop.Args[0] : string.Empty;
                 if (!string.IsNullOrEmpty(arg))
                 {
-                    if (arg.StartsWith('"') && arg.EndsWith('"'))
-                        arg = arg.Substring(1, arg.Length - 2).Trim();
-
+                    arg = arg.Replace('\\', '/').TrimEnd('/').Trim('\"').Trim();
                     if (arg.Length > 0 && !Path.IsPathFullyQualified(arg))
                         arg = Path.GetFullPath(arg);
                 }
@@ -475,8 +473,12 @@ namespace UGSGit
             Models.AvatarManager.Instance.Start();
 
             string startupRepo = null;
-            if (desktop.Args is { Length: 1 } && Directory.Exists(desktop.Args[0]))
-                startupRepo = desktop.Args[0];
+            if (desktop.Args is { Length: 1 })
+            {
+                var arg = desktop.Args[0].Replace('\\', '/').TrimEnd('/').Trim('\"').Trim();
+                if (Directory.Exists(arg))
+                    startupRepo = arg;
+            }
 
             var pref = ViewModels.Preferences.Instance;
             pref.SetCanModify();
@@ -487,8 +489,8 @@ namespace UGSGit
 
 #if !DISABLE_PLUGINS
             // Register built-in plugin manifests BEFORE external discovery (NEW-3: cross-check requires built-ins first)
-            Models.PluginRegistry.Instance.RegisterBuiltInManifest(new Plugins.HelloWorld.HelloWorldPluginManifest());
-            Models.PluginRegistry.Instance.RegisterBuiltInManifest(new Plugins.UnrealSync.UnrealSyncManifest());
+            Models.PluginRegistry.Instance.RegisterBuiltInManifest(new UGSGit.Plugins.HelloWorld.HelloWorldPluginManifest());
+            Models.PluginRegistry.Instance.RegisterBuiltInManifest(new UGSGit.Plugins.UnrealSync.UnrealSyncManifest());
 
             // Discover and load external plugins (disabled in AOT builds via DISABLE_PLUGINS)
             var pluginResults = Models.PluginLoader.Discover();
@@ -543,8 +545,9 @@ namespace UGSGit
                     // Fetch latest release information.
                     using var client = new HttpClient();
                     client.Timeout = TimeSpan.FromSeconds(5);
+                    client.DefaultRequestHeaders.UserAgent.ParseAdd("UGSGit/1.0");
 
-                    var data = await client.GetStringAsync("https://raw.githubusercontent.com/nievesj/UnrealGameSync-Git/main/VERSION.json");
+                    var data = await client.GetStringAsync("https://api.github.com/repos/nievesj/UnrealGameSync-Git/releases/latest");
                     var ver = JsonSerializer.Deserialize(data, JsonCodeGen.Default.Version);
                     if (ver == null)
                         return;

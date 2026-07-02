@@ -536,8 +536,8 @@ namespace UGSGit.ViewModels
         public bool IsGitFlowEnabled()
         {
             return GitFlow is { IsValid: true } &&
-                _branches.Find(x => x.IsLocal && x.Name.Equals(GitFlow.Master, StringComparison.Ordinal)) != null &&
-                _branches.Find(x => x.IsLocal && x.Name.Equals(GitFlow.Develop, StringComparison.Ordinal)) != null;
+                _branches.Find(x => x.IsLocal && x.Name.Equals(GitFlow.ProductionBranch, StringComparison.Ordinal)) != null &&
+                _branches.Find(x => x.IsLocal && x.Name.Equals(GitFlow.DevelopmentBranch, StringComparison.Ordinal)) != null;
         }
 
         public Models.GitFlowBranchType GetGitFlowType(Models.Branch b)
@@ -654,17 +654,7 @@ namespace UGSGit.ViewModels
 
                 var config = await new Commands.Config(FullPath).ReadAllAsync().ConfigureAwait(false);
                 _hasAllowedSignersFile = config.TryGetValue("gpg.ssh.allowedsignersfile", out var allowedSignersFile) && !string.IsNullOrEmpty(allowedSignersFile);
-
-                if (config.TryGetValue("gitflow.branch.master", out var masterName))
-                    GitFlow.Master = masterName;
-                if (config.TryGetValue("gitflow.branch.develop", out var developName))
-                    GitFlow.Develop = developName;
-                if (config.TryGetValue("gitflow.prefix.feature", out var featurePrefix))
-                    GitFlow.FeaturePrefix = featurePrefix;
-                if (config.TryGetValue("gitflow.prefix.release", out var releasePrefix))
-                    GitFlow.ReleasePrefix = releasePrefix;
-                if (config.TryGetValue("gitflow.prefix.hotfix", out var hotfixPrefix))
-                    GitFlow.HotfixPrefix = hotfixPrefix;
+                GitFlow.Parse(config);
             });
         }
 
@@ -771,7 +761,7 @@ namespace UGSGit.ViewModels
             _watcher?.MarkBranchUpdated();
             _watcher?.MarkWorkingCopyUpdated();
 
-            _branches.RemoveAll(b => b.IsLocal && b.FriendlyName.Equals(created.FriendlyName, StringComparison.Ordinal));
+            _branches.RemoveAll(b => b.IsLocal && b.Name.Equals(created.Name, StringComparison.Ordinal));
             _branches.Add(created);
 
             if (checkout)
@@ -799,15 +789,21 @@ namespace UGSGit.ViewModels
                 CurrentBranch = created;
             }
 
-            List<Models.Branch> locals = [];
+            var locals = new List<Models.Branch>();
+            var count = 0;
             foreach (var b in _branches)
             {
                 if (b.IsLocal)
+                {
                     locals.Add(b);
+                    if (!b.IsDetachedHead)
+                        count++;
+                }
             }
 
-            var builder = BuildBranchTree(locals, []);
+            var builder = BuildBranchTree(locals, [], false);
             LocalBranchTrees = builder.Locals;
+            LocalBranchesCount = count;
 
             RefreshCommits();
             RefreshWorkingCopyChanges();
@@ -841,7 +837,7 @@ namespace UGSGit.ViewModels
                     locals.Add(b);
             }
 
-            var builder = BuildBranchTree(locals, []);
+            var builder = BuildBranchTree(locals, [], false);
             LocalBranchTrees = builder.Locals;
             CurrentBranch = checkouted;
 
@@ -857,8 +853,28 @@ namespace UGSGit.ViewModels
             var newFullName = $"refs/heads/{newName}";
             _uiStates.RenameBranchFilter(b.FullName, newFullName);
 
-            b.Name = newName;
-            b.FullName = newFullName;
+            var renamed = new Models.Branch
+            {
+                Name = newName,
+                FullName = newFullName,
+                CommitterDate = b.CommitterDate,
+                Head = b.Head,
+                IsLocal = b.IsLocal,
+                IsCurrent = b.IsCurrent,
+                IsDetachedHead = b.IsDetachedHead,
+                Upstream = b.Upstream,
+                Ahead = b.Ahead,
+                Behind = b.Behind,
+                Remote = b.Remote,
+                IsUpstreamGone = b.IsUpstreamGone,
+                WorktreePath = b.WorktreePath,
+            };
+
+            _branches.Remove(b);
+            _branches.Add(renamed);
+
+            if (b.IsCurrent)
+                CurrentBranch = renamed;
 
             List<Models.Branch> locals = [];
             foreach (var branch in _branches)
@@ -867,7 +883,7 @@ namespace UGSGit.ViewModels
                     locals.Add(branch);
             }
 
-            var builder = BuildBranchTree(locals, []);
+            var builder = BuildBranchTree(locals, [], false);
             LocalBranchTrees = builder.Locals;
 
             RefreshCommits();
@@ -1204,7 +1220,7 @@ namespace UGSGit.ViewModels
                 var builder = new StringBuilder();
                 builder
                     .Append('-').Append(Preferences.Instance.MaxHistoryCommits).Append(' ')
-                    .Append(_uiStates.BuildHistoryParams());
+                    .Append(_uiStates.BuildHistoryParams(GitDir));
 
                 var commits = await new Commands.QueryCommits(FullPath, builder.ToString())
                     .GetResultAsync()
@@ -1218,7 +1234,6 @@ namespace UGSGit.ViewModels
                     if (_histories != null)
                     {
                         _histories.IsLoading = false;
-                        _histories.GenerateGraph(commits);
                         _histories.Commits = commits;
                         BisectState = _histories.UpdateBisectInfo();
 
@@ -1512,7 +1527,7 @@ namespace UGSGit.ViewModels
 
                 await new Commands.Submodule(FullPath)
                     .Use(log)
-                    .UpdateAsync(submodules);
+                    .UpdateAsync(submodules, false, _settings.EnableRecursiveWhenAutoUpdatingSubmodules, false);
             } while (false);
         }
 
@@ -1524,17 +1539,7 @@ namespace UGSGit.ViewModels
 
             var root = Path.GetFullPath(Path.Combine(FullPath, submodule));
             var normalizedPath = root.Replace('\\', '/').TrimEnd('/');
-
-            var node = Preferences.Instance.FindNode(normalizedPath) ??
-                new RepositoryNode
-                {
-                    Id = normalizedPath,
-                    Name = Path.GetFileName(normalizedPath),
-                    Bookmark = selfPage.Node.Bookmark,
-                    IsRepository = true,
-                };
-
-            App.GetLauncher().OpenRepositoryInTab(node, null);
+            App.GetLauncher().OpenRepositoryInTab(normalizedPath, null);
         }
 
         public void AddWorktree()
@@ -1554,16 +1559,8 @@ namespace UGSGit.ViewModels
             if (worktree.IsCurrent)
                 return;
 
-            var node = Preferences.Instance.FindNode(worktree.FullPath) ??
-                new RepositoryNode
-                {
-                    Id = worktree.FullPath,
-                    Name = Path.GetFileName(worktree.FullPath),
-                    Bookmark = 0,
-                    IsRepository = true,
-                };
-
-            App.GetLauncher().OpenRepositoryInTab(node, null);
+            var normalizedPath = worktree.FullPath.Replace('\\', '/').TrimEnd('/');
+            App.GetLauncher().OpenRepositoryInTab(normalizedPath, null);
         }
 
         public async Task LockWorktreeAsync(Worktree worktree)
@@ -1668,7 +1665,7 @@ namespace UGSGit.ViewModels
             return null;
         }
 
-        private BranchTreeNode.Builder BuildBranchTree(List<Models.Branch> branches, List<Models.Remote> remotes)
+        private BranchTreeNode.Builder BuildBranchTree(List<Models.Branch> branches, List<Models.Remote> remotes, bool validateExpandedNodes = true)
         {
             var builder = new BranchTreeNode.Builder(_uiStates.LocalBranchSortMode, _uiStates.RemoteBranchSortMode);
             if (string.IsNullOrEmpty(_filter))
@@ -1676,8 +1673,11 @@ namespace UGSGit.ViewModels
                 builder.SetExpandedNodes(_uiStates.ExpandedBranchNodesInSideBar);
                 builder.Run(branches, remotes, false);
 
-                foreach (var invalid in builder.InvalidExpandedNodes)
-                    _uiStates.ExpandedBranchNodesInSideBar.Remove(invalid);
+                if (validateExpandedNodes)
+                {
+                    foreach (var invalid in builder.InvalidExpandedNodes)
+                        _uiStates.ExpandedBranchNodesInSideBar.Remove(invalid);
+                }
             }
             else
             {
@@ -1901,13 +1901,13 @@ namespace UGSGit.ViewModels
                     await new Commands.Fetch(FullPath, remote).Use(log).RunAsync();
 
                 _lastFetchTime = DateTime.Now;
-                IsAutoFetching = false;
             }
             catch
             {
                 // Ignore all exceptions.
             }
 
+            IsAutoFetching = false;
             log?.Complete();
         }
 

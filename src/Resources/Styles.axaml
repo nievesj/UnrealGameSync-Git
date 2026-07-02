@@ -19,7 +19,6 @@
     </Style.Resources>
     
     <Setter Property="Background" Value="{DynamicResource Brush.Window}"/>
-    <Setter Property="BorderThickness" Value="0"/>
     <Setter Property="BorderBrush" Value="{DynamicResource Brush.WindowBorder}"/>
     <Setter Property="SystemDecorations" Value="Full"/>
     <Setter Property="Padding" Value="0"/>
@@ -38,7 +37,7 @@
                   <ScaleTransform ScaleX="{Binding Source={x:Static vm:Preferences.Instance}, Path=Zoom, Mode=OneWay}"
                                   ScaleY="{Binding Source={x:Static vm:Preferences.Instance}, Path=Zoom, Mode=OneWay}"/>
                 </LayoutTransformControl.LayoutTransform>
-                
+
                 <Border>
                   <ContentPresenter Name="PART_ContentPresenter"
                                     ContentTemplate="{TemplateBinding ContentTemplate}"
@@ -50,7 +49,7 @@
             </VisualLayerManager>
           </Border>
         </Border>
-      </ControlTemplate>
+      </ControlTemplate>        
     </Setter>
   </Style>
 
@@ -140,7 +139,7 @@
                     <ScaleTransform ScaleX="{Binding Source={x:Static vm:Preferences.Instance}, Path=Zoom, Mode=OneWay}"
                                     ScaleY="{Binding Source={x:Static vm:Preferences.Instance}, Path=Zoom, Mode=OneWay}"/>
                   </LayoutTransformControl.LayoutTransform>
-                  
+
                   <Border CornerRadius="{TemplateBinding CornerRadius}" ClipToBounds="True">
                     <ContentPresenter Name="PART_ContentPresenter"
                                       ContentTemplate="{TemplateBinding ContentTemplate}"
@@ -193,15 +192,16 @@
     <Setter Property="Foreground" Value="{DynamicResource Brush.FG1}"/>
     <Setter Property="Background" Value="{DynamicResource Brush.Popup}"/>
     <Setter Property="MaxWidth" Value="800"/>
+    <Setter Property="HorizontalOffset" Value="-8"/>
     <Setter Property="VerticalOffset" Value="-8"/>
     <Setter Property="TextBlock.TextDecorations" Value=""/>
     <Setter Property="Template">
       <ControlTemplate>
-        <Grid Margin="8" Effect="drop-shadow(0 0 8 #30000000)">
+        <Grid Margin="8" Effect="drop-shadow(0 0 8 #60000000)">
           <Border Padding="8,6"
                   CornerRadius="4"
                   Background="{DynamicResource Brush.Popup}"
-                  BorderBrush="{DynamicResource Brush.Border2}"
+                  BorderBrush="{DynamicResource Brush.PopupBorder}"
                   BorderThickness="1"
                   MaxWidth="{TemplateBinding MaxWidth}"
                   MinHeight="{TemplateBinding MinHeight}"
@@ -225,11 +225,12 @@
 
     <Setter Property="Template">
       <ControlTemplate>
-        <Grid Margin="4" Effect="drop-shadow(0 0 4 #A0000000)">
+        <Grid Margin="4" Effect="drop-shadow(0 0 4 #80000000)">
           <Border Name="LayoutRoot"
                   Padding="12"
                   Background="{DynamicResource Brush.Popup}"
-                  BorderThickness="0"
+                  BorderThickness="1"
+                  BorderBrush="{DynamicResource Brush.PopupBorder}"
                   CornerRadius="{TemplateBinding CornerRadius}">
             <ScrollViewer HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
                           VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
@@ -531,6 +532,7 @@
     <Setter Property="Foreground" Value="{DynamicResource Brush.Link}"/>
   </Style>
   <Style Selector="Run.commit_link">
+    <Setter Property="FontFamily" Value="{DynamicResource Fonts.Monospace}"/>
     <Setter Property="Foreground" Value="DarkOrange"/>
     <Setter Property="TextDecorations" Value="Underline"/>
   </Style>
@@ -709,87 +711,6 @@
     <Setter Property="Foreground" Value="{DynamicResource Brush.FG1}"/>
   </Style>
 
-  <Style Selector="ListBox.launcher_page_tabbar">
-    <Setter Property="Background" Value="Transparent"/>
-  </Style>
-  <Style Selector="ListBox.launcher_page_tabbar ListBoxItem">
-    <Setter Property="Padding" Value="0"/>
-  </Style>
-  <Style Selector="ListBox.launcher_page_tabbar ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="Opacity" Value=".5"/>
-  </Style>
-  <Style Selector="ListBox.launcher_page_tabbar ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="Opacity" Value=".85"/>
-  </Style>
-  <Style Selector="ListBox.launcher_page_tabbar ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="Opacity" Value="1"/>
-  </Style>
-
-  <Style Selector="ListBox.plugin_tabbar">
-    <Setter Property="Background" Value="Transparent"/>
-  </Style>
-  <Style Selector="ListBox.plugin_tabbar ListBoxItem">
-    <Setter Property="Padding" Value="0"/>
-    <Setter Property="Margin" Value="0"/>
-    <Setter Property="Height" Value="30"/>
-  </Style>
-  <Style Selector="ListBox.plugin_tabbar ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
-    <Setter Property="Background" Value="Transparent"/>
-  </Style>
-
-  <!-- Plugin tab wrapper -->
-  <Style Selector="Border.plugin_tab">
-    <Setter Property="Height" Value="30"/>
-    <Setter Property="Padding" Value="12,0"/>
-  </Style>
-
-  <!-- Unselected: transparent bg, FG2 text, FG2 icon -->
-  <Style Selector="ListBox.plugin_tabbar ListBoxItem Border.plugin_tab">
-    <Setter Property="Background" Value="Transparent"/>
-  </Style>
-  <Style Selector="ListBox.plugin_tabbar ListBoxItem TextBlock">
-    <Setter Property="Foreground" Value="{DynamicResource Brush.FG2}"/>
-  </Style>
-  <Style Selector="ListBox.plugin_tabbar ListBoxItem Path">
-    <Setter Property="Fill" Value="{DynamicResource Brush.FG2}"/>
-  </Style>
-
-  <!-- Hover: AccentHovered bg -->
-  <Style Selector="ListBox.plugin_tabbar ListBoxItem:pointerover Border.plugin_tab">
-    <Setter Property="Background" Value="{DynamicResource Brush.AccentHovered}"/>
-  </Style>
-
-  <!-- Selected: ToolBar bg, FG1 text, FG1 icon -->
-  <Style Selector="ListBox.plugin_tabbar ListBoxItem:selected Border.plugin_tab">
-    <Setter Property="Background" Value="{DynamicResource Brush.ToolBar}"/>
-  </Style>
-  <Style Selector="ListBox.plugin_tabbar ListBoxItem:selected TextBlock">
-    <Setter Property="Foreground" Value="{DynamicResource Brush.FG1}"/>
-  </Style>
-  <Style Selector="ListBox.plugin_tabbar ListBoxItem:selected Path">
-    <Setter Property="Fill" Value="{DynamicResource Brush.FG1}"/>
-  </Style>
-
-  <!-- Close button: hidden by default, visible on hover/selected -->
-  <Style Selector="ListBox.plugin_tabbar ListBoxItem Button.close_tab_btn">
-    <Setter Property="Opacity" Value="0"/>
-  </Style>
-  <Style Selector="ListBox.plugin_tabbar ListBoxItem:pointerover Button.close_tab_btn,
-                 ListBox.plugin_tabbar ListBoxItem:selected Button.close_tab_btn">
-    <Setter Property="Opacity" Value="1"/>
-  </Style>
-
-  <!-- Accent underline: visible only on selected tab -->
-  <Style Selector="ListBox.plugin_tabbar ListBoxItem:selected Border.plugin_tab Border">
-    <Setter Property="IsVisible" Value="True"/>
-  </Style>
-  <Style Selector="ListBox.plugin_tabbar ListBoxItem:not(:selected) Border.plugin_tab Border">
-    <Setter Property="IsVisible" Value="False"/>
-  </Style>
-
   <Style Selector="ListBox.repo_left_content_list">
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
@@ -843,12 +764,13 @@
 
   <Style Selector="ContextMenu">
     <Setter Property="MaxWidth" Value="1024"/>
-    <Setter Property="HorizontalOffset" Value="-4"/>
-    <Setter Property="VerticalOffset" Value="-4"/>
+    <Setter Property="HorizontalOffset" Value="-6"/>
+    <Setter Property="VerticalOffset" Value="-6"/>
     <Setter Property="Template">
       <ControlTemplate>
-        <Grid Margin="4" Effect="drop-shadow(0 0 4 #A0000000)">
-          <Border BorderThickness="0"
+        <Grid Margin="6" Effect="drop-shadow(0 0 6 #80000000)">
+          <Border BorderThickness="1"
+                  BorderBrush="{DynamicResource Brush.PopupBorder}"
                   Background="{DynamicResource Brush.Popup}"
                   CornerRadius="{TemplateBinding CornerRadius}"
                   Padding="8,4"
@@ -871,11 +793,11 @@
   <Style Selector="MenuFlyoutPresenter">
     <Setter Property="Template">
       <ControlTemplate>
-        <Grid Margin="4" Effect="drop-shadow(0 0 4 #A0000000)">
+        <Grid Margin="4" Effect="drop-shadow(0 0 4 #80000000)">
           <Border Name="LayoutRoot"
                   Background="{DynamicResource Brush.Popup}"
-                  BorderBrush="{TemplateBinding BorderBrush}"
-                  BorderThickness="0"
+                  BorderBrush="{DynamicResource Brush.PopupBorder}"
+                  BorderThickness="1"
                   Padding="4,2"
                   CornerRadius="{TemplateBinding CornerRadius}">
             <ScrollViewer HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
@@ -984,8 +906,12 @@
                  HorizontalOffset="-4"
                  VerticalOffset="-4"
                  IsOpen="{TemplateBinding IsSubMenuOpen, Mode=TwoWay}">
-            <Grid Margin="4" Effect="drop-shadow(0 0 4 #A0000000)">
-              <Border BorderThickness="0" Padding="8,4" MaxHeight="400" Background="{DynamicResource Brush.Popup}" CornerRadius="{DynamicResource OverlayCornerRadius}">
+            <Grid Margin="6" Effect="drop-shadow(0 0 6 #80000000)">
+              <Border Padding="8,4"
+                      MaxHeight="400"
+                      BorderThickness="1" BorderBrush="{DynamicResource Brush.PopupBorder}"
+                      Background="{DynamicResource Brush.Popup}"
+                      CornerRadius="{DynamicResource OverlayCornerRadius}">
                 <ScrollViewer>
                   <ItemsPresenter Name="PART_ItemsPresenter"
                                   Margin="{DynamicResource MenuFlyoutScrollerMargin}"
@@ -1064,6 +990,7 @@
     <Setter Property="MinHeight" Value="20"/>
     <Setter Property="VerticalAlignment" Value="Center"/>
     <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border1}"/>
+    <Setter Property="Background" Value="{DynamicResource Brush.Contents}"/>
 
     <Style Selector="^ /template/ Popup#PART_Popup">
       <Setter Property="Placement" Value="BottomEdgeAlignedLeft"/>
@@ -1071,6 +998,7 @@
     </Style>
     <Style Selector="^:pointerover /template/ Border#Background">
       <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+      <Setter Property="Background" Value="{DynamicResource Brush.Contents}"/>
     </Style>
     <Style Selector="^:disabled">
       <Setter Property="Opacity" Value=".6"/>
@@ -1133,6 +1061,8 @@
         <Border/>
       </FocusAdornerTemplate>
     </Setter>
+    
+    <Setter Property="Foreground" Value="{DynamicResource Brush.FG1}"/>
     
     <Setter Property="Template">
       <ControlTemplate>
@@ -1395,39 +1325,6 @@
     <Setter Property="Opacity" Value="1"/>
   </Style>
 
-  <Style Selector="ToggleButton.show_as_tree">
-    <Setter Property="Margin" Value="0" />
-    <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="Template">
-      <ControlTemplate>
-        <Border Background="Transparent"
-                Width="{TemplateBinding Width}"
-                Height="{TemplateBinding Height}"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Center">
-          <Path x:Name="ChevronPath"
-                Width="11" Height="11"
-                Margin="0,1,0,0"
-                Data="{StaticResource Icons.Tree}"
-                Fill="{DynamicResource Brush.FG1}"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Opacity="0.8"/>
-        </Border>
-      </ControlTemplate>
-    </Setter>
-
-    <Style Selector="^:checked /template/ Path#ChevronPath">
-      <Setter Property="Fill" Value="{DynamicResource Brush.Accent}" />
-      <Setter Property="Opacity" Value="1"/>
-    </Style>
-
-    <Style Selector="^:pointerover /template/ Path#ChevronPath">
-      <Setter Property="Fill" Value="{DynamicResource Brush.Accent}" />
-      <Setter Property="Opacity" Value="1"/>
-    </Style>
-  </Style>
-
   <Style Selector="Slider">
     <Style.Resources>
       <Thickness x:Key="SliderTopHeaderMargin">0,0,0,4</Thickness>
@@ -1464,6 +1361,9 @@
   </Style>
 
   <Style Selector="NumericUpDown">
+    <Setter Property="Foreground" Value="{DynamicResource Brush.FG1}"/>
+    <Setter Property="Background" Value="{DynamicResource Brush.Contents}"/>
+    
     <Style Selector="^ /template/ ButtonSpinner#PART_Spinner">
       <Setter Property="MinHeight" Value="0"/>
       <Setter Property="Height" Value="28"/>
@@ -1572,17 +1472,66 @@
     </Setter>
   </Style>
 
-  <Style Selector="aec|CompletionListBox">
-    <Setter Property="Background" Value="{DynamicResource Brush.Popup}"/>
-    <Setter Property="BorderThickness" Value="1"/>
-    <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border0}"/>
-    <Setter Property="Padding" Value="8,4"/>
-    <Setter Property="CornerRadius" Value="4"/>
+  <Style Selector="ListBox.plugin_tabbar">
+    <Setter Property="Background" Value="Transparent"/>
+  </Style>
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem">
+    <Setter Property="Padding" Value="0"/>
+    <Setter Property="Margin" Value="0"/>
+    <Setter Property="Height" Value="30"/>
+  </Style>
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent"/>
   </Style>
 
-  <Style Selector="aec|CompletionListBox ListBoxItem">
-    <Setter Property="Height" Value="24"/>
-    <Setter Property="Margin" Value="0,2"/>
-    <Setter Property="CornerRadius" Value="4"/>
+  <!-- Plugin tab wrapper -->
+  <Style Selector="Border.plugin_tab">
+    <Setter Property="Height" Value="30"/>
+    <Setter Property="Padding" Value="12,0"/>
+  </Style>
+
+  <!-- Unselected: transparent bg, FG2 text, FG2 icon -->
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem Border.plugin_tab">
+    <Setter Property="Background" Value="Transparent"/>
+  </Style>
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource Brush.FG2}"/>
+  </Style>
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem Path">
+    <Setter Property="Fill" Value="{DynamicResource Brush.FG2}"/>
+  </Style>
+
+  <!-- Hover: AccentHovered bg -->
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem:pointerover Border.plugin_tab">
+    <Setter Property="Background" Value="{DynamicResource Brush.AccentHovered}"/>
+  </Style>
+
+  <!-- Selected: ToolBar bg, FG1 text, FG1 icon -->
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem:selected Border.plugin_tab">
+    <Setter Property="Background" Value="{DynamicResource Brush.ToolBar}"/>
+  </Style>
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem:selected TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource Brush.FG1}"/>
+  </Style>
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem:selected Path">
+    <Setter Property="Fill" Value="{DynamicResource Brush.FG1}"/>
+  </Style>
+
+  <!-- Close button: hidden by default, visible on hover/selected -->
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem Button.close_tab_btn">
+    <Setter Property="Opacity" Value="0"/>
+  </Style>
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem:pointerover Button.close_tab_btn,
+                 ListBox.plugin_tabbar ListBoxItem:selected Button.close_tab_btn">
+    <Setter Property="Opacity" Value="1"/>
+  </Style>
+
+  <!-- Accent underline: visible only on selected tab -->
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem:selected Border.plugin_tab Border">
+    <Setter Property="IsVisible" Value="True"/>
+  </Style>
+  <Style Selector="ListBox.plugin_tabbar ListBoxItem:not(:selected) Border.plugin_tab Border">
+    <Setter Property="IsVisible" Value="False"/>
   </Style>
 </Styles>
+

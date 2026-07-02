@@ -1,6 +1,6 @@
 using System;
 using System.Reflection;
-
+using System.Text.RegularExpressions;
 using Avalonia.Interactivity;
 
 namespace UGSGit.Views
@@ -13,18 +13,26 @@ namespace UGSGit.Views
             InitializeComponent();
 
             var assembly = Assembly.GetExecutingAssembly();
-            var ver = assembly.GetName().Version;
-            if (ver != null)
-                TxtVersion.Text = $"{ver.Major}.{ver.Minor:D2}";
-
             var meta = assembly.GetCustomAttributes<AssemblyMetadataAttribute>();
+            var foundFriendlyVersion = false;
             foreach (var attr in meta)
             {
                 if (attr.Key.Equals("BuildDate", StringComparison.OrdinalIgnoreCase) && DateTime.TryParse(attr.Value, out var date))
                 {
                     TxtReleaseDate.Text = App.Text("About.ReleaseDate", Models.DateTimeFormat.Format(date, true));
-                    break;
                 }
+                else if (attr.Key.Equals("FriendlyVersion", StringComparison.OrdinalIgnoreCase) && REG_FRIENDLY_VERSION().IsMatch(attr.Value))
+                {
+                    foundFriendlyVersion = true;
+                    TxtVersion.Text = attr.Value;
+                }
+            }
+
+            if (!foundFriendlyVersion)
+            {
+                var ver = assembly.GetName().Version;
+                if (ver != null)
+                    TxtVersion.Text = $"v{ver.Major}.{ver.Minor:D2}";
             }
 
             var informationVersion = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
@@ -46,7 +54,13 @@ namespace UGSGit.Views
 
         private void OnVisitReleaseNotes(object _, RoutedEventArgs e)
         {
-            Native.OS.OpenBrowser($"https://github.com/nievesj/UnrealGameSync-Git/releases/tag/v{TxtVersion.Text}");
+            var tag = TxtVersion.Text;
+            // Strip dirty flag and commit-count suffix for release link
+            // e.g. "v2026.14-64-54a8ae2b-dirty" -> "v2026.14"
+            var baseMatch = System.Text.RegularExpressions.Regex.Match(tag, @"^(v\d{4}\.\d{1,2})");
+            if (baseMatch.Success)
+                tag = baseMatch.Groups[1].Value;
+            Native.OS.OpenBrowser($"https://github.com/nievesj/UnrealGameSync-Git/releases/tag/{tag}");
             e.Handled = true;
         }
 
@@ -61,5 +75,8 @@ namespace UGSGit.Views
             Native.OS.OpenBrowser("https://github.com/nievesj/UnrealGameSync-Git");
             e.Handled = true;
         }
+
+        [GeneratedRegex(@"^v\d{4}\.\d{1,2}(?:\-\d+\-[0-9a-f]{8})?(?:\-dirty)?$")]
+        private static partial Regex REG_FRIENDLY_VERSION();
     }
 }
