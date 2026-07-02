@@ -8,10 +8,10 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
-using SourceGit.Models;
+using UGSGit.Models;
 using UGSGit.PluginAbstractions;
 
-namespace SourceGit.ViewModels
+namespace UGSGit.ViewModels
 {
     public class RepositoryTabDescriptor : ObservableObject
     {

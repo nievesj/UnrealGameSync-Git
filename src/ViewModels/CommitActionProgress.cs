@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace SourceGit.ViewModels;
+namespace UGSGit.ViewModels;
 
 public class CommitActionProgress : ObservableObject
 {

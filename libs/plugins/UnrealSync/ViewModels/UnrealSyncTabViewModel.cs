@@ -183,6 +183,8 @@ public class UnrealSyncTabViewModel : ObservableObject
 
         _lastUprojectPath = uprojectPath;
 
+        try
+        {
         var json = System.IO.File.ReadAllText(uprojectPath);
         var meta = UProjectMeta.ParseTolerant(json);
 
@@ -191,6 +193,8 @@ public class UnrealSyncTabViewModel : ObservableObject
 
         Dispatcher.UIThread.Post(() =>
         {
+            try
+            {
             if (!string.IsNullOrEmpty(enginePath))
             {
                 var buildServiceFactory = _context.GetService<IBuildServiceFactory>()!;
@@ -219,7 +223,24 @@ public class UnrealSyncTabViewModel : ObservableObject
                 CurrentBody = new EngineNotFoundViewModel(meta);
                 StatusPanel.OpenSettingsCommand = null;
             }
+            }
+            catch (Exception uiEx)
+            {
+                _context.GetService<IPluginLogger>()?.LogError($"ProceedWithProject UI thread crashed: {uiEx}", uiEx);
+                Mode = SyncTabMode.EngineNotFound;
+                CurrentBody = new EngineNotFoundViewModel(meta);
+            }
         });
+        }
+        catch (Exception ex)
+        {
+            _context.GetService<IPluginLogger>()?.LogError($"ProceedWithProject crashed: {ex}", ex);
+            Dispatcher.UIThread.Post(() =>
+            {
+                Mode = SyncTabMode.EngineNotFound;
+                CurrentBody = new EngineNotFoundViewModel(new UProjectMeta());
+            });
+        }
     }
 
     /// <summary>

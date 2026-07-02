@@ -13,8 +13,8 @@
         <Description>OpenSource GIT client</Description>
         <Company>nievesj</Company>
         <Copyright>Copyright © $([System.DateTime]::Now.Year) sourcegit-scm &amp; nievesj.</Copyright>
-        <AssemblyName>SourceGit</AssemblyName>
-        <RootNamespace>SourceGit</RootNamespace>
+        <AssemblyName>ugsgit</AssemblyName>
+        <RootNamespace>UGSGit</RootNamespace>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageProjectUrl>https://github.com/nievesj/UnrealGameSync-Git</PackageProjectUrl>
         <RepositoryUrl>https://github.com/nievesj/UnrealGameSync-Git</RepositoryUrl>
@@ -25,8 +25,6 @@
         <PublishAot>true</PublishAot>
         <PublishTrimmed>true</PublishTrimmed>
         <TrimMode>link</TrimMode>
-        <!-- Plugin loading (AssemblyLoadContext + reflection) is incompatible with Native AOT -->
-        <DefineConstants>$(DefineConstants);DISABLE_PLUGINS</DefineConstants>
     </PropertyGroup>
 
     <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
@@ -76,12 +74,20 @@
     </ItemGroup>
 
     <ItemGroup>
-        <TrimmerRootAssembly Include="SourceGit"/>
+        <TrimmerRootAssembly Include="UGSGit"/>
         <TrimmerRootAssembly Include="UGSGit.PluginAbstractions"/>
         <TrimmerRootAssembly Include="UGSGit.Plugins.HelloWorld"/>
         <TrimmerRootAssembly Include="UGSGit.Plugins.UnrealSync"/>
         <TrimmerRootAssembly Include="Avalonia.Themes.Fluent"/>
     </ItemGroup>
 
+    <Target BeforeTargets="GetAssemblyAttributes" Name="GenVersionInfo">
+        <Exec Command="git describe --abbrev=8 --dirty" ConsoleToMsBuild="True" IgnoreExitCode="true">
+            <Output PropertyName="FriendlyVersion" TaskParameter="ConsoleOutput"/>
+        </Exec>
+        <ItemGroup>
+            <AssemblyMetadata Include="FriendlyVersion" Value="$([System.String]::Copy('$(FriendlyVersion)').Replace('g', '').Trim())"/>
+        </ItemGroup>
+    </Target>
 
 </Project>

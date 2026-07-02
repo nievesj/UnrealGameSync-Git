@@ -7,7 +7,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     public record ChartToolTip(string Title, bool HasUser, int All, int User);
 

@@ -5,7 +5,7 @@ using System.IO;
 
 using UGSGit.PluginAbstractions;
 
-namespace SourceGit.Services;
+namespace UGSGit.Services;
 
 /// <summary>
 /// Adapter that wraps the static ConfigService to implement IConfigService.

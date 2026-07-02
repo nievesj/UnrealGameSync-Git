@@ -85,14 +85,20 @@ public class UnrealSyncTab : IRepositoryTab
         _bodyView = new UnrealSyncTabView();
         _bodyView.DataContext = _viewModel;
 
+        // Diagnostic logging
+        var diagLogger = context.GetService<IPluginLogger>();
+        diagLogger?.Log($"UnrealSyncTab created for repo: {repoPath}");
+
         // Register commit annotator for build availability badges
         // Only register if the repository contains a .uproject file —
         // build availability is an Unreal Engine concept and should not
         // appear in non-UE repositories.
         var hasUProject = HasUProjectFile(repoPath);
+        diagLogger?.Log($"HasUProjectFile({repoPath}) = {hasUProject}");
         var deployService = context.GetService<IDeployService>();
         var configService = context.GetService<IConfigService>();
         var annotationProvider = context.GetService<ICommitAnnotationProvider>();
+        diagLogger?.Log($"Services: deploy={deployService != null}, config={configService != null}, annotation={annotationProvider != null}");
         if (deployService != null && configService != null && hasUProject)
         {
             var logger = context.GetService<IPluginLogger>();

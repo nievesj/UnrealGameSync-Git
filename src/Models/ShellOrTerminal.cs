@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 
-namespace SourceGit.Models
+namespace UGSGit.Models
 {
     public class ShellOrTerminal
     {

@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Avalonia.Interactivity;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     public partial class About : ChromelessWindow
     {
@@ -54,7 +54,13 @@ namespace SourceGit.Views
 
         private void OnVisitReleaseNotes(object _, RoutedEventArgs e)
         {
-            Native.OS.OpenBrowser($"https://github.com/nievesj/UnrealGameSync-Git/releases/tag/v{TxtVersion.Text}");
+            var tag = TxtVersion.Text;
+            // Strip dirty flag and commit-count suffix for release link
+            // e.g. "v2026.14-64-54a8ae2b-dirty" -> "v2026.14"
+            var baseMatch = System.Text.RegularExpressions.Regex.Match(tag, @"^(v\d{4}\.\d{1,2})");
+            if (baseMatch.Success)
+                tag = baseMatch.Groups[1].Value;
+            Native.OS.OpenBrowser($"https://github.com/nievesj/UnrealGameSync-Git/releases/tag/{tag}");
             e.Handled = true;
         }
 

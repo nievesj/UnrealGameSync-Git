@@ -4,7 +4,7 @@ using System.IO.Pipes;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SourceGit.Models
+namespace UGSGit.Models
 {
     public class IpcChannel : IDisposable
     {

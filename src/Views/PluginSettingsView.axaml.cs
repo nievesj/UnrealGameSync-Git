@@ -1,9 +1,9 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 
-using SourceGit.ViewModels;
+using UGSGit.ViewModels;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     public partial class PluginSettingsView : UserControl
     {

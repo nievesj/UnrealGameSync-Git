@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 
-namespace SourceGit.ViewModels
+namespace UGSGit.ViewModels
 {
     public class BlameCommandPalette : ICommandPalette
     {

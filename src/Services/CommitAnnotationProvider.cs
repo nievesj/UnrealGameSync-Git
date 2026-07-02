@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using UGSGit.PluginAbstractions;
 
-namespace SourceGit.Services
+namespace UGSGit.Services
 {
     /// <summary>
     /// Thread-safe provider that fans out annotation requests to all registered

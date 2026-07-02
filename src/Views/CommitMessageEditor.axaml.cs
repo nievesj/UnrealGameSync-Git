@@ -4,7 +4,7 @@ using System.Text.Json;
 
 using Avalonia.Interactivity;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     public partial class CommitMessageEditor : ChromelessWindow
     {

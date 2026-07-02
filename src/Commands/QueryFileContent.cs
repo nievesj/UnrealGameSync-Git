@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace SourceGit.Commands
+namespace UGSGit.Commands
 {
     public static class QueryFileContent
     {

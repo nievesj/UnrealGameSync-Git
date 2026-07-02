@@ -12,7 +12,7 @@ using Avalonia.VisualTree;
 
 using UGSGit.PluginAbstractions;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     /// <summary>
     /// Renders annotation badges (e.g., "Editor" build-available) alongside

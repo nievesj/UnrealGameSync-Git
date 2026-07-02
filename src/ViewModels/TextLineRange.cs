@@ -1,4 +1,4 @@
-namespace SourceGit.ViewModels
+namespace UGSGit.ViewModels
 {
     public record TextLineRange(int Start, int End);
 }

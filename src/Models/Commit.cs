@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace SourceGit.Models
+namespace UGSGit.Models
 {
     public enum CommitSearchMethod
     {

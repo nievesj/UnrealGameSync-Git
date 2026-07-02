@@ -1,7 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Data.Converters;
 
-namespace SourceGit.Converters
+namespace UGSGit.Converters
 {
     public static class IntConverters
     {

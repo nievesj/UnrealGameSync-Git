@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using Avalonia.Media;
 
-namespace SourceGit
+namespace UGSGit
 {
     public static class StringExtensions
     {

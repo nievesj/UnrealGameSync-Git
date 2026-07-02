@@ -1,6 +1,6 @@
 using Avalonia.Interactivity;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     public partial class ConventionalCommitMessageBuilder : ChromelessWindow
     {

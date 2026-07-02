@@ -14,7 +14,7 @@ using Avalonia.Media.Fonts;
 using Avalonia.Styling;
 using Avalonia.Threading;
 
-namespace SourceGit
+namespace UGSGit
 {
     public partial class App : Application
     {
@@ -187,7 +187,7 @@ namespace SourceGit
             {
                 if (!string.IsNullOrEmpty(defaultFont))
                 {
-                    monospaceFont = $"fonts:SourceGit#JetBrains Mono NL,{defaultFont}";
+                    monospaceFont = $"fonts:UGSGit#JetBrains Mono NL,{defaultFont}";
                     resDic.Add("Fonts.Monospace", FontFamily.Parse(monospaceFont));
                 }
             }
@@ -545,8 +545,9 @@ namespace SourceGit
                     // Fetch latest release information.
                     using var client = new HttpClient();
                     client.Timeout = TimeSpan.FromSeconds(5);
+                    client.DefaultRequestHeaders.UserAgent.ParseAdd("UGSGit/1.0");
 
-                    var data = await client.GetStringAsync("https://raw.githubusercontent.com/nievesj/UnrealGameSync-Git/main/VERSION.json");
+                    var data = await client.GetStringAsync("https://api.github.com/repos/nievesj/UnrealGameSync-Git/releases/latest");
                     var ver = JsonSerializer.Deserialize(data, JsonCodeGen.Default.Version);
                     if (ver == null)
                         return;

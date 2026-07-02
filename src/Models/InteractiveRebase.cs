@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace SourceGit.Models
+namespace UGSGit.Models
 {
     public enum InteractiveRebaseAction
     {

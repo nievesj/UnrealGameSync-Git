@@ -1,6 +1,6 @@
 using UGSGit.PluginAbstractions;
 
-namespace SourceGit.Services;
+namespace UGSGit.Services;
 
 /// <summary>
 /// Singleton registry for cross-cutting host services that must be accessible

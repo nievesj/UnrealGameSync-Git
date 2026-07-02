@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Avalonia.Threading;
 
-namespace SourceGit.ViewModels
+namespace UGSGit.ViewModels
 {
     public enum RebaseTestingState
     {

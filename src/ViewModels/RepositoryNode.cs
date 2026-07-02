@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace SourceGit.ViewModels
+namespace UGSGit.ViewModels
 {
     public class RepositoryNodeMinimalInfo
     {

@@ -5,7 +5,7 @@ using System.IO;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 
-namespace SourceGit.Models
+namespace UGSGit.Models
 {
     public class ExternalMerger(string icon, string name, string finder, string mergeCmd, string diffCmd)
     {

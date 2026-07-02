@@ -3,7 +3,7 @@ using System;
 using Avalonia.Controls;
 using Avalonia.Media;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     public class RepositoryCommandPaletteIcon : global::Avalonia.Controls.Shapes.Path
     {

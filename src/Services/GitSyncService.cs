@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 using UGSGit.PluginAbstractions;
 
-namespace SourceGit.Services;
+namespace UGSGit.Services;
 
 /// <summary>
 /// Delegates git operations to UGSGit's Commands infrastructure to avoid

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
-namespace SourceGit.ViewModels
+namespace UGSGit.ViewModels
 {
     public class Push : Popup
     {

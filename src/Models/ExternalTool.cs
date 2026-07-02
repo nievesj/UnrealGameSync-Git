@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 
-namespace SourceGit.Models
+namespace UGSGit.Models
 {
     public class ExternalTool
     {

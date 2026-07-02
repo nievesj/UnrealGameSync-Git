@@ -11,7 +11,7 @@ using AvaloniaEdit.Editing;
 using AvaloniaEdit.Rendering;
 using AvaloniaEdit.TextMate;
 
-namespace SourceGit.Views
+namespace UGSGit.Views
 {
     public class AIResponseView : TextEditor
     {

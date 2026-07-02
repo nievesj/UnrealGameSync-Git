@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 using Avalonia.Input.Platform;
 
-namespace SourceGit.ViewModels
+namespace UGSGit.ViewModels
 {
     public class Apply : Popup
     {

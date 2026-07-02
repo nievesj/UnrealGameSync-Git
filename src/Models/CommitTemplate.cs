@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace SourceGit.Models
+namespace UGSGit.Models
 {
     public class CommitTemplate : ObservableObject
     {

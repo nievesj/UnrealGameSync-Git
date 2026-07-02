@@ -41,6 +41,7 @@ public class UProjectMeta
     {
         ReadCommentHandling = JsonCommentHandling.Skip,
         PropertyNameCaseInsensitive = true,
+        TypeInfoResolverChain = { PluginAbstractionsJsonContext.Default }
     };
 
     /// <summary>

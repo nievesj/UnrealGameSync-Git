@@ -1,4 +1,4 @@
-namespace SourceGit.Commands
+namespace UGSGit.Commands
 {
     public class Archive : Command
     {

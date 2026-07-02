@@ -9,7 +9,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 using UGSGit.PluginAbstractions;
 
-namespace SourceGit.ViewModels
+namespace UGSGit.ViewModels
 {
     public class Preferences : ObservableObject, IPluginStateStore
     {

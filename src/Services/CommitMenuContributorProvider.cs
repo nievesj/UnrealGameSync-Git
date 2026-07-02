@@ -4,7 +4,7 @@ using System.Threading;
 
 using UGSGit.PluginAbstractions;
 
-namespace SourceGit.Services;
+namespace UGSGit.Services;
 
 /// <summary>
 /// Thread-safe registry for commit context menu contributors.

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 using UGSGit.PluginAbstractions;
 
-namespace SourceGit.Services;
+namespace UGSGit.Services;
 
 /// <summary>
 /// Executes UBT build targets or custom scripts. Has CancellationToken support

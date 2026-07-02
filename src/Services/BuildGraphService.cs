@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 using UGSGit.PluginAbstractions;
 
-namespace SourceGit.Services;
+namespace UGSGit.Services;
 
 /// <summary>
 /// Orchestrates UE BuildGraph for staging and packaging editor/game binaries.

@@ -7,7 +7,7 @@ using System.Runtime.Loader;
 
 using UGSGit.PluginAbstractions;
 
-namespace SourceGit.Models
+namespace UGSGit.Models
 {
     /// <summary>
     /// Scans the plugins/ directory for .NET DLLs, loads assemblies in an isolated

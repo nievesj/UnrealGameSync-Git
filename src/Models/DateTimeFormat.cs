@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 
-namespace SourceGit.Models
+namespace UGSGit.Models
 {
     public class DateTimeFormat
     {

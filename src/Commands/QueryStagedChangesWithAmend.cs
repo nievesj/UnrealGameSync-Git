@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace SourceGit.Commands
+namespace UGSGit.Commands
 {
     public partial class QueryStagedChangesWithAmend : Command
     {
